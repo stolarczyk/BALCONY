@@ -29,5 +29,5 @@ grouping_method = 'general';
 # Set the threshold for detecting key amino acids (the percentage of all at the given position)
 proog = 0.1;
 # Magical shift ...
-shift=170
+shift=170;
 
