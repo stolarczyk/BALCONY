@@ -6,7 +6,6 @@ source("~/Uczelnia/PROJEKT/BALCONY/BALCONY/BALCONYfunctions.R")
 # Set working directory
 setwd("~/Uczelnia/PROJEKT/BALCONY/BALCONY/")
 getwd()
-
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
 file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
