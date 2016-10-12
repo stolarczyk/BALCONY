@@ -17,7 +17,7 @@ alignment2matrix(prmt,alignment_squences)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja P?uciennik & Micha? Stolarczyk
 }
 \note{
 %%  ~~further notes~~
