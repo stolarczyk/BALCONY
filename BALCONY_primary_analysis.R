@@ -1,4 +1,4 @@
-# Libraries
+# Load libraries
 library(seqinr)
 library(Biostrings)
 # Source of BALCONY functions
