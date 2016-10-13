@@ -4,11 +4,11 @@ library(Biostrings)
 # Source of BALCONY functions
 source("~/Uczelnia/PROJEKT/BALCONY/BALCONY/BALCONYfunctions.R")
 # Set working directory
-setwd("~/Uczelnia/PROJEKT/BALCONY/BALCONY/")
+setwd("~/Uczelnia/PROJEKT/BALCONY")
 getwd()
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
-file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
+# file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
 file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
 # Structure data files
 ### ZROBIC AUTOMATYCZNE WCZYTYWANIE PLIKOW ZE STRUKTURA PO NAZWIE!
@@ -30,4 +30,14 @@ grouping_method = 'general';
 proog = 0.1;
 # Magical shift ...
 shift=170;
+# Calculating consensus sequence 
+consensus_seq=consensus(file, threshold);
+# Extract just the sequences
+aligned_sequences=file[[3]];
+# Extract just the number of sequences
+ilosc_seq=file[[1]];
+# Get alignment parameters (#rows,#columns)
+parametry=alignment_parameters(aligned_sequences);
+# Convert aligned sequences to matrix
+aligned_sequences_matrix=alignment2matrix(parametry,aligned_sequences);
 
