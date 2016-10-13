@@ -48,7 +48,6 @@ hist(true_consensus,breaks=15, col="firebrick3",cex.main=1.8,cex.lab=1.4,main=""
 konsensus_grupowy=cons2seqs_sim(parametry,aligned_sequences_matrix,consensus_seq,grouping_method);
 mean_tpG=mean(konsensus_grupowy);
 hist(konsensus_grupowy,breaks=15, col="firebrick3",cex.main=1.8,cex.lab=1.4,main="",ylim=c(0,250),xlim=c(0.3,1),xlab="Sequence to consensus identity score");
-
 ################################################################################# analiza outputu
 best_consensus_true = cons_best_for(true_consensus, file); write.table(
   best_consensus_true,"best_consensus_true.txt",col.names = F, row.names = F

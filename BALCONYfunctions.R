@@ -19,14 +19,12 @@ consensus <-
     consens = c(rep("*", each = len_of_vers))
     for (j in vec) {
       alignment_col = mat[,j]
-      m = row.names(as.data.frame(sort(table(alignment_col), decreasing =
-                                         T))[1])
+      m = as.character(as.data.frame(sort(table(alignment_col), decreasing = T))[[1]])
       num = sort(table(alignment_col),decreasing = T)[1]
       value = num / length(alignment_col) * 100
       if (value >= thresh) {
         consens[j] = m[1]
       }
-      
     }
     
     return(consens)
