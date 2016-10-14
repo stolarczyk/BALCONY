@@ -31,24 +31,12 @@ threshold_variations = 1;
 # Magical shift ...
 shift=170;
 # Calculating consensus sequence 
-<<<<<<< HEAD
 consensus_seq=consensus(file, threshold_consensus);
-=======
-<<<<<<< HEAD
-consensus_seq=consensus(file, threshold_consensus);
-=======
-consensus_seq=consensus(file, threshold);
->>>>>>> aeb1653d58848bb75e4fdd3b83abcb427c14e3a6
->>>>>>> 88462382d6b28f99789a6f06364234535ee25a10
 # Extract just the sequences
 aligned_sequences=file[[3]];
 # Extract just the number of sequences
 ilosc_seq=file[[1]];
 # Get alignment parameters (#rows,#columns)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 88462382d6b28f99789a6f06364234535ee25a10
 parameters=alignment_parameters(aligned_sequences);
 # Convert aligned sequences to matrix
 aligned_sequences_matrix=alignment2matrix(parameters,aligned_sequences);
@@ -76,12 +64,5 @@ var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variation
 # Calculating amino acids groups variations on each alignment (protein) position
 var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
 variations_matrix = display_AA_variation(var_aa);
-<<<<<<< HEAD
-=======
-=======
-parametry=alignment_parameters(aligned_sequences);
-# Convert aligned sequences to matrix
-aligned_sequences_matrix=alignment2matrix(parametry,aligned_sequences);
 
->>>>>>> aeb1653d58848bb75e4fdd3b83abcb427c14e3a6
->>>>>>> 88462382d6b28f99789a6f06364234535ee25a10
+
