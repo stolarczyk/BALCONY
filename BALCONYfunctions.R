@@ -588,7 +588,7 @@ TG_conservativity <- function(final_output,var_aa,method) {
   );
   return(ret)
 }# GAPS EXCLUDED - wrong
-TG_conservativity1 <- function(final_output,var_aa,method) {
+TG_conservativity1 <- function(final_output,var_aa) {
   max_cons = c();
   for (i in seq(1,length(final_output[1,]),1)) {
     #     if (final_output[1,i] != "-") {
@@ -607,8 +607,7 @@ TG_conservativity1 <- function(final_output,var_aa,method) {
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
-    ile_var[i] = length(which(var_aa$AA[,i] != "n" &
-                                var_aa$AA[,i] != "-"));
+    ile_var[i] = length(which(var_aa$AA[,i] != "n" & var_aa$AA[,i] != "-"));
   }
   m_i = max_cons / ile_var;#wzgledna konserwatywnosc
   m_i[which(is.nan(m_i) == TRUE)] = 0;#zmiana NaN na 0
@@ -670,8 +669,7 @@ substitution_mtx <- function (matrix_name) {
   # function can read .txt file substitution matrix and convert it
   # into a list of alphabet (the range of letters in matrix) and
   # mtx(valuse into substitution matrix)
-  
-  matrix = read.table("PAM250.txt")#           sprawdzi? jak to zrobi? zeby wczytywa? po nazwie
+  matrix = read.table(matrix_name)
   mtx = matrix[-1,-1]
   alphabet = as.character(unlist(matrix[1,-1]))
   sub_mtx = list(alphabet, mtx)
@@ -701,14 +699,12 @@ D_matrix <- function(sub_mtx) {
 }
 
 Landgraf_conservation <-
-  function(dissim_mtx, alignment_col, weights) {
-    #alignment_col=4
-    column = alignment_col
-    #dissim_mtx=sub_mtx
+  function(matrix_name, alignment_column_number, weights) {
+    dissim_mtx = substitution_mtx(matrix_name)
+    column = aligned_sequences_matrix[,alignment_column_number];
     values = as.numeric(as.matrix(dissim_mtx[[2]]))# values
     alpha = dissim_mtx[[1]]
     dim(values) <- dim(dissim_mtx[[2]])
-    
     iterator = seq(1:length(column))
     sum_of_dist = 0;
     global_sum = 0;
