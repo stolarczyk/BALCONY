@@ -64,5 +64,5 @@ var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variation
 # Calculating amino acids groups variations on each alignment (protein) position
 var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
 variations_matrix = display_AA_variation(var_aa);
-
+co
 
