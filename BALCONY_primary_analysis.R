@@ -16,7 +16,14 @@ structure_names = c();
 for (i in seq(1,length(myFiles),by = 1)){
   structure_names= append(structure_names,strsplit(strsplit(myFiles[i],"_")[[1]][2],"[.]")[[1]][1]);
 }
-tunnel_file = as.list(structure_names)
+structure_names_list = as.list(structure_names)
+structure_list = list();
+i=1;
+for (structure in myFiles){
+  temp = read.table(structure)
+  structure_list[[i]]= temp;
+  i = i + 1;
+}
 # Set PDB name
 pdb_name = "4JNC"; 
 # Specify alignment position to examine
@@ -29,6 +36,16 @@ grouping_method = 'general';
 threshold_variations = 1;
 # Magical shift ...
 shift=170;
+# Library mapping Uniprot names to PDB
+lib = list(
+  c("Q6U6J0","4QLA"), #creating library uniprot - PDB
+  c("Q9UR30","3G0I","3G02","1QO7"),
+  c("Q84HB8","4I19","4QA9"),
+  c("P34913","4JNC"),
+  c("P34914","1EK2","1CR6","1EK1","1CQZ"),
+  c("G9BEX6","4O08","4IO0","2E3J","4INZ"),
+  c("Q41413","3CXU","2CJP")
+)
 # Calculating consensus sequence 
 consensus_seq=consensus(file, threshold_consensus);
 # Extract just the sequences
@@ -59,8 +76,8 @@ variations_matrix = display_AA_variation(var_aa);
 uniprot=find_seqid(pdb_name,lib);
 my_seq=find_seq(uniprot, file,1);
 # add tunnels
-structure=create_structure_seq(tunnel_file,uniprot,file,3);
-structure_matrix=display_structure(structure,tunnel_file);
+structure=create_structure_seq(structure_list,uniprot,file,3);
+structure_matrix=display_structure(structure,structure_list);
 # set residue indexes
 structure_numbers=show_numbers(structure);  
 ############# CALCULATE CONSERVATION

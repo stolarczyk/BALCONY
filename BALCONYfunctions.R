@@ -267,24 +267,16 @@ calculate_AA_variation <-
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
     keyaas_treshold = prmt$row_no * (threshold / 100);
-    #returns list of matrices with tabled symbols of the most common AA in alignment column and percentage values for contributed AA
     aligned_sequences_matrix = alignment2matrix(prmt,sequence_alignment);
     keyaas = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
     keyaas_per = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
     
     for (i in seq(1,dim(aligned_sequences_matrix)[2])) {
-      table = as.matrix(as.data.frame(sort(
-        table(aligned_sequences_matrix[,i]),decreasing = T
-      ))); #Czestosci i ridzaje wystepowania AA
-      aas = row.names(table);
-      keyaas[i,1:length(matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
-                                                                                         keyaas_treshold)])))] = matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
-                                                                                                                                                                                  keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
-      keyaas_per[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >=
-                                                                                                     keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] /
-                                                                                                                                            parametry$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
+      table = (sort(table(aligned_sequences_matrix[,i]),decreasing = T)); #Czestosci i rodzaje wystepowania AA
+      aas = names(table);
+      keyaas[i,1:length(matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >= keyaas_treshold)])))] = matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >= keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
+      keyaas_per[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >= keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] / prmt$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
     }
-    
     i = 1;
     while (length(which(keyaas[,i] != "n")) > 0) {
       i = i + 1;
@@ -344,14 +336,14 @@ calculate_GROUP_variation <-
     }
     
     for (i in seq(1,dim(grupy)[2])) {
-      table = as.matrix(as.data.frame(sort(table(grupy[,i]),decreasing = T))); #Czestosci i ridzaje wystepowania AA
-      aas = row.names(table);
+      table = (sort(table(grupy[,i]),decreasing = T)); #Czestosci i ridzaje wystepowania AA
+      aas = names(table);
       keyaas_gr[i,1:length(matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
                                                                                             keyaas_treshold)])))] = matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
                                                                                                                                                                                      keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
       keyaas_per_gr[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >=
                                                                                                         keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] /
-                                                                                                                                               parametry$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
+                                                                                                                                               prmt$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
     }
     
     i = 1;
@@ -532,29 +524,29 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
-create_final_csv <-
-  #do poprawy: powinna wczytywać listę dodatkowych argumentów
-  #dlaczego jak chce stworzyć csv z wybranymi kolumnami to cały czas zweaca to samo?
-  function(variations_matrix,structure_matrix,structure_numbers,landgraf,schneider,TG_score,uniprot,alignment_file) {
+
+create_final_CSV <-
+  #do poprawy: powinna wczytywa? list? dodatkowych argument?w
+  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?
+  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    final_output = rbind(
-      variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("sequence",sequence)
-    );
-    final_csv = write.csv(final_output,file = "final_csv.csv", row.names = F)
+    if (is.null(list_of_scores)==TRUE){
+      final_output = rbind(
+        variations_matrix,structure_matrix,structure_numbers);
+    }
+    else{
+      landgraf=list_of_scores[[1]]
+      schneider=list_of_scores[[2]]
+      TG_score= list_of_scores[[3]]
+      kabat= list_of_scores[[4]]
+      final_output = rbind(
+        variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence));
+    }
+    final_csv = write.csv(final_output,file = FILENAME, row.names = F)
     View(final_output)
     return(final_output)
   }
-create_final_csv2 <-
-  ####trzeba dodać nazwę pliku
-   function(new_file_name,var_matrix,stru_matrix,stru_numbers,landgraf,schneider,TG_score,uniprot,alignment_file) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    f_out = rbind(
-      var_matrix,stru_matrix,stru_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("sequence",sequence)
-    );
-    final_csv = write.csv(f_out,file = new_file_name, row.names = F)
-    View(f_out)
-    return(f_out)
-  }
+
 TG_conservativity <- function(final_output,var_aa,method) {
   max_cons = c();
   for (i in seq(1,length(final_output[1,]),1)) {
