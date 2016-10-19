@@ -1,8 +1,8 @@
 consensus <-
   function(alignment, thresh) {
     #Function which calculates consensus
-    #alignment- alignment alignment , output of read.alignment()
-    #thresh- given threshold of conservation (%)
+    #alignment-output of read.alignment()
+    #thresh-given threshold of conservation (%)
     alignment_matrix = as.matrix(as.character(alignment[[3]]));
     count_cols = length(alignment_matrix)
     vec = seq(1,length(s2c(alignment_matrix[1,])))
@@ -19,16 +19,13 @@ consensus <-
     consens = c(rep("*", each = len_of_vers))
     for (j in vec) {
       alignment_col = mat[,j]
-      m = row.names(as.data.frame(sort(table(alignment_col), decreasing =
-                                         T))[1])
+      m = names(sort(table(alignment_col), decreasing = T))
       num = sort(table(alignment_col),decreasing = T)[1]
       value = num / length(alignment_col) * 100
       if (value >= thresh) {
         consens[j] = m[1]
       }
-      
     }
-    
     return(consens)
   }
 cons2seqs_ident <-
