@@ -64,5 +64,37 @@ var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variation
 # Calculating amino acids groups variations on each alignment (protein) position
 var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
 variations_matrix = display_AA_variation(var_aa);
-co
+
+#find reference sequence
+uniprot=find_seqid(pdb_name,lib);
+my_seq=find_seq(uniprot, file,1);
+# add tunnels
+structure=create_structure_seq(tunnel_file,uniprot,file,3);
+
+structure_matrix=display_structure(structure,tunnel_file);
+# set residue indexes
+structure_numbers=show_numbers(structure);  
+############# CALCULATE CONSERVATION
+
+final_output=rbind(variations_matrix,structure_matrix,structure_numbers,uniprot);
+stats=TG_conservativity1(final_output,var_aa);
+
+how_long = parameters[[2]]
+iteracja = seq(1:how_long)
+scoreK = rep(1, each = how_long);
+scoreS = rep(1, each = how_long);
+for (i in iteracja) {
+  if (i %% 100 == 0) {
+    print(i)
+  }
+  column = aligned_sequences_matrix[,i]
+  scoreK[i] = conservativity(column)$Kabat;
+  scoreS[i] = conservativity(column)$Schneider
+}
+
+####FINAL CSV
+SCORE_LIST=list(scoreS,rep(1, each = how_long),stats$relative_conservativity,scoreK)
+final_CSV=create_final_CSV("NaszPlik.csv",variations_matrix, structure_matrix,structure_numbers,uniprot,file,SCORE_LIST)
+
+
 

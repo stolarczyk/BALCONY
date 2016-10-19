@@ -19,12 +19,14 @@ consensus <-
     consens = c(rep("*", each = len_of_vers))
     for (j in vec) {
       alignment_col = mat[,j]
-      m = as.character(as.data.frame(sort(table(alignment_col), decreasing = T))[[1]])
+      m = row.names(as.data.frame(sort(table(alignment_col), decreasing =
+                                         T))[1])
       num = sort(table(alignment_col),decreasing = T)[1]
       value = num / length(alignment_col) * 100
       if (value >= thresh) {
         consens[j] = m[1]
       }
+      
     }
     
     return(consens)
@@ -533,28 +535,26 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
-create_final_csv <-
-  #do poprawy: powinna wczytywać listę dodatkowych argumentów
-  #dlaczego jak chce stworzyć csv z wybranymi kolumnami to cały czas zweaca to samo?
-  function(variations_matrix,structure_matrix,structure_numbers,landgraf,schneider,TG_score,uniprot,alignment_file) {
+create_final_CSV <-
+  #do poprawy: powinna wczytywa? list? dodatkowych argument?w
+  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?
+  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    final_output = rbind(
-      variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("sequence",sequence)
-    );
-    final_csv = write.csv(final_output,file = "final_csv.csv", row.names = F)
+    if (is.null(list_of_scores)==TRUE){
+      final_output = rbind(
+        variations_matrix,structure_matrix,structure_numbers);
+    }
+    else{
+      landgraf=list_of_scores[[1]]
+      schneider=list_of_scores[[2]]
+      TG_score= list_of_scores[[3]]
+      kabat= list_of_scores[[4]]
+      final_output = rbind(
+        variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence));
+    }
+    final_csv = write.csv(final_output,file = FILENAME, row.names = F)
     View(final_output)
     return(final_output)
-  }
-create_final_csv2 <-
-  ####trzeba dodać nazwę pliku
-  function(new_file_name,var_matrix,stru_matrix,stru_numbers,landgraf,schneider,TG_score,uniprot,alignment_file) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    f_out = rbind(
-      var_matrix,stru_matrix,stru_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("sequence",sequence)
-    );
-    final_csv = write.csv(f_out,file = new_file_name, row.names = F)
-    View(f_out)
-    return(f_out)
   }
 TG_conservativity <- function(final_output,var_aa,method) {
   max_cons = c();
