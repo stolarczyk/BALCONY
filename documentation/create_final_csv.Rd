@@ -1,11 +1,11 @@
-\name{create_final_csv}
-\alias{create_final_csv}
+\name{create_final_CSV}
+\alias{create_final_CSV}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Create CSV file to save results
 }
 \description{
-Create_final_csv() saves results as table into csv file. Combination of given variation allows to compare protein structure with evolutionary data content from alignment. Each position on alignment has its own column in csv file. WARNING: for long aligned sequences last colums can exceed csv file dimension!
+Create_final_CSV() saves results as table into csv file. Combination of given variation allows to compare protein structure with evolutionary data content from alignment. Each position on alignment has its own column in csv file. WARNING: for long aligned sequences last colums can exceed csv file dimension!
 }
 \usage{
 create_final_csv(variations_matrix,structure_matrix,structure_numbers)
@@ -28,7 +28,7 @@ create_final_csv(variations_matrix,structure_matrix,structure_numbers)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja P?uciennik & Micha? Stolarczyk
 }
 \note{
 %%  ~~further notes~~

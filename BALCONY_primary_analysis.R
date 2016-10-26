@@ -86,13 +86,13 @@ final_output=rbind(variations_matrix,structure_matrix,structure_numbers);
 # Calculate TG entropy score for all alignment positions
 TG_entropy=TG_conservativity1(final_output,var_aa)$srelative_conservativity;
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
-Kabat_entropy = conservativity(column)$Kabat;
-Schneider_entropy = conservativity(column)$Schneider;
+Kabat_entropy = conservativity(alignmnent_position)$Kabat;
+Schneider_entropy = conservativity(alignmnent_position)$Schneider;
 Landgraf = Landgraf_conservation(matrix_name,alignmnent_position,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
 entropy_data=list(Schneider_entropy,Landgraf,TG_entropy,Kabat_entropy)
-final_CSV=create_final_CSV("BALCONY_OUTPUT.csv",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
+final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file)
 
 
 

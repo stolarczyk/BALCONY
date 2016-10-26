@@ -528,9 +528,10 @@ show_numbers <- function(structure) {
 create_final_CSV <-
   #do poprawy: powinna wczytywa? list? dodatkowych argument?w
   #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?
-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores) {
+  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
+    
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    if (is.null(list_of_scores)==TRUE){
+    if (is.null(list_of_scores)){
       final_output = rbind(
         variations_matrix,structure_matrix,structure_numbers);
     }
@@ -542,8 +543,15 @@ create_final_CSV <-
       final_output = rbind(
         variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence));
     }
-    final_csv = write.csv(final_output,file = FILENAME, row.names = F)
-    View(final_output)
+    files_no = ceiling(dim(final_output)[2]/1000);
+    for (i in seq(1,files_no,1)){
+      if (i == files_no){
+        write.csv(final_output[,((i-1)*1000+1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+      }
+      else{
+        write.csv(final_output[,((i-1)*1000+1):(i*1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+      }
+    }
     return(final_output)
   }
 
