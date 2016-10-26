@@ -1,11 +1,11 @@
-\name{create_final_csv}
-\alias{create_final_csv}
+\name{create_final_CSV}
+\alias{create_final_CSV}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Create CSV file to save results
 }
 \description{
-Create_final_csv() saves results as table into csv file. Combination of given variation allows to compare protein structure with evolutionary data content from alignment. Each position on alignment has its own column in csv file. WARNING: for long aligned sequences last colums can exceed csv file dimension!
+Create_final_CSV() saves results as table into csv file. Combination of given variation allows to compare protein structure with evolutionary data content from alignment. Each position on alignment has its own column in csv file. If the length of the alignmnet exceeds 1000 characters, the output is divided into separate files. 
 }
 \usage{
 create_final_csv(variations_matrix,structure_matrix,structure_numbers)
@@ -15,6 +15,7 @@ create_final_csv(variations_matrix,structure_matrix,structure_numbers)
   \item{variations_matrix}{matrix which contains alignment and frequencies of occurences each amino acids on each position of alignment}
   \item{structure_matrix}{matrix of aligned, examined protein sequence covered structure markers (T/N) }
   \item{structure_numbers}{vector of unaligned amino acids numbers(contains gaps) }
+  \item{entropy_data}{list of calculated entropy/conservation scores. Optional parameter. If not provided, this rows are not present in the output file}
 }
 \details{
 
@@ -28,7 +29,7 @@ create_final_csv(variations_matrix,structure_matrix,structure_numbers)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja P?uciennik & Micha? Stolarczyk
 }
 \note{
 %%  ~~further notes~~
