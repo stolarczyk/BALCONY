@@ -1,4 +1,4 @@
-consensus <-
+  consensus <-
   function(alignment, thresh) {
     #Function which calculates consensus
     #alignment-output of read.alignment()
@@ -558,35 +558,25 @@ create_final_CSV <-
 TG_conservativity <- function(final_output,var_aa) {
   max_cons = c();
   for (i in seq(1,length(final_output[1,]),1)) {
-    #     if (final_output[1,i] != "-") {
-    #       #ktore nie są gapami
-    #       max_cons[i] = as.numeric(final_output[2,i]);
-    #     }
     if (is.na(as.numeric(final_output[2,i])) == FALSE) {
-      #czy poza gapem sa jakies inne
       max_cons[i] = as.numeric(final_output[2,i])
     }}
-  #     else
-  #       #nie ma innych
-  #       max_cons[i] = 0;
-  #   }
-  max_cons = max_cons[-1];#maksymalne wartosci procentowe na kazdej pozycji gdzie nie ma gapa lub poza gapem jest jeszcze inny AA |||| zniwelowanie przesuniecia o 1 kolumne w final_output wzgledem var_aa$AA
+  max_cons = max_cons[-1];
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
     ile_var[i] = length(which(var_aa$AA[,i] != "n" & var_aa$AA[,i] != "-"));
   }
-  m_i = max_cons / ile_var;#wzgledna konserwatywnosc
-  m_i[which(is.nan(m_i))] = 0;#zmiana NaN na 0
-  part_con = m_i
+  pre_conservativity = max_cons / ile_var;
+  pre_conservativity[which(is.nan(pre_conservativity))] = 0; # change NaNs to 0
+  part_con = pre_conservativity;
   part_conserv = part_con / max(part_con)
-  TG_score = -(log(part_conserv))
-  TG_s = (TG_score / max(TG_score))
-  ret = TG_s;
-  return(ret)
-}# GAPS INCLUDED 
+  TG= -(log(part_conserv))
+  TG_score = (TG/ max(TG))
+  return_data = TG_score;
+  return(return_data)
+}
 conservativity <- function(aligned_sequences_matrix) {
-  
   suma = rep(NaN,dim(aligned_sequences_matrix)[2])
   suma_schneider = rep(NaN,dim(aligned_sequences_matrix)[2])
   Kabat = rep(NaN,dim(aligned_sequences_matrix)[2])
@@ -669,7 +659,7 @@ Landgraf_conservation <-
     status=0;
     for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
       column = aligned_sequences_matrix[,rep];
-      values = as.numeric(as.matrix(dissim_mtx[[2]]))# values
+      values = as.numeric(as.matrix(dissim_mtx[[2]]))
       alpha = dissim_mtx[[1]]
       dim(values) <- dim(dissim_mtx[[2]])
       iterator = seq(1:length(column))

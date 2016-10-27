@@ -563,91 +563,30 @@ create_final_CSV <-
     }
     return(final_output)
   }
-TG_conservativity <- function(final_output,var_aa,method) {
+TG_conservativity <- function(final_output,var_aa) {
   max_cons = c();
   for (i in seq(1,length(final_output[1,]),1)) {
-    if (final_output[1,i] != "-") {
-      #ktore nie są gapami
-      max_cons[i] = as.numeric(final_output[2,i]);
-    }
-    else if (is.na(as.numeric(final_output[4,i])) == FALSE) {
-      #czy poza gapem sa jakies inne
-      max_cons[i] = as.numeric(final_output[4,i])
-    }
-    else
-      #nie ma innych
-      max_cons[i] = 0;
-  }
-  max_cons = max_cons[-1];#maksymalne wartosci procentowe na kazdej pozycji gdzie nie ma gapa lub poza gapem jest jeszcze inny AA |||| zniwelowanie przesuniecia o 1 kolumne w final_output wzgledem var_aa$AA
-  AA = which(max_cons != 0);
-  ile_var = c();
-  for (i in seq(1,dim(var_aa$AA)[2],1)) {
-    ile_var[i] = length(which(var_aa$AA[,i] != "n" &
-                                var_aa$AA[,i] != "-"));
-  }
-  m_i = max_cons / ile_var;#wzgledna konserwatywnosc
-  m_i[which(is.nan(m_i) == TRUE)] = 0;#zmiana NaN na 0
-  m_i_m = mean(m_i); #srednia wzgledna konserwatywnosc
-  m_i_s = sd(m_i);#odchylenie od sredniej wzglednej konserwatywnosci
-  position = seq(1,length(m_i),1);
-  plot(position,max_cons,main = "Max AA precentage on each alignment position, gaps = 0",ylab =
-         "Percentage",pch = "*")
-  plot(position,m_i,main = "Relative conservativity on each position",ylab =
-         "Realtive conservativity",pch = "*")
-  hist(
-    m_i,col = "mediumpurple2",cex.main = 1.8,cex.axis = 1.4,cex.lab = 1.4,ylim = c(0,100), main =
-      "Relative conservation histogram",xlab = "Relative conservation"
-  )
-  ret = list(
-    relative_conservativity = m_i,relative_conservativity_mean = m_i_m,relative_conservativity_standard_deviation =
-      m_i_s
-  );
-  return(ret)
-}# GAPS EXCLUDED - wrong
-TG_conservativity1 <- function(final_output,var_aa,method) {
-  max_cons = c();
-  for (i in seq(1,length(final_output[1,]),1)) {
-    #     if (final_output[1,i] != "-") {
-    #       #ktore nie są gapami
-    #       max_cons[i] = as.numeric(final_output[2,i]);
-    #     }
     if (is.na(as.numeric(final_output[2,i])) == FALSE) {
-      #czy poza gapem sa jakies inne
       max_cons[i] = as.numeric(final_output[2,i])
     }}
-  #     else
-  #       #nie ma innych
-  #       max_cons[i] = 0;
-  #   }
-  max_cons = max_cons[-1];#maksymalne wartosci procentowe na kazdej pozycji gdzie nie ma gapa lub poza gapem jest jeszcze inny AA |||| zniwelowanie przesuniecia o 1 kolumne w final_output wzgledem var_aa$AA
+  max_cons = max_cons[-1];
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
-    ile_var[i] = length(which(var_aa$AA[,i] != "n" &
-                                var_aa$AA[,i] != "-"));
+    ile_var[i] = length(which(var_aa$AA[,i] != "n" & var_aa$AA[,i] != "-"));
   }
-  m_i = max_cons / ile_var;#wzgledna konserwatywnosc
-  m_i[which(is.nan(m_i) == TRUE)] = 0;#zmiana NaN na 0
-  m_i_m = mean(m_i); #srednia wzgledna konserwatywnosc
-  m_i_s = sd(m_i);#odchylenie od sredniej wzglednej konserwatywnosci
-  position = seq(1,length(m_i),1);
-  plot(position,max_cons,main = "Max AA precentage on each alignment position, gaps = 0",ylab =
-         "Percentage",pch = "*")
-  plot(position,m_i,main = "Relative conservativity on each position",ylab =
-         "Realtive conservativity",pch = "*")
-  hist(
-    m_i,col = "mediumpurple2",cex.main = 1.8,cex.axis = 1.4,cex.lab = 1.4,ylim = c(0,100), main =
-      "Relative conservation histogram",xlab = "Relative conservation"
-  )
-  ret = list(
-    relative_conservativity = m_i,relative_conservativity_mean = m_i_m,relative_conservativity_standard_deviation =
-      m_i_s
-  );
-  return(ret)
-}# GAPS INCLUDED 
+  pre_conservativity = max_cons / ile_var;
+  pre_conservativity[which(is.nan(pre_conservativity))] = 0; # change NaNs to 0
+  part_con = pre_conservativity;
+  part_conserv = part_con / max(part_con)
+  TG= -(log(part_conserv))
+  TG_score = (TG/ max(TG))
+  return_data = TG_score;
+  return(return_data)
+}
+
 conservativity <- function(aligned_sequences_matrix) {
-  
-  suma = rep(NaN,dim(aligned_sequences_matrix)[2])
+    suma = rep(NaN,dim(aligned_sequences_matrix)[2])
   suma_schneider = rep(NaN,dim(aligned_sequences_matrix)[2])
   Kabat = rep(NaN,dim(aligned_sequences_matrix)[2])
   for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
@@ -693,7 +632,7 @@ substitution_mtx <- function (matrix_name) {
   # into a list of alphabet (the range of letters in matrix) and
   # mtx(valuse into substitution matrix)
   
-  matrix = read.table("PAM250.txt")#           sprawdzi? jak to zrobi? zeby wczytywa? po nazwie
+  matrix = read.table("PAM250.txt")
   mtx = matrix[-1,-1]
   alphabet = as.character(unlist(matrix[1,-1]))
   sub_mtx = list(alphabet, mtx)
@@ -723,34 +662,40 @@ D_matrix <- function(sub_mtx) {
 }
 
 Landgraf_conservation <-
-  function(dissim_mtx, alignment_col, weights) {
-    #alignment_col=4
-    column = alignment_col
-    #dissim_mtx=sub_mtx
-    values = as.numeric(as.matrix(dissim_mtx[[2]]))# values
-    alpha = dissim_mtx[[1]]
-    dim(values) <- dim(dissim_mtx[[2]])
-    
-    iterator = seq(1:length(column))
-    sum_of_dist = 0;
-    global_sum = 0;
-    for (i in iterator) {
-      iterator2 = c((i + 1):length(column))
-      posa = match(column[i],alpha)
-      if (!i == length(column)) {
-        for (j in iterator2) {
-          posb = match(column[j], alpha)
-          tempi = weights[i] * values[posa,posb]
-          tempj = weights[j] * values[posb,posa]
-          sum_of_dist = tempi + tempj
-          global_sum = global_sum + sum_of_dist
+  function(matrix_name, aligned_sequences_matrix, weights) {
+    pre_dissim_mtx = substitution_mtx(matrix_name)
+    dissim_mtx = D_matrix(pre_dissim_mtx)
+    conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
+    status=0;
+    for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
+      column = aligned_sequences_matrix[,rep];
+      values = as.numeric(as.matrix(dissim_mtx[[2]]))
+      alpha = dissim_mtx[[1]]
+      dim(values) <- dim(dissim_mtx[[2]])
+      iterator = seq(1:length(column))
+      sum_of_dist = 0;
+      global_sum = 0;
+      for (i in iterator) {
+        iterator2 = c((i + 1):length(column))
+        posa = match(column[i],alpha)
+        if (!i == length(column)) {
+          for (j in iterator2) {
+            posb = match(column[j], alpha)
+            tempi = weights[i] * values[posa,posb]
+            tempj = weights[j] * values[posb,posa]
+            sum_of_dist = tempi + tempj
+            global_sum = global_sum + sum_of_dist
+          }
         }
-        
       }
-      
+      conservation[rep] = global_sum / length(column);
+      if(round((rep/dim(aligned_sequences_matrix)[2])*100) != status){
+        print(paste("Position: ",rep,", ",round((rep/dim(aligned_sequences_matrix)[2])*100), "% DONE",sep = ""));
+        status = round((rep/dim(aligned_sequences_matrix)[2])*100)
+      }
     }
-    conservation = global_sum / length(column)
-    return(conservation)
+    Landgraf_normalized_entropy = conservation / max(conservation)
+    return(Landgraf_normalized_entropy)
   }
 
 sequence_stats <-
