@@ -30,7 +30,7 @@ If maximum fraction of any amino acid on the certain position is lower than a th
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja P?uciennik & Micha? Stolarczyk
 }
 \note{
 %%  ~~further notes~~

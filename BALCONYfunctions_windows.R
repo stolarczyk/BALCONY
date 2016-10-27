@@ -645,16 +645,21 @@ TG_conservativity1 <- function(final_output,var_aa,method) {
   );
   return(ret)
 }# GAPS INCLUDED 
-conservativity <- function(column) {
-  #Methods:Shannon, Schneider, Kabat
-  K = c();sum_wew = c();p = c();n = c();tab = c();sum_wew_schneider = c();suma =
-    c();suma_schneider = c();
+conservativity <- function(aligned_sequences_matrix) {
+  
+  suma = rep(NaN,dim(aligned_sequences_matrix)[2])
+  suma_schneider = rep(NaN,dim(aligned_sequences_matrix)[2])
+  Kabat = rep(NaN,dim(aligned_sequences_matrix)[2])
+  for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
+    column = aligned_sequences_matrix[,rep]
+    #KABAT
+    K = c();sum_wew = c();p = c();n = c();tab = c();sum_wew_schneider = c();
     N = length(column); #no of objects
     K = length(as.numeric(table(column))); #no of classes
     n1 = as.numeric(sort(table(column))[length(table(column))]);
-    Kabat = (K/n1)*N;
+    Kabat[rep] = (K/n1)*N;
+    #SCHNEIDER, SHANNON
     tab = as.numeric(table(column));
-    
     suma_wew = 0;sum_wew_schneider = 0;
     for (i in seq(1,K,by = 1)) {
       n[i] = tab[i];
@@ -663,13 +668,14 @@ conservativity <- function(column) {
       res_schneider = p[i] * log(p[i]) * (1 / log(21));
       sum_wew = suma_wew + res;
       sum_wew_schneider = sum_wew_schneider + res_schneider;
+      
     }
-    suma = -sum_wew;
-    
-    suma_schneider = -sum_wew_schneider;
-    ret = list(Shannon = suma,Schneider = suma_schneider,Kabat = Kabat);
-    #plot(suma,main="Shannon Entropy of each alignmnet position",xlab="Alignment position",ylab="Shannon entropy",pch="*");
-    return(ret)
+    suma[rep] = -sum_wew
+    suma_schneider[rep] = -sum_wew_schneider;
+  }
+  Kabat_entropy_normalized = Kabat/max(Kabat);
+  ret = list(Shannon = suma,Schneider = suma_schneider,Kabat = Kabat_entropy_normalized);
+  return(ret)
 }
 weights <- function(file,aligned_sequences_matrix,threshold) {
   consensus_seq = consensus(file, threshold);
