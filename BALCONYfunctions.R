@@ -555,7 +555,7 @@ create_final_CSV <-
     return(final_output)
   }
 
-TG_conservativity1 <- function(final_output,var_aa) {
+TG_conservativity <- function(final_output,var_aa) {
   max_cons = c();
   for (i in seq(1,length(final_output[1,]),1)) {
     #     if (final_output[1,i] != "-") {
@@ -663,7 +663,8 @@ D_matrix <- function(sub_mtx) {
 
 Landgraf_conservation <-
   function(matrix_name, aligned_sequences_matrix, weights) {
-    dissim_mtx = substitution_mtx(matrix_name)
+    pre_dissim_mtx = substitution_mtx(matrix_name)
+    dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
     status=0;
     for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){

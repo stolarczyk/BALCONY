@@ -33,7 +33,7 @@ threshold_consensus= 30;
 # Set the grouping method for calculation of consensus to the peptide sequence similarity: general, hydrophobicity, size, aromaticity
 grouping_method = 'general';
 # Set the threshold for detecting key amino acids (the percentage of all at the given position)
-threshold_variations = 1;
+threshold_variations = 0.01;
 # Magical shift ...
 shift=170;
 # Substitution matrix name for Landgraf conservation
@@ -86,8 +86,7 @@ final_output=rbind(variations_matrix,structure_matrix,structure_numbers);
 # Calculate TG entropy score for all alignment positions
 TG_entropy=TG_conservativity1(final_output,var_aa);
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
-Kabat_entropy = conservativity(alignmnent_position)$Kabat;
-Schneider_entropy = conservativity(alignmnent_position)$Schneider;
+conservativity = conservativity(aligned_sequences_matrix)
 Landgraf = Landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
