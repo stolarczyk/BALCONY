@@ -632,7 +632,7 @@ substitution_mtx <- function (matrix_name) {
   # into a list of alphabet (the range of letters in matrix) and
   # mtx(valuse into substitution matrix)
   
-  matrix = read.table("PAM250.txt")
+  matrix = read.table(matrix_name)
   mtx = matrix[-1,-1]
   alphabet = as.character(unlist(matrix[1,-1]))
   sub_mtx = list(alphabet, mtx)
