@@ -23,3 +23,4 @@ parametry=alignment_parameters(aligned_sequences);
 weights=cons2seqs_sim(parametry,aligned_sequences_matrix,consensus_seq,grouping_method);
 w2=abs(weights-1)
 landgraf_normalized=Landgraf_conservation("GONNET.txt",aligned_sequences_matrix,weights = w2)
+
