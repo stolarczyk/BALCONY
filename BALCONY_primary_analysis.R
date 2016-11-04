@@ -40,7 +40,7 @@ shift=170;
 matrix_name="GONNET.txt";
 # Library mapping Uniprot names to PDB
 lib = list(
-  c("Q6U6J0","4QLA"), #creating library uniprot - PDB
+  c("Q6U6J0","4QLA"), 
   c("Q9UR30","3G0I","3G02","1QO7"),
   c("Q84HB8","4I19","4QA9"),
   c("P34913","4JNC"),
