@@ -1,5 +1,4 @@
-consensus <-
-  function(alignment, thresh) {
+consensus <-  function(alignment, thresh) {
     #Function which calculates consensus
     #alignment-output of read.alignment()
     #thresh-given threshold of conservation (%)
@@ -28,8 +27,7 @@ consensus <-
     }
     return(consens)
   }
-cons2seqs_ident <-
-  function(alignment_sequence, number_of_seq, consensusus_seq) {
+cons2seqs_ident <-  function(alignment_sequence, number_of_seq, consensusus_seq) {
     #alignment_sequence- file[[3]]
     # number_of_seq- file[[1]]
     #consensus- calculated consensusus (output of my_consensusus())
@@ -49,8 +47,7 @@ alignment_parameters <- function(alignment_sequences) {
   param = list(row_no = row_num, col_no = col_num)
   return(param)
 }
-cons2seqs_sim <-
-  function(prmt, aligned_sequences_matrix, consensus_seq, grouping_method) {
+cons2seqs_sim <-  function(prmt, aligned_sequences_matrix, consensus_seq, grouping_method) {
     aligned_sequences_matrixG = aligned_sequences_matrix
     consensusG = rep(x = "-",length(consensus_seq));
     true_percentage_G = c();
@@ -260,8 +257,7 @@ alignment2matrix <- function(prmt, aligned_sequences) {
   }
   return(aligned_sequences_matrix)
 }
-calculate_AA_variation <-
-  function(prmt, sequence_alignment, threshold) {
+calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
@@ -287,8 +283,7 @@ calculate_AA_variation <-
     keyaas_per = t(keyaas_per[,1:i]) #transpose matrix
     return(list(AA = keyaas,per = keyaas_per))
   }
-calculate_GROUP_variation <-
-  function(prmt, sequence_alignment, threshold) {
+calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
@@ -356,8 +351,7 @@ calculate_GROUP_variation <-
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-display_AA_variation <-
-  function(AA_variation) {
+display_AA_variation <-  function(AA_variation) {
     #merging key AAs symbols table with key AAs percentages table
     keyaas = AA_variation$AA; keyaas_per = AA_variation$per;
     size = dim(keyaas);
@@ -443,8 +437,7 @@ find_seq <- function(sequence_id, alignment_file, isoform) {
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
-create_structure_seq <-
-  function(tunnel_file, sequence_id, alignment_file, shift) {
+create_structure_seq <-  function(tunnel_file, sequence_id, alignment_file, shift) {
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)
@@ -525,23 +518,25 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
-create_final_CSV <-
-  #do poprawy: powinna wczytywa? list? dodatkowych argument?w
-  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?
-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores =
-             NULL) {
+create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     if (is.null(list_of_scores)) {
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
     else{
-      landgraf = list_of_scores[[1]]
-      schneider = list_of_scores[[2]]
-      TG_score = list_of_scores[[3]]
-      kabat = list_of_scores[[4]]
-      final_output = rbind(
-        variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence)
-      );
+#       landgraf = list_of_scores[[1]]
+#       schneider = list_of_scores[[2]]
+#       TG_score = list_of_scores[[3]]
+#       kabat = list_of_scores[[4]]
+#       final_output = rbind(
+#         variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence)
+#       );
+      #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
+      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
+      for(i in seq(1,length(list_of_scores))){
+        scores_mtx[i,] = append(names(list_of_scores)[i],list_of_scores[[i]])
+      }
+      final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
     }
     files_no = ceiling(dim(final_output)[2] / 1000);
     for (i in seq(1,files_no,1)) {
@@ -565,7 +560,7 @@ TG_conservativity <- function(final_output,var_aa) {
       max_cons[i] = as.numeric(final_output[2,i])
     }
   }
-  max_cons = max_cons[-1];
+  max_cons = max_cons[-1]; 
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
@@ -653,8 +648,7 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-Landgraf_conservation <-
-  function(matrix_name, aligned_sequences_matrix, weights) {
+Landgraf_conservation <-  function(matrix_name, aligned_sequences_matrix, weights) {
     pre_dissim_mtx = substitution_mtx(matrix_name)
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
@@ -691,8 +685,7 @@ Landgraf_conservation <-
     Landgraf_normalized_entropy = conservation / max(conservation)
     return(Landgraf_normalized_entropy)
   }
-sequence_stats <-
-  function(alignment_file,uniprot,landgraf,schneider,TG) {
+sequence_stats <-  function(alignment_file,uniprot,landgraf,schneider,TG) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     alignment_positions = which(sequence != "-")
     sequence = sequence[alignment_positions];
@@ -725,8 +718,7 @@ sequence_stats <-
     write.csv(x = return_table,file = "sequence_stats.csv");print(paste("Table saved in: ",getwd(),"sequence_stats.csv",sep = ""))
     return(return_set);
   }
-entropy_profile <-
-  function(tunnel_file, sequence_id, alignment_file, shift,prot_entropy, index) {
+entropy_profile <-  function(tunnel_file, sequence_id, alignment_file, shift,prot_entropy, index) {
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)
