@@ -1,2 +1,11 @@
+### jezeli jakies zmiany w funckjiach, to pamietac o dokumemtacji!!!!!!!
 1. W każdym pliku csv musi być pierwsza kolumna jak w pierwszym
-2. Kolejność miar konserwatywności w csv musi być automatycznie 
+2. Dodaj funckję delete_isoforms(), ktora bedzie z wczytanegop dopasowania usuwala izoformy - linie z nazwami "-cyfra|"
+3. Best consy i wors consy do jednej funckji
+4. Polaczyc calculate_AA_variation i display_variations_matrix w jedna, ktora zachowuje wyniki z obu tych funkcji
+5. Sprawdzic, wyniki bledow ktore mozee popelnic uzytkowinik tworzac final_CSV. Np. jak wpisze strcture numbers, a nie wpisze structure matrix
+6. Test S-K  zamknac w funckje - ALA
+7. Funkcja liczaca entropie dla tuneli - ALA
+8. Funckja wizualizujaca wyniki dla tuneli(struktur) - kolory, jezeli nie podane przez uzytkownika, to reainbow czy cos
+9. Sprawdzenie czestosci wystepowania tuneli(struktur) w ramkach (pamietac o tym, ze dla niektorych struktur, nie bedzie kolumnyh z powtorzeniami)
+10. Landgraf ma sie liczyc szybciej
