@@ -524,13 +524,19 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
     else{
-      landgraf = list_of_scores[[1]]
-      schneider = list_of_scores[[2]]
-      TG_score = list_of_scores[[3]]
-      kabat = list_of_scores[[4]]
-      final_output = rbind(
-        variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence)
-      );
+#       landgraf = list_of_scores[[1]]
+#       schneider = list_of_scores[[2]]
+#       TG_score = list_of_scores[[3]]
+#       kabat = list_of_scores[[4]]
+#       final_output = rbind(
+#         variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence)
+#       );
+      #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
+      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
+      for(i in seq(1,length(list_of_scores))){
+        scores_mtx[i,] = append(names(list_of_scores)[i],list_of_scores[[i]])
+      }
+      final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
     }
     files_no = ceiling(dim(final_output)[2] / 1000);
     for (i in seq(1,files_no,1)) {
@@ -554,7 +560,7 @@ TG_conservativity <- function(final_output,var_aa) {
       max_cons[i] = as.numeric(final_output[2,i])
     }
   }
-  max_cons = max_cons[-1];
+  max_cons = max_cons[-1]; 
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
