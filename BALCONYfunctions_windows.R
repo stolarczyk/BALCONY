@@ -296,7 +296,18 @@ calculate_AA_variation <-
     
     keyaas = t(keyaas[,1:i]); #transpose matrix
     keyaas_per = t(keyaas_per[,1:i]) #transpose matrix
-    return(list(AA = keyaas,per = keyaas_per))
+    
+    #merging key AAs symbols table with key AAs percentages table
+    size = dim(keyaas);
+    output = matrix("-",size[1] * 2,size[2] + 1);
+    j = 1;
+    for (i in seq(1,size[1] * 2,2)) {
+      output[i,-1] = keyaas[j,];
+      output[i + 1,-1] = keyaas_per[j,];
+      j = j + 1;
+    }
+    
+    return(list(AA = keyaas,per = keyaas_per, matrix = output))
   }
 calculate_GROUP_variation <-
   function(prmt, sequence_alignment, threshold) {
@@ -367,20 +378,7 @@ calculate_GROUP_variation <-
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-display_AA_variation <-
-  function(AA_variation) {
-    #merging key AAs symbols table with key AAs percentages table
-    keyaas = AA_variation$AA; keyaas_per = AA_variation$per;
-    size = dim(keyaas);
-    output = matrix("-",size[1] * 2,size[2] + 1);
-    j = 1;
-    for (i in seq(1,size[1] * 2,2)) {
-      output[i,-1] = keyaas[j,];
-      output[i + 1,-1] = keyaas_per[j,];
-      j = j + 1;
-    }
-    return(output)
-  }
+
 cons_best_for <- function(percentage, alignment_file) {
   a = which.max(percentage)
   namelist = alignment_file[[2]]
