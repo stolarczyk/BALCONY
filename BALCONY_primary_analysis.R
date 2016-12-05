@@ -10,6 +10,7 @@ getwd()
 # Alignment data (fasta format)
 #file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
 file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
+file = delete_isoforms(file);
 # Read structure data files 
 myFiles <- list.files(pattern = "*.txt");
 structure_names = c();
@@ -62,17 +63,13 @@ aligned_sequences_matrix=alignment2matrix(parameters,aligned_sequences);
 consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
 group_consensus=cons2seqs_sim(parameters,aligned_sequences_matrix,consensus_seq,grouping_method);
-# Following lines find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
-best_consensus_true = cons_best_for(consensus_sequences_identity, file); 
-worst_consensus_true = worst_cons_for(consensus_sequences_identity, file); 
-best_consensus_group = cons_best_for(group_consensus, file); 
-worst_consensus_group = worst_cons_for(group_consensus, file); 
-list_most_common = most_common(consensus_sequences_identity, file);
+# Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
+outliers=outlying_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position
 var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position
 var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
-variations_matrix = display_AA_variation(var_aa);
+variations_matrix = var_aa$matrix;
 #find reference sequence
 uniprot=find_seqid(pdb_name,lib);
 my_seq=find_seq(uniprot, file,1);
