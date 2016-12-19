@@ -52,3 +52,23 @@ for( i in seq(1:length(bezTuneli))){
   legend('topleft',c("protein","T1","T2","T3"),lty=c(1,1,1,1),lwd=c(2.5,2.5),col=c("grey","blue","green","red")) 
   
 }
+
+i=5
+j=3
+p1x=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 1)
+p2x=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 2)
+p3x=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 3)
+
+p1y=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[j]], 1)
+p2y=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[j]], 2)
+p3y=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[j]], 3)
+
+plot(prot_cons[[5]],abs(log(prot_cons[[3]]))/max(abs(log(prot_cons[[3]]))),xlim=c(0,1),ylim=c(0,1),col="grey",xlab=paste(Names[i]),ylab=paste(Names[j]),main=paste("Entropy of amino acids in",prot_descript),pch=19)
+par(new=T)
+plot(p1x[[1]],abs(log(p1y[[1]]))/max(abs(log(p1y[[1]]))), col="blue",xlim=c(0,1),ylim=c(0,1),xlab="",ylab="",main="",pch=19)
+par(new=T)
+plot(p2x[[1]],abs(log(p2y[[1]]))/max(abs(log(p2y[[1]]))), col="green",xlim=c(0,1),ylim=c(0,1),xlab="",ylab="",main="",pch=19)
+par(new=T)
+plot(p3x[[1]],abs(log(p3y[[1]]))/max(abs(log(p3y[[1]]))), col="red",xlim=c(0,1),ylim=c(0,1),xlab="",ylab="",main="",pch=19)
+legend('topright',c("protein","T1","T2","T3"),pch=c(19,19,19,19),col=c("grey","blue","green","red")) 
+

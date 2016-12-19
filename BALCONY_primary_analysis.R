@@ -94,4 +94,3 @@ entropy_data=list(Schneider.entropy=conservativity$Schneider,Landgraf.entropy = 
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
 
 
-
