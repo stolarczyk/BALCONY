@@ -24,13 +24,74 @@ get_prot_entropy<- function(whole_prot, SCORE_LIST,score_descript){
   return(prot_cons)
 }
 
-plot_entropy<- function(prot_cons, description){
-  #plots scores, sutomagically uses name of pdb FIXME
-  colors<- rainbow(length(prot_cons))
+plot_entropy<- function(prot_cons, description, colors){
+  #plots scores on one plot, if colors are not specified plot as rainbow
+  #automagically uses name of pdb FIXME
+  # recive list of entropy scores and list of Names in this list
+  if(missing(colors)){
+    colors<- rainbow(length(prot_cons))
+  }
+ 
   plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score for ",pdb_name), type="l")
   for(i in seq(2, length(prot_cons))){
     par(new=T)
     plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
   }
   legend("topleft",description, col=colors, lty =c(4))
+}
+
+### entropy for stuff
+get_structures_entropy<- function(structure_index, SCORE_LIST, NAMES){
+  #structure_index is a list of indexes in alignment of protein and structures 
+  #SCORE_LIST list of entropies for whole alignment
+  #NAMES names of entropy scores
+  #output is a list of matrixes where each row contains values of entropy for AA in structure
+  t_index=structure_index$structureIndices
+  Entropy=list()
+  lengths=list()
+  for (i in seq(1:length(t_index))){
+   lengths[[i]]=length(t_index[[i]])
+   output=matrix(NA,nrow=length(SCORE_LIST),ncol=lengths[[i]])
+    for (j in seq(1:length(SCORE_LIST))){
+      output[j,]=SCORE_LIST[[j]][t_index[[i]]]
+    }
+    rownames(output)<-NAMES
+    Entropy[[i]]=output
+   
+  }
+  return(Entropy)
+}
+
+##### FINISH ME! :D 
+plot_structure_entropy<-function(NAMES, colors){
+  
+}
+Names=c("Shannon","Schneider", "Kabat", "Landgraf", "TG")
+bezTuneli=list()
+for(i in seq(1:length(prot_cons))){
+  profilet1=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 1) 
+  profilet2=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 2) 
+  profilet3=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 3)
+  bezTuneli[[i]]=prot_cons[[i]][-intersect(intersect(profilet1[[2]],profilet3[[2]]),profilet3[[2]])]
+  profilet3
+  StruLen=max(length(profilet3[[1]]),length(profilet2[[1]]),length(profilet1[[1]]))
+  ###################### STRUCTURES ON PROTEIN
+  plot(prot_cons[[i]], col ="black",type="l", main=paste(Names[i],"entropy score for ",prot_descript, pdb_name),pch = 20, xlim=c(0,my_seq$len),
+       ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
+  par(new=T)
+  plot(profilet1[[2]],prot_cons[[i]][profilet1[[2]]],col="blue",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=21)
+  par(new=T)
+  plot(profilet2[[2]],prot_cons[[i]][profilet2[[2]]], col="green",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=20)
+  par(new=T)
+  plot(profilet3[[2]],prot_cons[[i]][profilet3[[2]]],col="red",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=22)
+  legend('topleft',c("protein","T1","T2","T3"),lty=c(1,0,0,0),pch=c(-1,21,20,22),lwd=c(2.5,2.5),col=c("black","blue","green","red")) 
+  ##############################3 PROFILES OF TUNNEL
+  plot(profilet1[[1]], type="l", main=paste(Names[i]," entropy profile for tunnels in", pdb_name),xlim=c(0,StruLen),ylim=c(0,1), col="blue", xlab="distance from acitve site [AA]",ylab=paste(Names[i]," entropy score"))
+  par(new=T)
+  plot(profilet2[[1]], type="l", main="",xlim=c(0,StruLen),ylim=c(0,1), col="red", xlab="",ylab="")
+  par(new=T)
+  plot(profilet3[[1]], type="l", main="",xlim=c(0,StruLen),ylim=c(0,1), col="green", xlab="",ylab="")
+  par(new=T)
+  legend('bottomright',c("T1","T2","T3"),lty=c(1,1,1),lwd=c(2.5,2.5),col=c("blue","green","red")) 
+  
 }
