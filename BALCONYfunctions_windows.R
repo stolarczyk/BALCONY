@@ -1,5 +1,23 @@
-consensus <-
-  function(alignment, thresh) {
+delete_isoforms <- function(alignment){
+  # This functions searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
+  # As input it takes the alignment file
+  # Output: alignment without isoforms
+  lines_to_delete=c();
+  pattern="(-\\d+\\|)";
+  for(i in seq(1,length(alignment$nam))){
+    test = grep(perl = T,pattern = pattern,x = alignment$nam[i]);  
+    if(length(test)==1){
+      lines_to_delete = append(lines_to_delete,i)
+    }
+  }
+  new=list();
+  new$nb = alignment$nb - (length(lines_to_delete))
+  new$nam = alignment$nam[-lines_to_delete]
+  new$seq= alignment$seq[-lines_to_delete]
+  output = new;
+  return(output)
+}
+consensus <-function(alignment, thresh) {
     #Function which calculates consensus
     #alignment- alignment alignment , output of read.alignment()
     #thresh- given threshold of conservation (%)
@@ -31,8 +49,7 @@ consensus <-
     
     return(consens)
   }
-cons2seqs_ident <-
-  function(alignment_sequence, number_of_seq, consensusus_seq) {
+cons2seqs_ident <-function(alignment_sequence, number_of_seq, consensusus_seq) {
     #alignment_sequence- file[[3]]
     # number_of_seq- file[[1]]
     #consensus- calculated consensusus (output of my_consensusus())
@@ -52,8 +69,7 @@ alignment_parameters <- function(alignment_sequences) {
   param = list(row_no = row_num, col_no = col_num)
   return(param)
 }
-cons2seqs_sim <-
-  function(prmt, aligned_sequences_matrix, consensus_seq, grouping_method) {
+cons2seqs_sim <-function(prmt, aligned_sequences_matrix, consensus_seq, grouping_method) {
     aligned_sequences_matrixG = aligned_sequences_matrix
     consensusG = rep(x = "-",length(consensus_seq));
     true_percentage_G = c();
@@ -263,8 +279,7 @@ alignment2matrix <- function(prmt, aligned_sequences) {
   }
   return(aligned_sequences_matrix)
 }
-calculate_AA_variation <-
-  function(prmt, sequence_alignment, threshold) {
+calculate_AA_variation <- function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
@@ -309,8 +324,7 @@ calculate_AA_variation <-
     
     return(list(AA = keyaas,per = keyaas_per, matrix = output))
   }
-calculate_GROUP_variation <-
-  function(prmt, sequence_alignment, threshold) {
+calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
@@ -378,25 +392,17 @@ calculate_GROUP_variation <-
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-
-cons_best_for <- function(percentage, alignment_file) {
-  a = which.max(percentage)
+outlying_sequences <- function(){
+  max = which.max(percentage)
   namelist = alignment_file[[2]]
-  out = list(c(namelist[a], a)) #output is a name of sequence and position in alignment
-  return(out)
-}
-worst_cons_for <- function(percentage, alignment_file) {
-  a = which.min(percentage) #percentage is an output of calculate_group_consensus or calculate_tru_consensus
-  namelist = alignment_file[[2]]
-  out = list(c(namelist[a], a)) #output is a name of sequence and position in alignment
-  return(out)
-}
-most_common <- function(percentage, alignment_file) {
+  out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
+  min = which.min(percentage) #percentage is an output of calculate_group_consensus or calculate_tru_consensus
+  out.min = list(c(namelist[min], min)) #output is a name of sequence and position in alignment
   value = which.max(table(percentage))
   vector = which(percentage %in% names(value))
   names = match(vector,file[[2]])
-  list_name = alignment_file[[2]]
-  out = list_name[vector]
+  out.common = namelist[vector]
+  out=list(best_consensus = out.max,worst_consensus=out.min,most_common=out.common);
   return(out)
 }
 convert <- function(amino_acids) {
@@ -452,8 +458,7 @@ find_seq <- function(sequence_id, alignment_file, isoform) {
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
-create_structure_seq <-
-  function(tunnel_file, sequence_id, alignment_file, shift) {
+create_structure_seq <- function(tunnel_file, sequence_id, alignment_file, shift) {
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)
@@ -533,11 +538,10 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
-create_final_CSV <-
+create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
   #do poprawy: powinna wczytywa? list? dodatkowych argument?w
-  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?
-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
+  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?  
+  sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     if (is.null(list_of_scores)){
       final_output = rbind(
         variations_matrix,structure_matrix,structure_numbers);
@@ -582,7 +586,6 @@ TG_conservativity <- function(final_output,var_aa) {
   return_data = TG_score;
   return(return_data)
 }
-
 conservativity <- function(aligned_sequences_matrix) {
     suma = rep(NaN,dim(aligned_sequences_matrix)[2])
   suma_schneider = rep(NaN,dim(aligned_sequences_matrix)[2])
@@ -624,7 +627,6 @@ weights <- function(file,aligned_sequences_matrix,threshold) {
   }
   return(score)
 }
-
 substitution_mtx <- function (matrix_name) {
   # function can read .txt file substitution matrix and convert it
   # into a list of alphabet (the range of letters in matrix) and
@@ -636,7 +638,6 @@ substitution_mtx <- function (matrix_name) {
   sub_mtx = list(alphabet, mtx)
   return(sub_mtx)
 }
-
 D_matrix <- function(sub_mtx) {
   values = as.numeric(as.matrix(sub_mtx[[2]]))
   dim(values) <- dim(sub_mtx[[2]])
@@ -658,9 +659,7 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-
-Landgraf_conservation <-
-  function(matrix_name, aligned_sequences_matrix, weights) {
+Landgraf_conservation <- function(matrix_name, aligned_sequences_matrix, weights) {
     pre_dissim_mtx = substitution_mtx(matrix_name)
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
@@ -695,9 +694,7 @@ Landgraf_conservation <-
     Landgraf_normalized_entropy = conservation / max(conservation)
     return(Landgraf_normalized_entropy)
   }
-
-sequence_stats <-
-  function(alignment_file,uniprot,landgraf,schneider,TG) {
+sequence_stats <- function(alignment_file,uniprot,landgraf,schneider,TG) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     alignment_positions = which(sequence != "-")
     sequence = sequence[alignment_positions];
@@ -730,8 +727,7 @@ sequence_stats <-
     write.csv(x = return_table,file = "sequence_stats.csv");print(paste("Table saved in: ",getwd(),"sequence_stats.csv",sep = ""))
     return(return_set);
   }
-entropy_profile<-
-  function(tunnel_file, sequence_id, alignment_file, shift,prot_entropy, index) {
+entropy_profile<- function(tunnel_file, sequence_id, alignment_file, shift,prot_entropy, index) {
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)

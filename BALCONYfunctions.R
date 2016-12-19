@@ -1,3 +1,22 @@
+delete_isoforms <- function(alignment){
+  # This functions searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
+  # As input it takes the alignment file
+  # Output: alignment without isoforms
+  lines_to_delete=c();
+  pattern="(-\\d+\\|)";
+  for(i in seq(1,length(alignment$nam))){
+    test = grep(perl = T,pattern = pattern,x = alignment$nam[i]);  
+    if(length(test)==1){
+      lines_to_delete = append(lines_to_delete,i)
+    }
+  }
+  new=list();
+  new$nb = alignment$nb - (length(lines_to_delete))
+  new$nam = alignment$nam[-lines_to_delete]
+  new$seq= alignment$seq[-lines_to_delete]
+  output = new;
+  return(output)
+}
 consensus <-  function(alignment, thresh) {
     #Function which calculates consensus
     #alignment-output of read.alignment()
@@ -362,24 +381,17 @@ calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-cons_best_for <- function(percentage, alignment_file) {
-  a = which.max(percentage)
+outlying_sequences <- function(percentage, alignment_file){
+  max = which.max(percentage)
   namelist = alignment_file[[2]]
-  out = list(c(namelist[a], a)) #output is a name of sequence and position in alignment
-  return(out)
-}
-worst_cons_for <- function(percentage, alignment_file) {
-  a = which.min(percentage) #percentage is an output of calculate_group_consensus or calculate_tru_consensus
-  namelist = alignment_file[[2]]
-  out = list(c(namelist[a], a)) #output is a name of sequence and position in alignment
-  return(out)
-}
-most_common <- function(percentage, alignment_file) {
+  out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
+  min = which.min(percentage) #percentage is an output of calculate_group_consensus or calculate_tru_consensus
+  out.min = list(c(namelist[min], min)) #output is a name of sequence and position in alignment
   value = which.max(table(percentage))
   vector = which(percentage %in% names(value))
   names = match(vector,file[[2]])
-  list_name = alignment_file[[2]]
-  out = list_name[vector]
+  out.common = namelist[vector]
+  out=list(best_consensus = out.max,worst_consensus=out.min,most_common=out.common);
   return(out)
 }
 convert <- function(amino_acids) {
@@ -522,13 +534,6 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
     else{
-#       landgraf = list_of_scores[[1]]
-#       schneider = list_of_scores[[2]]
-#       TG_score = list_of_scores[[3]]
-#       kabat = list_of_scores[[4]]
-#       final_output = rbind(
-#         variations_matrix,structure_matrix,structure_numbers,append("landgraf metric",landgraf),append("schneider metric",schneider),append("TG metric",TG_score),append("Kabat metric",kabat),append("sequence",sequence)
-#       );
       #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
       scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
       for(i in seq(1,length(list_of_scores))){
@@ -539,14 +544,24 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
     files_no = ceiling(dim(final_output)[2] / 1000);
     for (i in seq(1,files_no,1)) {
       if (i == files_no) {
+        if(!i==1){
         write.csv(
-          final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
         )
+        }
+        else{
+          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+        }
       }
       else{
-        write.csv(
-          final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
-        )
+        if(!i==1){
+          write.csv(
+            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+          )
+        }
+        else{
+          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+        }
       }
     }
     return(final_output)
@@ -744,3 +759,4 @@ entropy_profile <-  function(tunnel_file, sequence_id, alignment_file, shift,pro
     
     return(output)
   }
+
