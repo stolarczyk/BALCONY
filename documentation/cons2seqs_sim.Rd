@@ -13,8 +13,8 @@ cons2seq_sim(prmt, aligned_sequences_matrix, consensus, grouping_method)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{prmt}{list of alignment dimensions(number of sequences and length of sequences in alignment)}
-  \item{alignment_sequences_matrix}{ output of alignment2matrix()}
-  \item{consensus}{output of consensus()}
+  \item{alignment_sequences_matrix}{ output of alignment2matrix() function}
+  \item{consensus}{output of consensus() function}
   \item{grouping_method}{one of following: 'hydrophobicity','size','aromaticity','general'}
 
 }
@@ -30,7 +30,7 @@ AA in  consensus sequences and aligned sequences are converted into groups symbo
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
