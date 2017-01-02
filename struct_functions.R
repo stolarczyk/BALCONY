@@ -95,3 +95,36 @@ for(i in seq(1:length(prot_cons))){
   legend('bottomright',c("T1","T2","T3"),lty=c(1,1,1),lwd=c(2.5,2.5),col=c("blue","green","red")) 
   
 }
+
+read_structure<-(structure_file,sequence_id, alignment_file, shift){
+  #structure_file- string with a name of structure file eg. "stru1.txt"
+  structutre_file="1QCZ_wt_petla.txt"
+  shift=3
+  sequence_id=uniprot
+  alignment_file= read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F)
+  file=as.data.frame(read.table(structutre_file))
+  DAT <- data.frame(lapply(file, as.character), stringsAsFactors=FALSE)
+  numb=as.numeric(DAT[1,])
+  AA=DAT[2,]
+  if(shift!=0){
+    struct=numb+rep(shift,length(numb))
+  }
+  base_seq = find_seq(sequence_id, alignment_file,1)
+  seq = rep("N",each = base_seq$len);
+  
+  seq[struct] = "T"
+
+  
+  aa_positions = which(s2c(base_seq$sequence) != "-")
+  just_align = alignment_file[[3]]
+  paramet = alignment_parameters(just_align)
+  length_alignment = dim(alignment2matrix(paramet, just_align))[2]
+  structures = rep("-",each = length_alignment);
+  j = 1;
+  for (a in aa_positions) {
+    #aligning the tunnels information with the alignment sequence
+    structures[a] = seq[j];
+    j = j + 1;
+  }
+return(structures)
+  }
