@@ -2,19 +2,19 @@
 \alias{cons2seqs_ident}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Consensus to each sequence in the alignment identity
+Identity of each sequence in the alignment to the consensus sequence.
 }
 \description{
-The function calculates identity of consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment.
+The function calculates identity of consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment. Also, it can be used to weight conservativity metrics results in further steps of analysis with BALCONY package.
 }
 \usage{
 cons2seqs_ident(alignment_sequences, number_of_seq, consensus)
 }
 %- maybe also 'usage' for other objects documented here.
-\arguments{ , 
-  \item{alignment_sequences}{ alignment[[3]] loaded with read.alignment()}
-  \item{number_of_seq}{number of sequences in the alignment}
-  \item{consensus}{calculated consensus sequences (output of consensus())}
+\arguments{
+  \item{alignment_sequences}{the third element of the list loaded with read.alignment() function }
+  \item{number_of_seq}{number of sequences in the alignment. The first element of list yielded by alignment_parameters() function}
+  \item{consensus}{consensus sequence (output of consensus() function)}
 %%     ~~Describe \code{x} here~~
 }
 }
@@ -30,7 +30,7 @@ Returned values are percentage of identical symbols (AA and "-") in consensus se
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -49,8 +49,6 @@ cons=consensus(alignment, threshold)
 aligned_sequences=alignment[[3]]
 number=alignment[[1]]
 true_consensus=cons2seqs_ident(aligned_sequences,number, consensus)
-
-hist(true_consensus,breaks=15, col="firebrick3",cex.main=1.8,cex.lab=1.4,main="",xlim=c(0.3,1),ylim=c(0,250),xlab="Sequence to consensus identity score") 
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -5,7 +5,7 @@
 Get alignment dimensions
 }
 \description{
-This function returns size of alignment, which facilitates upcoming steps of analysis.
+This function returns size of alignment, which facilitates upcoming steps of analysis with BALCONY package.
 }
 \usage{
 alignment_parameters(alignment_sequences)
@@ -29,9 +29,9 @@ Function returns list of two elements row_no(number of rows, sequences) and col_
 
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
-\note{
+\note{}
 
 \seealso{
 read.alignment {seqinr}
