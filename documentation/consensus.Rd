@@ -2,17 +2,17 @@
 \alias{consensus}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-calculates consensus based on read file
+consensus
 }
 \description{
-Function calclates consensus sequence for given alignment  with choosen threshold, required: {seqinr}.
+Function calculates consensus sequence for given alignment with a threshold of user's choice.
 }
 \usage{
 consensus(alignment, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{alignment, threshold
-  \item{alignment}{from output of read.alignment()}
+  \item{alignment}{output of of read.alignment() function}
   \item{threshold}{minimal fraction of amino acids on the certain position in all sequences of the alignment to be taken for consensus letter on this position; number in range 0-100.  }
 %%     ~~Describe \code{x} here~~
 }
@@ -22,15 +22,13 @@ consensus(alignment, threshold)
 If maximum fraction of any amino acid on the certain position is lower than a threshold then "*" is printed instead. 
 }
 \value{
-
-  \item{consensus }{character of length of the aligned sequence}
-
+character vector of length of the aligned sequence containing consesus sequence based on the input alignment}
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P?uciennik & Micha? Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -39,7 +37,7 @@ Alicja P?uciennik & Micha? Stolarczyk
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+seqinr
 }
 \examples{
 alignment=read.alignment(file="alignment.mfa", format="fasta", forceToLower=F) 

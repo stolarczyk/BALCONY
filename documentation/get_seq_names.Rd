@@ -5,7 +5,7 @@
 Get names of sequences from alignment
 }
 \description{
-This simple function allows to get sequence names/identifies form alignment, useful to forward analysis. Alignment is obtained with read.alignment() {seqinr}.
+This simple function allows to get sequence names/identifies from alignment.
 }
 \usage{
 get_seq_names(alignment)
@@ -24,7 +24,7 @@ get_seq_names(alignment)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~

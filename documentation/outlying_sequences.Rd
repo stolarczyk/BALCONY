@@ -2,7 +2,7 @@
 \alias{outlying_sequences}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Outlying sequences detection
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

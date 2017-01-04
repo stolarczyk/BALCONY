@@ -8,13 +8,12 @@ Find sequence by id in alignment.
 This function allows to search current large alignent for a sequence with its id.
 }
 \usage{
-find_seq(sequence_id, alignment_file, isoform)
+find_seq(sequence_id, alignment_file)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sequence_id}{identifier of desired sequence from alignment}
   \item{alignment_file}{alignment file, see package seqinr }
-  \item{isoform}{number of isoform, if exist, default is 1 }
 }
 \details{
 
@@ -27,7 +26,7 @@ find_seq(sequence_id, alignment_file, isoform)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~

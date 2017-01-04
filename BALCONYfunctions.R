@@ -303,11 +303,11 @@ calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
     
     #merging key AAs symbols table with key AAs percentages table
     size = dim(keyaas);
-    output = matrix("-",size[1] * 2,size[2] + 1);
+    output = matrix("-",size[1] * 2,size[2]);
     j = 1;
     for (i in seq(1,size[1] * 2,2)) {
-      output[i,-1] = keyaas[j,];
-      output[i + 1,-1] = keyaas_per[j,];
+      output[i,] = keyaas[j,];
+      output[i + 1,] = keyaas_per[j,];
       j = j + 1;
     }
     
@@ -425,7 +425,7 @@ get_seq_names <- function(alignment) {
   names = file[[2]];
   return(names)
 }
-find_seq <- function(sequence_id, alignment_file, isoform) {
+find_seq <- function(sequence_id, alignment_file) {
   mat = as.matrix(as.character(alignment_file[[3]]));
   nazwy_mat = get_seq_names(alignment_file)
   
@@ -439,11 +439,8 @@ find_seq <- function(sequence_id, alignment_file, isoform) {
       )
     )
   }
-  if (sum(which_uniprot) < isoform) {
-    isoform = 1;
-  }
-  seqs = mat[which(which_uniprot == 1)][isoform]; #seq of protein uniprot ID
-  seqs_character = length(which(s2c(seqs[isoform]) != "-") == T);
+  seqs = mat[which(which_uniprot == 1)]; #seq of protein uniprot ID
+  seqs_character = length(which(s2c(seqs) != "-") == T);
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
@@ -451,12 +448,10 @@ create_structure_seq <-  function(tunnel_file, sequence_id, alignment_file, shif
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)
-    
     seq = list();
     tunnel = list();
-    
     #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file,1)
+    base_seq = find_seq(sequence_id, alignment_file)
     for (i in seq(1,length(tunnel_file))) {
       tunnels_indices = as.vector(tunnel_file[[i]][[1]]);
       tunnels_names = as.vector(tunnel_file[[i]][[2]]);
@@ -467,11 +462,7 @@ create_structure_seq <-  function(tunnel_file, sequence_id, alignment_file, shif
         tunnel_idx = tunnel_idx + rep(shift,length(tunnels_indices))
       }
       seq[[i]] = rep("N",each = base_seq$len);
-      
-      #for (z in tunnel_idx) {
       seq[[i]][tunnel_idx] = "T"
-      #}
-      
       aa_positions = which(s2c(base_seq$sequence) != "-")
       just_align = alignment_file[[3]]
       paramet = alignment_parameters(just_align)
@@ -489,11 +480,10 @@ create_structure_seq <-  function(tunnel_file, sequence_id, alignment_file, shif
 display_structure <- function(structure,structure_file) {
   struc_length = length(structure[[1]])
   count = length(structure_file);
-  output = matrix("-",count,struc_length + 1);
+  output = matrix("-",count,struc_length);
   v = seq(1,count,1)
   for (i in v) {
-    output[i,-1] = structure[[i]]
-    output[i,1] = as.character(structure_file[[i]][1,2]);
+    output[i,] = structure[[i]]
   }
   return((output))
 }
@@ -522,7 +512,7 @@ show_numbers <- function(structure) {
   j = 1;
   for (i in seq(1,length(structure[[1]]),1)) {
     if (structure[[1]][i] != "-") {
-      nr_stru[i + 1] = j
+      nr_stru[i] = j
       j = j + 1;
     }
   }
@@ -535,10 +525,13 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
     }
     else{
       #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
-      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
+      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
+      scores_mtx_names=c();
       for(i in seq(1,length(list_of_scores))){
-        scores_mtx[i,] = append(names(list_of_scores)[i],list_of_scores[[i]])
+        scores_mtx[i,] = list_of_scores[[i]]
+        scores_mtx_names[i] = names(list_of_scores)[i];
       }
+      rownames(scores_mtx) = scores_mtx_names;
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
     }
     files_no = ceiling(dim(final_output)[2] / 1000);
@@ -573,7 +566,6 @@ TG_conservativity <- function(final_output,var_aa) {
       max_cons[i] = as.numeric(final_output[2,i])
     }
   }
-  max_cons = max_cons[-1]; 
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
