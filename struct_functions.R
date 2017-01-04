@@ -1,6 +1,7 @@
 #Tunels functions
 #checked only for windows
 get_structure_idx<- function(structure){
+  #documentation get_structure_idx.Rd
   #get idx of structure in alignemnt
   #return sorted list of indices in MSA, one list element is one structure
   #the first element is indices of whole protein in alignment
@@ -13,6 +14,7 @@ get_structure_idx<- function(structure){
   return(out)
 }
 get_prot_entropy<- function(whole_prot, SCORE_LIST,score_descript){
+  #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
  
@@ -24,17 +26,20 @@ get_prot_entropy<- function(whole_prot, SCORE_LIST,score_descript){
   return(prot_cons)
 }
 
-plot_entropy<- function(prot_cons, description, colors){
+plot_entropy<- function(prot_cons, description, colors,impose){
   #plots scores on one plot, if colors are not specified plot as rainbow
   #automagically uses name of pdb FIXME
   # recive list of entropy scores and list of Names in this list
   if(missing(colors)){
     colors<- rainbow(length(prot_cons))
   }
+  if(missing(impose)){
+    stacked<-T
+  }
  
   plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score for ",pdb_name), type="l")
   for(i in seq(2, length(prot_cons))){
-    par(new=T)
+    par(new=impose)
     plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
   }
   legend("topleft",description, col=colors, lty =c(4))
@@ -95,3 +100,36 @@ for(i in seq(1:length(prot_cons))){
   legend('bottomright',c("T1","T2","T3"),lty=c(1,1,1),lwd=c(2.5,2.5),col=c("blue","green","red")) 
   
 }
+
+read_structure<- function(structure_file, sequence_id, alignment_file, shift){
+  #structure_file- string with a name of structure file eg. "stru1.txt"
+  #structutre_file="1QCZ_wt_petla.txt"
+  #shift=3
+  #sequence_id=uniprot
+  #alignment_file= read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F)
+  file=as.data.frame(read.table(structutre_file))
+  DAT <- data.frame(lapply(file, as.character), stringsAsFactors=FALSE)
+  numb=as.numeric(DAT[1,])
+  AA=DAT[2,]
+  if(shift!=0){
+    struct=numb+rep(shift,length(numb))
+  }
+  base_seq = find_seq(sequence_id, alignment_file,1)
+  seq = rep("N",each = base_seq$len);
+  
+  seq[struct] = "T"
+
+  aa_positions = which(s2c(base_seq$sequence) != "-")
+  just_align = alignment_file[[3]]
+  paramet = alignment_parameters(just_align)
+  length_alignment = dim(alignment2matrix(paramet, just_align))[2]
+  structures = rep("-",each = length_alignment);
+  j = 1;
+  for (a in aa_positions) {
+    #aligning the tunnels information with the alignment sequence
+    structures[a] = seq[j];
+    j = j + 1;
+  }
+  structures=c(paste(sequence_id,"STRU"),structure_loop)
+  return(structures)
+  }
