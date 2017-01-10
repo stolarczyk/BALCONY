@@ -519,7 +519,7 @@ show_numbers <- function(structure) {
   return(nr_stru)
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
+    sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
     if (is.null(list_of_scores)) {
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
