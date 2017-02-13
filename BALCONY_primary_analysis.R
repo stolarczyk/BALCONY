@@ -87,7 +87,9 @@ conservativity = conservativity(aligned_sequences_matrix)
 Landgraf = Landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
-entropy_data=list(Schneider.entropy=conservativity$Schneider,Landgraf.entropy = Landgraf,TG.entropy = TG_entropy,Kabat.entropy = conservativity$Kabat)
+entropy_data=list(Schneider.entropy=conservativity$Schneider,Landgraf.entropy = Landgraf,TG.entropy = TG_entropy,Kabat.entropy = conservativity$Kabat
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
-
+# or
+seq_csv = append("-",s2c(my_seq$sequence))
+final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix,seq_csv,structure_numbers,uniprot,file,entropy_data)
 
