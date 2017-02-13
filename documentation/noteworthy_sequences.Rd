@@ -1,14 +1,14 @@
-\name{outlying_sequences}
-\alias{outlying_sequences}
+\name{noteworthy_sequences}
+\alias{noteworthy_sequences}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Outlying sequences detection
+Finds noteworthy sequences in the dataset (most common, closest to the consensus and most different from the consesus)
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-outlying_sequences(percentage, alignment_file)
+noteworthy_sequences(percentage, alignment_file)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,7 +22,7 @@ outlying_sequences(percentage, alignment_file)
 \value{
 \item{best_consensus}{Sequence closest to the consensus}
 \item{worst_consensus}{Sequence most different to the consensus}
-\item{most_common}{Most common sequence in the alignment ???}
+\item{most_common}{Most common sequence in the alignment}
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -46,9 +46,9 @@ seq_count=file[[1]];
 threshold_consensus=30;
 consensus_seq=consensus(file, threshold_consensus);
 consensus_sequences_identity=cons2seqs_ident(aligned_sequences, seq_count, consensus_seq)
-outliers=outlying_sequences(consensus_sequences_identity, file);
+outliers=noteworthy_sequences(consensus_sequences_identity, file);
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Consensus }% use one of  RShowDoc("KEYWORDS")
-\keyword{ Outliers }% __ONLY ONE__ keyword per line
+\keyword{ Sequences }% __ONLY ONE__ keyword per line
