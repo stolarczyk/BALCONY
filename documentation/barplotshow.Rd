@@ -12,8 +12,8 @@ barplotshow(position, AA_variation)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{position}{choosen column of alignment}
-  \item{AA_variation}{percentage frequency of amino acids on alignment, calculated with display_AA_variation()}
+  \item{position}{column of alignment to be visualized}
+  \item{AA_variation}{percentage frequency of amino acids in the alignment, calculated with display_AA_variation() function}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -29,7 +29,7 @@ barplotshow(position, AA_variation)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja P³uciennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -44,7 +44,7 @@ display_AA_variation(), calculate_AA_variation()
 seq=read.alignment("aligment.mfa")
 aligned_sequences=seq[[3]]
 prmt=alignnment_parameters(aligned_sequences)
-theshold=4 # exemplary threshold, percentage, 4\%, below this value AA are not included into displayed matrix
+threshold=4 # exemplary threshold, percentage, 4\%, below this value AA are not included into displayed matrix
 var_aa=calculate_AA_variation(prmt,aligned_sequences,4)
 AA_variation=display_AA_variation(var_aa)
 barplotshow(AA_variation)}

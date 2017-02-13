@@ -16,7 +16,6 @@ display_AA_variation(AA_variation)
 
 }
 \details{
-
 }
 \value{
 
@@ -27,7 +26,7 @@ display_AA_variation(AA_variation)
 %% ~put references to the literature/web site here ~
 }
 \author{
-AlicjA P³cuiennik & Micha³ Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -50,4 +49,4 @@ table = display_AA_variation(var_aa)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ variation}
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
