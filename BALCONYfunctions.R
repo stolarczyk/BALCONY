@@ -381,7 +381,7 @@ calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-outlying_sequences <- function(percentage, alignment_file){
+noteworthy_sequences <- function(percentage, alignment_file){
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
