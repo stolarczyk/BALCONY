@@ -392,7 +392,7 @@ calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-outlying_sequences <- function(){
+noteworthy_sequences <- function(){
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
@@ -536,7 +536,7 @@ show_numbers <- function(structure) {
       j = j + 1;
     }
   }
-  return(nr_stru)
+  return(append("AA Number",nr_stru))
 }
 create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
   #do poprawy: powinna wczytywa? list? dodatkowych argument?w
@@ -565,24 +565,26 @@ create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structu
     
     return(final_output)
   }
-TG_conservativity <- function(final_output,var_aa) {
+TG_conservativity <- function(var_aa) {
   max_cons = c();
-  for (i in seq(1,length(final_output[1,]),1)) {
-    if (is.na(as.numeric(final_output[2,i])) == FALSE) {
-      max_cons[i] = as.numeric(final_output[2,i])
-    }}
-  max_cons = max_cons[-1];
+  for (i in seq(2,length(var_aa$matrix[1,]),1)) {
+    if (is.na(as.numeric(var_aa$matrix[2,i])) == FALSE) {
+      max_cons[i] = as.numeric(var_aa$matrix[2,i])
+    }
+  }
   AA = which(max_cons != 0);
   ile_var = c();
-  for (i in seq(1,dim(var_aa$AA)[2],1)) {
-    ile_var[i] = length(which(var_aa$AA[,i] != "n" & var_aa$AA[,i] != "-"));
+  for (i in seq(2,dim(var_aa$AA)[2],1)) {
+    ile_var[i] = length(which(var_aa$AA[,i] != "n" &
+                                var_aa$AA[,i] != "-"));
   }
-  pre_conservativity = max_cons / ile_var;
-  pre_conservativity[which(is.nan(pre_conservativity))] = 0; # change NaNs to 0
+  pre_conservativity = max_cons[-1] / ile_var;
+  pre_conservativity[which(is.na(pre_conservativity))] = 0; # change NaNs to 0
   part_con = pre_conservativity;
   part_conserv = part_con / max(part_con)
-  TG= -(log(part_conserv))
-  TG_score = (TG/ max(TG))
+  TG = -(log(part_conserv))
+  TG[which(is.infinite(TG[1]))] = 0 # change Infs to 0
+  TG_score = (TG / max(TG))
   return_data = TG_score;
   return(return_data)
 }
