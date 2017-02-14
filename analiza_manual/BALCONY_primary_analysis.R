@@ -4,7 +4,7 @@ library(Biostrings)
 # Source of BALCONY functions
 source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
 # Set working directory
-setwd("~/Uczelnia/PROJEKT/BALCONY")
+setwd("~/Uczelnia/PROJEKT/BALCONY/analiza_manual/")
 getwd()
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
@@ -16,7 +16,7 @@ file = delete_isoforms(file);
 myFiles <- list.files(pattern = "*.txt");
 structure_names = c();
 for (i in seq(1,length(myFiles),by = 1)){
-  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[1]][1]);
+  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
 }
 structure_names_list = as.list(structure_names)
 structure_list = list();
@@ -67,7 +67,7 @@ consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consen
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
 group_consensus=cons2seqs_sim(parameters,aligned_sequences_matrix,consensus_seq,grouping_method);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
-outliers=outlying_sequences(consensus_sequences_identity, file);
+noteworthy_seqs=noteworthy_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position
 var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position
@@ -75,7 +75,7 @@ var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_var
 variations_matrix = var_aa$matrix;
 #find reference sequence
 uniprot=find_seqid(pdb_name,lib);
-my_seq=find_seq(uniprot, file,1);
+my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,3);
 structure_matrix=display_structure(structure,structure_list); rownames(structure_matrix) = structure_names
@@ -84,7 +84,7 @@ structure_numbers=show_numbers(structure);
 # bind the results into one table 
 final_output=rbind(variations_matrix,structure_matrix,structure_numbers);
 # Calculate TG entropy score for all alignment positions
-TG_entropy=TG_conservativity(final_output,var_aa);
+TG_entropy=TG_conservativity(var_aa);
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
 conservativity = conservativity(aligned_sequences_matrix)
 Landgraf = Landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)

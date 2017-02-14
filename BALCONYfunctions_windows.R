@@ -536,35 +536,50 @@ show_numbers <- function(structure) {
       j = j + 1;
     }
   }
-  return(append("AA Number",nr_stru))
+  return(nr_stru)
 }
-create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
-  #do poprawy: powinna wczytywa? list? dodatkowych argument?w
-  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?  
-  sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
-    if (is.null(list_of_scores)){
-      final_output = rbind(
-        variations_matrix,structure_matrix,structure_numbers);
+create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
+  sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
+  rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
+  if (is.null(list_of_scores)) {
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
+  }
+  else{
+    #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
+    scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
+    scores_mtx_names=c();
+    for(i in seq(1,length(list_of_scores))){
+      scores_mtx[i,] = list_of_scores[[i]]
+      scores_mtx_names[i] = names(list_of_scores)[i];
     }
-    else{
-      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
-      for(i in seq(1,length(list_of_scores))){
-        scores_mtx[i,] = append(names(list_of_scores)[i],list_of_scores[[i]])
-      }
-      final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
-    }
-    files_no = ceiling(dim(final_output)[2]/1000);
-    for (i in seq(1,files_no,1)){
-      if (i == files_no){
-        write.csv(final_output[,((i-1)*1000+1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+    rownames(scores_mtx) = scores_mtx_names;
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
+  }
+  files_no = ceiling(dim(final_output)[2] / 1000);
+  for (i in seq(1,files_no,1)) {
+    if (i == files_no) {
+      if(!i==1){
+        write.csv(
+          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
+        )
       }
       else{
-        write.csv(final_output[,((i-1)*1000+1):(i*1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+        write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
       }
     }
-    
-    return(final_output)
+    else{
+      if(!i==1){
+        write.csv(
+          final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
+        )
+      }
+      else{
+        write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
+      }
+    }
   }
+  return(final_output)
+}
 TG_conservativity <- function(var_aa) {
   max_cons = c();
   for (i in seq(2,length(var_aa$matrix[1,]),1)) {

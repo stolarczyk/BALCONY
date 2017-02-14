@@ -311,7 +311,7 @@ calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
       j = j + 1;
     }
     
-    return(list(AA = keyaas,per = keyaas_per, matrix = output))
+    return(list(AA = keyaas,percentage = keyaas_per, matrix = output))
   }
 calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
@@ -516,10 +516,11 @@ show_numbers <- function(structure) {
       j = j + 1;
     }
   }
-  return(append("AA Number",nr_stru))
+  return(nr_stru)
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
     sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
+    rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
     if (is.null(list_of_scores)) {
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
@@ -539,21 +540,21 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
       if (i == files_no) {
         if(!i==1){
         write.csv(
-          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
         )
         }
         else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
         }
       }
       else{
         if(!i==1){
           write.csv(
-            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
           )
         }
         else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
         }
       }
     }
