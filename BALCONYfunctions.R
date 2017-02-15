@@ -655,8 +655,14 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-Landgraf_conservation <-  function(matrix_name, aligned_sequences_matrix, weights) {
-    pre_dissim_mtx = substitution_mtx(matrix_name)
+Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, weights) {
+    if(is.null(matrix_name)){
+      load("sub_mat/Gonnet_matrix.rda")
+      pre_dissim_mtx = gonnet_matrix
+    }
+    else{
+      pre_dissim_mtx = substitution_mtx(matrix_name)
+    }
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
     status = 0;

@@ -676,41 +676,49 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-Landgraf_conservation <- function(matrix_name, aligned_sequences_matrix, weights) {
+Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, weights) {
+  if(is.null(matrix_name)){
+    load("sub_mat/Gonnet_matrix.rda")
+    pre_dissim_mtx = gonnet_matrix
+  }
+  else{
     pre_dissim_mtx = substitution_mtx(matrix_name)
-    dissim_mtx = D_matrix(pre_dissim_mtx)
-    conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
-    status=0;
-    for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
-      column = aligned_sequences_matrix[,rep];
-      values = as.numeric(as.matrix(dissim_mtx[[2]]))
-      alpha = dissim_mtx[[1]]
-      dim(values) <- dim(dissim_mtx[[2]])
-      iterator = seq(1:length(column))
-      sum_of_dist = 0;
-      global_sum = 0;
-      for (i in iterator) {
-        iterator2 = c((i + 1):length(column))
-        posa = match(column[i],alpha)
-        if (!i == length(column)) {
-          for (j in iterator2) {
-            posb = match(column[j], alpha)
-            tempi = weights[i] * values[posa,posb]
-            tempj = weights[j] * values[posb,posa]
-            sum_of_dist = tempi + tempj
-            global_sum = global_sum + sum_of_dist
-          }
+  }
+  dissim_mtx = D_matrix(pre_dissim_mtx)
+  conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
+  status = 0;
+  for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)) {
+    column = aligned_sequences_matrix[,rep];
+    values = as.numeric(as.matrix(dissim_mtx[[2]]))
+    alpha = dissim_mtx[[1]]
+    dim(values) <- dim(dissim_mtx[[2]])
+    iterator = seq(1:length(column))
+    sum_of_dist = 0;
+    global_sum = 0;
+    for (i in iterator) {
+      iterator2 = c((i + 1):length(column))
+      posa = match(column[i],alpha)
+      if (!i == length(column)) {
+        for (j in iterator2) {
+          posb = match(column[j], alpha)
+          tempi = weights[i] * values[posa,posb]
+          tempj = weights[j] * values[posb,posa]
+          sum_of_dist = tempi + tempj
+          global_sum = global_sum + sum_of_dist
         }
       }
-      conservation[rep] = global_sum / length(column);
-      if(round((rep/dim(aligned_sequences_matrix)[2])*100) != status){
-        print(paste("Position: ",rep,", ",round((rep/dim(aligned_sequences_matrix)[2])*100), "% DONE",sep = ""));
-        status = round((rep/dim(aligned_sequences_matrix)[2])*100)
-      }
     }
-    Landgraf_normalized_entropy = conservation / max(conservation)
-    return(Landgraf_normalized_entropy)
+    conservation[rep] = global_sum / length(column);
+    if (round((rep / dim(aligned_sequences_matrix)[2]) * 100) != status) {
+      print(paste("Position: ",rep,", ",round((
+        rep / dim(aligned_sequences_matrix)[2]
+      ) * 100), "% DONE",sep = ""));
+      status = round((rep / dim(aligned_sequences_matrix)[2]) * 100)
+    }
   }
+  Landgraf_normalized_entropy = conservation / max(conservation)
+  return(Landgraf_normalized_entropy)
+}
 sequence_stats <- function(alignment_file,uniprot,landgraf,schneider,TG) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     alignment_positions = which(sequence != "-")
