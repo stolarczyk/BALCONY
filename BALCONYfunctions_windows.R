@@ -392,11 +392,7 @@ calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-<<<<<<< HEAD
 noteworthy_sequences <- function(percentage, alignment_file){
-=======
-noteworthy_sequences <- function(){
->>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
@@ -539,26 +535,6 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
-<<<<<<< HEAD
-create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
-  #do poprawy: powinna wczytywa? list? dodatkowych argument?w
-  #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?  
-  sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
-    if (is.null(list_of_scores)){
-      final_output = rbind(
-        variations_matrix,structure_matrix,structure_numbers);
-    }
-    if (is.null(c(structure_matrix,structure_numbers,list_of_scores))){
-    final_output = variations_matrix;
-    }
-    else{
-      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
-      scores_mtx_names=c();
-      
-      for(i in seq(1,length(list_of_scores))){
-        scores_mtx[i,] = list_of_scores[[i]]
-        scores_mtx_names=names(list_of_scores)[i]
-=======
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
   sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
   rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
@@ -586,7 +562,6 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
       }
       else{
         write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
->>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
       }
     }
     else{
@@ -604,19 +579,11 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
 }
 TG_conservativity <- function(var_aa) {
   max_cons = c();
-<<<<<<< HEAD
-  for (i in seq(1,length(final_output[1,]),1)) {
-    if (is.na(as.numeric(final_output[2,i])) == FALSE) {
-      max_cons[i] = as.numeric(final_output[2,i])
-    }}
- 
-=======
   for (i in seq(2,length(var_aa$matrix[1,]),1)) {
     if (is.na(as.numeric(var_aa$matrix[2,i])) == FALSE) {
       max_cons[i] = as.numeric(var_aa$matrix[2,i])
     }
   }
->>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(2,dim(var_aa$AA)[2],1)) {
@@ -750,7 +717,7 @@ Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, w
   return(Landgraf_normalized_entropy)
 }
 sequence_stats <- function(alignment_file,uniprot,landgraf,schneider,TG) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
+    sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
     alignment_positions = which(sequence != "-")
     sequence = sequence[alignment_positions];
     protein_positions = seq(1,length(sequence));
@@ -806,4 +773,5 @@ entropy_profile<- function(tunnel_file, sequence_id, alignment_file, shift,prot_
     output=list(profile, tunnel_idx)
     
     return(output)
-  }
+}
+
