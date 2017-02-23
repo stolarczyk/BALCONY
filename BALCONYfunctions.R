@@ -311,7 +311,7 @@ calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
       j = j + 1;
     }
     
-    return(list(AA = keyaas,per = keyaas_per, matrix = output))
+    return(list(AA = keyaas,percentage = keyaas_per, matrix = output))
   }
 calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     #prmt- size of alignment (output of get_parameter())
@@ -381,7 +381,7 @@ calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-outlying_sequences <- function(percentage, alignment_file){
+noteworthy_sequences <- function(percentage, alignment_file){
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
@@ -520,6 +520,7 @@ show_numbers <- function(structure) {
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
     sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
+    rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
     if (is.null(list_of_scores)) {
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
     }
@@ -539,44 +540,45 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
       if (i == files_no) {
         if(!i==1){
         write.csv(
-          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
         )
         }
         else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
         }
       }
       else{
         if(!i==1){
           write.csv(
-            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F
+            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
           )
         }
         else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
         }
       }
     }
     return(final_output)
   }
-TG_conservativity <- function(final_output,var_aa) {
+TG_conservativity <- function(var_aa) {
   max_cons = c();
-  for (i in seq(1,length(final_output[1,]),1)) {
-    if (is.na(as.numeric(final_output[2,i])) == FALSE) {
-      max_cons[i] = as.numeric(final_output[2,i])
+  for (i in seq(2,length(var_aa$matrix[1,]),1)) {
+    if (is.na(as.numeric(var_aa$matrix[2,i])) == FALSE) {
+      max_cons[i] = as.numeric(var_aa$matrix[2,i])
     }
   }
   AA = which(max_cons != 0);
   ile_var = c();
-  for (i in seq(1,dim(var_aa$AA)[2],1)) {
+  for (i in seq(2,dim(var_aa$AA)[2],1)) {
     ile_var[i] = length(which(var_aa$AA[,i] != "n" &
                                 var_aa$AA[,i] != "-"));
   }
-  pre_conservativity = max_cons / ile_var;
-  pre_conservativity[which(is.nan(pre_conservativity))] = 0; # change NaNs to 0
+  pre_conservativity = max_cons[-1] / ile_var;
+  pre_conservativity[which(is.na(pre_conservativity))] = 0; # change NaNs to 0
   part_con = pre_conservativity;
   part_conserv = part_con / max(part_con)
   TG = -(log(part_conserv))
+  TG[which(is.infinite(TG[1]))] = 0 # change Infs to 0
   TG_score = (TG / max(TG))
   return_data = TG_score;
   return(return_data)
@@ -653,8 +655,14 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-Landgraf_conservation <-  function(matrix_name, aligned_sequences_matrix, weights) {
-    pre_dissim_mtx = substitution_mtx(matrix_name)
+Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, weights) {
+    if(is.null(matrix_name)){
+      load("sub_mat/Gonnet_matrix.rda")
+      pre_dissim_mtx = gonnet_matrix
+    }
+    else{
+      pre_dissim_mtx = substitution_mtx(matrix_name)
+    }
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
     status = 0;

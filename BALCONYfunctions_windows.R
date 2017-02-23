@@ -392,7 +392,11 @@ calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
+<<<<<<< HEAD
 noteworthy_sequences <- function(percentage, alignment_file){
+=======
+noteworthy_sequences <- function(){
+>>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
@@ -535,6 +539,7 @@ show_numbers <- function(structure) {
   }
   return(nr_stru)
 }
+<<<<<<< HEAD
 create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
   #do poprawy: powinna wczytywa? list? dodatkowych argument?w
   #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?  
@@ -553,39 +558,78 @@ create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structu
       for(i in seq(1,length(list_of_scores))){
         scores_mtx[i,] = list_of_scores[[i]]
         scores_mtx_names=names(list_of_scores)[i]
-      }
-      final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
+=======
+create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
+  sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
+  rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
+  if (is.null(list_of_scores)) {
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
+  }
+  else{
+    #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
+    scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
+    scores_mtx_names=c();
+    for(i in seq(1,length(list_of_scores))){
+      scores_mtx[i,] = list_of_scores[[i]]
+      scores_mtx_names[i] = names(list_of_scores)[i];
     }
-    files_no = ceiling(dim(final_output)[2]/1000);
-    for (i in seq(1,files_no,1)){
-      if (i == files_no){
-        write.csv(final_output[,((i-1)*1000+1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+    rownames(scores_mtx) = scores_mtx_names;
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
+  }
+  files_no = ceiling(dim(final_output)[2] / 1000);
+  for (i in seq(1,files_no,1)) {
+    if (i == files_no) {
+      if(!i==1){
+        write.csv(
+          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
+        )
       }
       else{
-        write.csv(final_output[,((i-1)*1000+1):(i*1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = F)
+        write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
+>>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
       }
     }
-    
-    return(final_output)
+    else{
+      if(!i==1){
+        write.csv(
+          final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
+        )
+      }
+      else{
+        write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
+      }
+    }
   }
-TG_conservativity <- function(final_output,var_aa) {
+  return(final_output)
+}
+TG_conservativity <- function(var_aa) {
   max_cons = c();
+<<<<<<< HEAD
   for (i in seq(1,length(final_output[1,]),1)) {
     if (is.na(as.numeric(final_output[2,i])) == FALSE) {
       max_cons[i] = as.numeric(final_output[2,i])
     }}
  
+=======
+  for (i in seq(2,length(var_aa$matrix[1,]),1)) {
+    if (is.na(as.numeric(var_aa$matrix[2,i])) == FALSE) {
+      max_cons[i] = as.numeric(var_aa$matrix[2,i])
+    }
+  }
+>>>>>>> a6af12c8b4747c16a3b3ae4bab3d7bc949e7b77c
   AA = which(max_cons != 0);
   ile_var = c();
-  for (i in seq(1,dim(var_aa$AA)[2],1)) {
-    ile_var[i] = length(which(var_aa$AA[,i] != "n" & var_aa$AA[,i] != "-"));
+  for (i in seq(2,dim(var_aa$AA)[2],1)) {
+    ile_var[i] = length(which(var_aa$AA[,i] != "n" &
+                                var_aa$AA[,i] != "-"));
   }
-  pre_conservativity = max_cons / ile_var;
-  pre_conservativity[which(is.nan(pre_conservativity))] = 0; # change NaNs to 0
+  pre_conservativity = max_cons[-1] / ile_var;
+  pre_conservativity[which(is.na(pre_conservativity))] = 0; # change NaNs to 0
   part_con = pre_conservativity;
   part_conserv = part_con / max(part_con)
-  TG= -(log(part_conserv))
-  TG_score = (TG/ max(TG))
+  TG = -(log(part_conserv))
+  TG[which(is.infinite(TG[1]))] = 0 # change Infs to 0
+  TG_score = (TG / max(TG))
   return_data = TG_score;
   return(return_data)
 }
@@ -662,41 +706,49 @@ D_matrix <- function(sub_mtx) {
   output = list(sub_mtx[[1]],distance)
   return(output)
 }
-Landgraf_conservation <- function(matrix_name, aligned_sequences_matrix, weights) {
+Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, weights) {
+  if(is.null(matrix_name)){
+    load("sub_mat/Gonnet_matrix.rda")
+    pre_dissim_mtx = gonnet_matrix
+  }
+  else{
     pre_dissim_mtx = substitution_mtx(matrix_name)
-    dissim_mtx = D_matrix(pre_dissim_mtx)
-    conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
-    status=0;
-    for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)){
-      column = aligned_sequences_matrix[,rep];
-      values = as.numeric(as.matrix(dissim_mtx[[2]]))
-      alpha = dissim_mtx[[1]]
-      dim(values) <- dim(dissim_mtx[[2]])
-      iterator = seq(1:length(column))
-      sum_of_dist = 0;
-      global_sum = 0;
-      for (i in iterator) {
-        iterator2 = c((i + 1):length(column))
-        posa = match(column[i],alpha)
-        if (!i == length(column)) {
-          for (j in iterator2) {
-            posb = match(column[j], alpha)
-            tempi = weights[i] * values[posa,posb]
-            tempj = weights[j] * values[posb,posa]
-            sum_of_dist = tempi + tempj
-            global_sum = global_sum + sum_of_dist
-          }
+  }
+  dissim_mtx = D_matrix(pre_dissim_mtx)
+  conservation = rep(NaN,dim(aligned_sequences_matrix)[2])
+  status = 0;
+  for (rep in seq(1,dim(aligned_sequences_matrix)[2],1)) {
+    column = aligned_sequences_matrix[,rep];
+    values = as.numeric(as.matrix(dissim_mtx[[2]]))
+    alpha = dissim_mtx[[1]]
+    dim(values) <- dim(dissim_mtx[[2]])
+    iterator = seq(1:length(column))
+    sum_of_dist = 0;
+    global_sum = 0;
+    for (i in iterator) {
+      iterator2 = c((i + 1):length(column))
+      posa = match(column[i],alpha)
+      if (!i == length(column)) {
+        for (j in iterator2) {
+          posb = match(column[j], alpha)
+          tempi = weights[i] * values[posa,posb]
+          tempj = weights[j] * values[posb,posa]
+          sum_of_dist = tempi + tempj
+          global_sum = global_sum + sum_of_dist
         }
       }
-      conservation[rep] = global_sum / length(column);
-      if(round((rep/dim(aligned_sequences_matrix)[2])*100) != status){
-        print(paste("Position: ",rep,", ",round((rep/dim(aligned_sequences_matrix)[2])*100), "% DONE",sep = ""));
-        status = round((rep/dim(aligned_sequences_matrix)[2])*100)
-      }
     }
-    Landgraf_normalized_entropy = conservation / max(conservation)
-    return(Landgraf_normalized_entropy)
+    conservation[rep] = global_sum / length(column);
+    if (round((rep / dim(aligned_sequences_matrix)[2]) * 100) != status) {
+      print(paste("Position: ",rep,", ",round((
+        rep / dim(aligned_sequences_matrix)[2]
+      ) * 100), "% DONE",sep = ""));
+      status = round((rep / dim(aligned_sequences_matrix)[2]) * 100)
+    }
   }
+  Landgraf_normalized_entropy = conservation / max(conservation)
+  return(Landgraf_normalized_entropy)
+}
 sequence_stats <- function(alignment_file,uniprot,landgraf,schneider,TG) {
     sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
     alignment_positions = which(sequence != "-")
