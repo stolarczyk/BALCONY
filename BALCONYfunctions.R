@@ -699,7 +699,7 @@ Landgraf_conservation <-  function(matrix_name=NULL, aligned_sequences_matrix, w
     return(Landgraf_normalized_entropy)
   }
 sequence_stats <-  function(alignment_file,uniprot,landgraf,schneider,TG) {
-    sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
+    sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
     alignment_positions = which(sequence != "-")
     sequence = sequence[alignment_positions];
     protein_positions = seq(1,length(sequence));
@@ -741,7 +741,7 @@ entropy_profile <-  function(tunnel_file, sequence_id, alignment_file, shift,pro
     
     index
     #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file,1)
+    base_seq = find_seq(sequence_id, alignment_file)
     tunnels_indices = as.vector(tunnel_file[[index]][[1]]);
     tunnels_names = as.vector(tunnel_file[[index]][[2]]);
     tunnels_indices = tunnels_indices[-1];
