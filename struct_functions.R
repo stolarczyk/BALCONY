@@ -11,30 +11,31 @@ get_structure_idx<- function(structure){
   }
   whole_prot=which(structure[[1]]!="-");
   out=list(proteinIndices=whole_prot,structureIndices=stru_index)
+  names(out[[2]])= names(structure)
   return(out)
 }
-get_prot_entropy<- function(whole_prot, SCORE_LIST,score_descript){
+get_prot_entropy<- function(whole_prot,score_list){
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
  
   prot_cons=list()
-  for(i in seq(1, length(SCORE_LIST))){
-    prot_cons[[i]]=SCORE_LIST[[i]][whole_prot]
+  for(i in seq(1, length(score_list))){
+    prot_cons[[i]]=score_list[[i]][whole_prot]
   }
-  names(prot_cons)<-score_descript
+  names(prot_cons)<-names(score_list)
   return(prot_cons)
 }
 
-plot_entropy<- function(prot_cons, description, colors,impose){
+plot_entropy<- function(prot_cons, colors,impose=NULL){
   #plots scores on one plot, if colors are not specified plot as rainbow
   #automagically uses name of pdb FIXME
   # recive list of entropy scores and list of Names in this list
   if(missing(colors)){
     colors<- rainbow(length(prot_cons))
   }
-  if(missing(impose)){
-    stacked<-T
+  if(is.null(impose)){
+    impose<-T
   }
  
   plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score for ",pdb_name), type="l")
@@ -42,32 +43,31 @@ plot_entropy<- function(prot_cons, description, colors,impose){
     par(new=impose)
     plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
   }
-  legend("topleft",description, col=colors, lty =c(4))
+  legend("topleft",names(prot_cons), col=colors, lty =c(1))
 }
 
 ### entropy for stuff
-get_structures_entropy<- function(structure_index, SCORE_LIST, NAMES){
+get_structures_entropy<- function(structure_index, score_list){
   #structure_index is a list of indexes in alignment of protein and structures 
   #SCORE_LIST list of entropies for whole alignment
-  #NAMES names of entropy scores
   #output is a list of matrixes where each row contains values of entropy for AA in structure
   t_index=structure_index$structureIndices
   Entropy=list()
   lengths=list()
   for (i in seq(1:length(t_index))){
    lengths[[i]]=length(t_index[[i]])
-   output=matrix(NA,nrow=length(SCORE_LIST),ncol=lengths[[i]])
-    for (j in seq(1:length(SCORE_LIST))){
-      output[j,]=SCORE_LIST[[j]][t_index[[i]]]
+   output=matrix(NA,nrow=length(score_list),ncol=lengths[[i]])
+    for (j in seq(1:length(score_list))){
+      output[j,]=score_list[[j]][t_index[[i]]]
     }
-    rownames(output)<-NAMES
+    rownames(output)<-names(score_list)
     Entropy[[i]]=output
    
   }
   return(Entropy)
 }
 
-profil_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
+entropy_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
   profilet=list()
   stru_numb=length(tunnel_file)
   names<- paste(names(prot_cons))
@@ -85,7 +85,7 @@ profil_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
   return(megalist)
 }
 
-profils_for_structure=profil_for_all(tunnel_file,uniprot,file,3,prot_cons)
+profils_for_structure=profile_for_all(tunnel_file,uniprot,file,3,prot_cons)
 length(profils_for_structure$s)
 ##### FINISH ME! :D 
 plot_structure_entropy(profils_for_structure, prot_cons,prot_descript, pdb_name)

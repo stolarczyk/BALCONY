@@ -775,3 +775,88 @@ entropy_profile<- function(tunnel_file, sequence_id, alignment_file, shift,prot_
     return(output)
 }
 
+# Structure analysis ------------------------------------------------------
+
+get_structure_idx<- function(structure){
+  #documentation get_structure_idx.Rd
+  #get idx of structure in alignemnt
+  #return sorted list of indices in MSA, one list element is one structure
+  #the first element is indices of whole protein in alignment
+  stru_index=list()
+  for (i in seq(1:length(structure))){
+    stru_index[[i]]=which(structure[[i]]=="T");
+  }
+  whole_prot=which(structure[[1]]!="-");
+  out=list(proteinIndices=whole_prot,structureIndices=stru_index)
+  names(out[[2]])= names(structure)
+  return(out)
+}
+
+get_prot_entropy<- function(whole_prot,score_list){
+  #documentation get_prot_entropy.Rd
+  #allows to get idx of whole protein in alignment
+  #returns list of entropy for protein
+  
+  prot_cons=list()
+  for(i in seq(1, length(score_list))){
+    prot_cons[[i]]=score_list[[i]][whole_prot]
+  }
+  names(prot_cons)<-names(score_list)
+  return(prot_cons)
+}
+
+plot_entropy<- function(prot_cons, colors,impose=NULL){
+  #plots scores on one plot, if colors are not specified plot as rainbow
+  #automagically uses name of pdb FIXME
+  # recive list of entropy scores and list of Names in this list
+  if(missing(colors)){
+    colors<- rainbow(length(prot_cons))
+  }
+  if(is.null(impose)){
+    impose<-T
+  }
+  
+  plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score for ",pdb_name), type="l")
+  for(i in seq(2, length(prot_cons))){
+    par(new=impose)
+    plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
+  }
+  legend("topleft",names(prot_cons), col=colors, lty =c(1))
+}
+
+get_structures_entropy<- function(structure_index, score_list){
+  #structure_index is a list of indexes in alignment of protein and structures 
+  #score_list list of entropies for whole alignment
+  #output is a list of matrixes where each row contains values of entropy for AA in structure
+  t_index=structure_index$structureIndices
+  Entropy=list()
+  lengths=list()
+  for (i in seq(1:length(t_index))){
+    lengths[[i]]=length(t_index[[i]])
+    output=matrix(NA,nrow=length(score_list),ncol=lengths[[i]])
+    for (j in seq(1:length(score_list))){
+      output[j,]=score_list[[j]][t_index[[i]]]
+    }
+    rownames(output)<-names(score_list)
+    Entropy[[i]]=output
+    
+  }
+  return(Entropy)
+}
+entropy_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
+  profilet=list()
+  stru_numb=length(tunnel_file)
+  names<- paste(names(prot_cons))
+  #k- possible entropy score iterator
+  megalist=list()
+  for (k in seq(1,length(prot_cons))){
+    
+    for(i in seq(1,stru_numb)){
+      profilet[[i]]=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[k]], i)
+      #profilet[[i]]<- setNames(mapply(paste("stru",i))
+    }
+    megalist[[names[k]]]<-profilet
+    
+  }
+  return(megalist)
+}

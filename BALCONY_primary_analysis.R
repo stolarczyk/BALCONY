@@ -27,6 +27,7 @@ for (structure in myFiles){
   i = i + 1;
 }
 names(structure_list)=structure_names
+
 # Set PDB name
 #pdb_name = "4JNC"; 
 pdb_name = "1CQZ"; 
@@ -78,6 +79,7 @@ uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,3);
+#names(structure)=structure_names
 structure_matrix=display_structure(structure,structure_list); rownames(structure_matrix) = structure_names
 # set residue indexes
 structure_numbers=show_numbers(structure);
