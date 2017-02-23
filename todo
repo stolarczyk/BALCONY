@@ -11,5 +11,8 @@
 
 
 
-14. Sprawdzenie poprawności sekwencji  (zgodność UNIPROT/PDB)
 13. nazwa wiersza z sekwencją nazywa się structure matrix
+14. Sprawdzenie poprawności sekwencji  (zgodność UNIPROT/PDB)
+15. wybieranie pozycji do analizy jako pozycja w białku
+16. dokumenacja funkcji
+17 robienie plota dla profili tunelu
