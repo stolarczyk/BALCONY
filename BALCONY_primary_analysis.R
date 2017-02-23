@@ -43,7 +43,7 @@ shift=3;
 # Substitution matrix name for Landgraf conservation
 matrix_name="GONNET.txt";
 # Library mapping Uniprot names to PDB
-lib = list(
+dictionary = list(
   c("Q6U6J0","4QLA"), 
   c("Q9UR30","3G0I","3G02","1QO7"),
   c("Q84HB8","4I19","4QA9"),
@@ -74,7 +74,7 @@ var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variation
 var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
 variations_matrix = var_aa$matrix;
 #find reference sequence
-uniprot=find_seqid(pdb_name,lib);
+uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,3);
@@ -95,6 +95,6 @@ entropy_data=list(Schneider.entropy=conservativity$Schneider,TG.entropy = TG_ent
 
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
 # or
-seq_csv = s2c(my_seq$sequence)
+seq_csv = s2c(my_seq$sequence))
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix,seq_csv,structure_numbers,uniprot,file,entropy_data)
 
