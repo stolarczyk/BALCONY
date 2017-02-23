@@ -8,14 +8,15 @@ setwd("~/Uczelnia/PROJEKT/BALCONY")
 getwd()
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
-#file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
-file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
+file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
+#file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
 file = delete_isoforms(file);
+
 # Read structure data files 
 myFiles <- list.files(pattern = "*.txt");
 structure_names = c();
 for (i in seq(1,length(myFiles),by = 1)){
-  structure_names= append(structure_names,strsplit(strsplit(myFiles[i],"_")[[1]][2],"[.]")[[1]][1]);
+  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[1]][1]);
 }
 structure_names_list = as.list(structure_names)
 structure_list = list();
@@ -25,8 +26,10 @@ for (structure in myFiles){
   structure_list[[i]]= temp;
   i = i + 1;
 }
+names(structure_list)=structure_names
 # Set PDB name
 pdb_name = "4JNC"; 
+pdb_name = "1CQZ"; 
 # Specify alignment position to examine
 alignmnent_position = 925;
 # Set the threshold for consensus calculation

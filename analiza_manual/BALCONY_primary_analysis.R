@@ -28,9 +28,9 @@ for (structure in myFiles){
 }
 names(structure_list)=structure_names
 # Set PDB name
-pdb_name = "4JNC"; 
 pdb_name = "1CQZ"; 
 # Specify alignment position to examine
+###fix me WYBRAĆ POZYCJĘ LICZĄC PO AA W BADANYM BIAŁKU
 alignmnent_position = 925;
 # Set the threshold for consensus calculation
 threshold_consensus= 30;
@@ -39,7 +39,7 @@ grouping_method = 'general';
 # Set the threshold for detecting key amino acids (the percentage of all at the given position)
 threshold_variations = 0.01;
 # Magical shift ...
-shift=170;
+shift=3;
 # Substitution matrix name for Landgraf conservation
 matrix_name="GONNET.txt";
 # Library mapping Uniprot names to PDB
@@ -67,7 +67,7 @@ consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consen
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
 group_consensus=cons2seqs_sim(parameters,aligned_sequences_matrix,consensus_seq,grouping_method);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
-outliers=outlying_sequences(consensus_sequences_identity, file);
+outliers=noteworthy_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position
 var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position
@@ -75,9 +75,9 @@ var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_var
 variations_matrix = var_aa$matrix;
 #find reference sequence
 uniprot=find_seqid(pdb_name,lib);
-my_seq=find_seq(uniprot, file,1);
+my_seq=find_seq(uniprot, file);
 # add structure and name the rows
-structure=create_structure_seq(structure_list,uniprot,file,3);
+structure=create_structure_seq(structure_list,uniprot,file,shift);
 structure_matrix=display_structure(structure,structure_list); rownames(structure_matrix) = structure_names
 # set residue indexes
 structure_numbers=show_numbers(structure);

@@ -300,7 +300,7 @@ calculate_AA_variation <- function(prmt, sequence_alignment, threshold) {
                                                                                                                                                                                   keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
       keyaas_per[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >=
                                                                                                      keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] /
-                                                                                                                                            parametry$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
+                                                                                                                                            prmt$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
     }
     
     i = 1;
@@ -314,11 +314,11 @@ calculate_AA_variation <- function(prmt, sequence_alignment, threshold) {
     
     #merging key AAs symbols table with key AAs percentages table
     size = dim(keyaas);
-    output = matrix("-",size[1] * 2,size[2] + 1);
+    output = matrix("-",size[1] * 2,size[2]);
     j = 1;
     for (i in seq(1,size[1] * 2,2)) {
-      output[i,-1] = keyaas[j,];
-      output[i + 1,-1] = keyaas_per[j,];
+      output[i,] = keyaas[j,];
+      output[i + 1,] = keyaas_per[j,];
       j = j + 1;
     }
     
@@ -379,7 +379,7 @@ calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
                                                                                                                                                                                      keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
       keyaas_per_gr[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >=
                                                                                                         keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] /
-                                                                                                                                               parametry$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
+                                                                                                                                               prmt$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
     }
     
     i = 1;
@@ -392,7 +392,7 @@ calculate_GROUP_variation <- function(prmt, sequence_alignment, threshold) {
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
     return(list(AA = keyaas_gr,per = keyaas_per_gr))
   }
-outlying_sequences <- function(){
+noteworthy_sequences <- function(percentage, alignment_file){
   max = which.max(percentage)
   namelist = alignment_file[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
@@ -436,7 +436,7 @@ get_seq_names <- function(alignment) {
   names = file[[2]];
   return(names)
 }
-find_seq <- function(sequence_id, alignment_file, isoform) {
+find_seq <- function(sequence_id, alignment_file) {
   mat = as.matrix(as.character(alignment_file[[3]]));
   nazwy_mat = get_seq_names(alignment_file)
   
@@ -450,11 +450,9 @@ find_seq <- function(sequence_id, alignment_file, isoform) {
       )
     )
   }
-  if (sum(which_uniprot) < isoform) {
-    isoform = 1;
-  }
-  seqs = mat[which(which_uniprot == 1)][isoform]; #seq of protein uniprot ID
-  seqs_character = length(which(s2c(seqs[isoform]) != "-") == T);
+ 
+  seqs = mat[which(which_uniprot == 1)]; #seq of protein uniprot ID
+  seqs_character = length(which(s2c(seqs) != "-") == T);
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
@@ -467,7 +465,7 @@ create_structure_seq <- function(tunnel_file, sequence_id, alignment_file, shift
     tunnel = list();
     
     #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file,1)
+    base_seq = find_seq(sequence_id, alignment_file)
     for (i in seq(1,length(tunnel_file))) {
       tunnels_indices = as.vector(tunnel_file[[i]][[1]]);
       tunnels_names = as.vector(tunnel_file[[i]][[2]]);
@@ -500,11 +498,10 @@ create_structure_seq <- function(tunnel_file, sequence_id, alignment_file, shift
 display_structure <- function(structure,structure_file) {
   struc_length = length(structure[[1]])
   count = length(structure_file);
-  output = matrix("-",count,struc_length + 1);
+  output = matrix("-",count,struc_length);
   v = seq(1,count,1)
   for (i in v) {
-    output[i,-1] = structure[[i]]
-    output[i,1] = as.character(structure_file[[i]][1,2]);
+    output[i,] = structure[[i]]
   }
   return((output))
 }
@@ -532,7 +529,7 @@ show_numbers <- function(structure) {
   j = 1;
   for (i in seq(1,length(structure[[1]]),1)) {
     if (structure[[1]][i] != "-") {
-      nr_stru[i + 1] = j
+      nr_stru[i] = j
       j = j + 1;
     }
   }
@@ -541,15 +538,21 @@ show_numbers <- function(structure) {
 create_final_CSV <- function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores=NULL) {
   #do poprawy: powinna wczytywa? list? dodatkowych argument?w
   #dlaczego jak chce stworzy? csv z wybranymi kolumnami to ca?y czas zwraca to samo?  
-  sequence = s2c(find_seq(uniprot,alignment_file,1)$sequence);
+  sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
     if (is.null(list_of_scores)){
       final_output = rbind(
         variations_matrix,structure_matrix,structure_numbers);
     }
+    if (is.null(c(structure_matrix,structure_numbers,list_of_scores))){
+    final_output = variations_matrix;
+    }
     else{
-      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]])+1)
+      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
+      scores_mtx_names=c();
+      
       for(i in seq(1,length(list_of_scores))){
-        scores_mtx[i,] = append(names(list_of_scores)[i],list_of_scores[[i]])
+        scores_mtx[i,] = list_of_scores[[i]]
+        scores_mtx_names=names(list_of_scores)[i]
       }
       final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
     }
@@ -571,7 +574,7 @@ TG_conservativity <- function(final_output,var_aa) {
     if (is.na(as.numeric(final_output[2,i])) == FALSE) {
       max_cons[i] = as.numeric(final_output[2,i])
     }}
-  max_cons = max_cons[-1];
+ 
   AA = which(max_cons != 0);
   ile_var = c();
   for (i in seq(1,dim(var_aa$AA)[2],1)) {
@@ -737,7 +740,7 @@ entropy_profile<- function(tunnel_file, sequence_id, alignment_file, shift,prot_
     
     index
     #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file,1)
+    base_seq = find_seq(sequence_id, alignment_file)
     tunnels_indices = as.vector(tunnel_file[[index]][[1]]);
     tunnels_names = as.vector(tunnel_file[[index]][[2]]);
     tunnels_indices = tunnels_indices[-1];
@@ -746,10 +749,7 @@ entropy_profile<- function(tunnel_file, sequence_id, alignment_file, shift,prot_
     if(shift!=0){
       tunnel_idx=tunnel_idx+rep(shift,length(tunnels_indices))
     }
-    #profile=tunnel_idx
-    #for(i in seq(1:length(profile))){
-    # id=tunnel_idx[i]
-    # profile[i]=prot_entropy[id]
+   
     profile=prot_entropy[tunnel_idx]
     output=list(profile, tunnel_idx)
     

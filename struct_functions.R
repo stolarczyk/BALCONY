@@ -67,14 +67,70 @@ get_structures_entropy<- function(structure_index, SCORE_LIST, NAMES){
   return(Entropy)
 }
 
+profil_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
+  profilet=list()
+  stru_numb=length(tunnel_file)
+  names<- paste(names(prot_cons))
+  #k- possible entropy score iterator
+  megalist=list()
+  for (k in seq(1,length(prot_cons))){
+    
+    for(i in seq(1,stru_numb)){
+      profilet[[i]]=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[k]], i)
+    #profilet[[i]]<- setNames(mapply(paste("stru",i))
+    }
+    megalist[[names[k]]]<-profilet
+    
+  }
+  return(megalist)
+}
+
+profils_for_structure=profil_for_all(tunnel_file,uniprot,file,3,prot_cons)
+length(profils_for_structure$s)
 ##### FINISH ME! :D 
-plot_structure_entropy<-function(NAMES, colors){
-  
+plot_structure_entropy(profils_for_structure, prot_cons,prot_descript, pdb_name)
+plot_structure_entropy<-function(global_profil, prot_cons, prot_descript, pdb_name, strucure_names, colors ){
+  #dodać wejście funkcji - listę entropii
+  #global_profil-lista indeksów AAi ich entropii dla wszystkich struktur
+  #wyświetli wykresy max dla 25 struktur
+  #global_profil=profils_for_structure
+  #global_profil[[i=1]]
+  num_stru=length(global_profil[[1]])
+  if(missing(strucure_names)) {
+    strucure_names=c()
+    for(f in seq(1,num_stru)){
+      strucure_names[f]=paste("stru",f)
+    }
+  if(missing(colors)) {
+    colors=rainbow(num_stru)
+  } 
+  NAMES<- paste(names(prot_cons))
+  for( i in seq(1, length(global_profil))){
+    len=c()
+    TMPlist=global_profil[[i]]
+    for (k in seq(1, length(TMPlist))){
+      len[k]=length(TMPlist[[k]][[1]])
+    }
+    StruLen=max(len)
+    plot(prot_cons[[i]], col ="black",type="l", main=paste(NAMES[i],"entropy score for ",prot_descript, pdb_name),pch = 20, xlim=c(0,length(prot_cons[[1]])),
+         ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
+    for (j in seq(1,length(len))){
+
+      par(new=T)
+      plot(TMPlist[[i]][[2]],TMPlist[[i]][[1]],col=colors[j],xlim=c(0,length(prot_cons[[1]])),ylim=c(0,1),xlab="",ylab="",main="",pch=j)
+      
+    }
+    legend('topleft',c("protein",structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=colors)
+  }
+  }
 }
 Names=c("Shannon","Schneider", "Kabat", "Landgraf", "TG")
 bezTuneli=list()
+profilet=list()
+prot_cons=2
+i=2
 for(i in seq(1:length(prot_cons))){
-  profilet1=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 1) 
+  profilet[[i]]=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], [[i]]) 
   profilet2=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 2) 
   profilet3=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 3)
   bezTuneli[[i]]=prot_cons[[i]][-intersect(intersect(profilet1[[2]],profilet3[[2]]),profilet3[[2]])]
@@ -101,6 +157,7 @@ for(i in seq(1:length(prot_cons))){
   
 }
 
+nowa_struktura=read_structure("1QCZ_wt_petla.txt",uniprot,file, 3)
 read_structure<- function(structure_file, sequence_id, alignment_file, shift){
   #structure_file- string with a name of structure file eg. "stru1.txt"
   #structutre_file="1QCZ_wt_petla.txt"
