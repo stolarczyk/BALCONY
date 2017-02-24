@@ -97,6 +97,6 @@ entropy_data=list(Schneider.entropy=conservativity$Schneider,TG.entropy = TG_ent
 
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
 # or
-seq_csv = s2c(my_seq$sequence))
+seq_csv = s2c(my_seq$sequence)
 final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix,seq_csv,structure_numbers,uniprot,file,entropy_data)
 
