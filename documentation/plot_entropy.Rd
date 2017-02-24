@@ -5,22 +5,20 @@
 Plot entropies for protein
 }
 \description{
-This function allows to plot entropies for protein. Plots might be superimposed or not.
+This function plots entropies of protein. Plots might be superimposed or not.
 }
 \usage{
 plot_entropy(ProtConservation,description, colors, impose)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{ProtConservation}{list or a vector of protein conservation, entropies}
+  \item{ProtConservation}{list or a vectors of protein conservation/entropies}
   \item{description}{vector of names for entropy/conservation scores}
-  \item{colors}{(optional) vector of colors for each plot, default-rainbow}
+  \item{colors}{(optional) vector of colors for each plot, default: rainbow}
   \item{impose}{(optional)boolean, if True/T plots are superimposed, if False/F plots are printed separately}
-
-
 }
 \details{
-Function makes plots for given values, on X axis are further amino acids, on Y axis are values of entropy/conservation. Legend contains score names form description values. 
+This function produces plots for given values, on X axis are amino acids, on Y axis are values of entropy/conservation. Legend contains score names for description values. 
 }
 \value{
 %%  ~Describe the value returned
@@ -33,7 +31,7 @@ Function makes plots for given values, on X axis are further amino acids, on Y a
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Płuciennik & Michał Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -45,7 +43,7 @@ Alicja Płuciennik & Michał Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-FIX ME
+FIX ME!!!!!!!!!!!!!!!!!!!!!!!!!!!
 NAMES=c("Shannon","Schneider", "Kabat", "Landgraf", "TG")
 ProtConservation=get_prot_entropy(structure_index$proteinIndices,SCORE_LIST, NAMES)
 colors=c("red", "green", "cyan", "hotpink", "hotpink2")

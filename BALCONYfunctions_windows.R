@@ -1,3 +1,6 @@
+
+# Conservation analysis ---------------------------------------------------
+
 delete_isoforms <- function(alignment){
   # This functions searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
   # As input it takes the alignment file
@@ -509,15 +512,14 @@ isUpper <- function(s) {
   return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
 }
 barplotshow <- function(position,AA_variation) {
-  row = max(which(is.na(as.numeric(
-    AA_variation$per[,position]
-  )) == FALSE));#checking how many different AA is on the position
+  row = max(which(AA_variation$percentage[,position]!="n"));#checking how many different AA is on the position
   x_names = AA_variation$AA[seq(1,row),position]
-  x_val = round(as.numeric(AA_variation$per[seq(1,row),position]))
+  x_val = round(as.numeric(AA_variation$percentage[seq(1,row),position]))
   plot = barplot(
     x_val,names.arg = x_names,cex.main = 1.8,cex.lab = 1.3,cex.names =
-      1.5,cex.axis = 1.5, width = rep(1.1,row),xlim = c(0,dim(AA_variation[[1]])[1]),ylim = c(0,max(x_val)+10),ylab = "Percentage",main = bquote(Amino ~
-                                                                                                                                                   acid ~ variation ~ on ~ the ~ .(position) ~ position)
+      1.5,cex.axis = 1.5, width = rep(1.1,row),xlim = c(0,dim(AA_variation[[1]])[1]),ylim = c(0,max(x_val) +
+                                                                                                10),ylab = "Percentage",main = bquote(Amino ~
+                                                                                                                                        acid ~ variation ~ on ~ the ~ .(position) ~ position)
   );
   text(
     x = plot,y = x_val / 2,cex = 1.0,labels = paste(as.character(x_val),"%",sep = ""),xpd =
@@ -554,26 +556,7 @@ create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,struct
   }
   files_no = ceiling(dim(final_output)[2] / 1000);
   for (i in seq(1,files_no,1)) {
-    if (i == files_no) {
-      if(!i==1){
-        write.csv(
-          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
-        )
-      }
-      else{
-        write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
-      }
-    }
-    else{
-      if(!i==1){
-        write.csv(
-          final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
-        )
-      }
-      else{
-        write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
-      }
-    }
+    write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
   }
   return(final_output)
 }

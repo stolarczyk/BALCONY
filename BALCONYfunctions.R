@@ -1,3 +1,6 @@
+
+# Conservation analysis ---------------------------------------------------
+
 delete_isoforms <- function(alignment){
   # This functions searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
   # As input it takes the alignment file
@@ -491,11 +494,10 @@ isUpper <- function(s) {
   return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
 }
 barplotshow <- function(position,AA_variation) {
-  row = max(which(is.na(as.numeric(
-    AA_variation$per[,position]
-  )) == FALSE));#checking how many different AA is on the position
+  #position=position-1;
+  row = max(which(AA_variation$percentage[,position]!="n"));#checking how many different AA is on the position
   x_names = AA_variation$AA[seq(1,row),position]
-  x_val = round(as.numeric(AA_variation$per[seq(1,row),position]))
+  x_val = round(as.numeric(AA_variation$percentage[seq(1,row),position]))
   plot = barplot(
     x_val,names.arg = x_names,cex.main = 1.8,cex.lab = 1.3,cex.names =
       1.5,cex.axis = 1.5, width = rep(1.1,row),xlim = c(0,dim(AA_variation[[1]])[1]),ylim = c(0,max(x_val) +
@@ -519,47 +521,28 @@ show_numbers <- function(structure) {
   return(nr_stru)
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
-    sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
-    rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
-    if (is.null(list_of_scores)) {
-      final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
-    }
-    else{
-      #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
-      scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
-      scores_mtx_names=c();
-      for(i in seq(1,length(list_of_scores))){
-        scores_mtx[i,] = list_of_scores[[i]]
-        scores_mtx_names[i] = names(list_of_scores)[i];
-      }
-      rownames(scores_mtx) = scores_mtx_names;
-      final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
-    }
-    files_no = ceiling(dim(final_output)[2] / 1000);
-    for (i in seq(1,files_no,1)) {
-      if (i == files_no) {
-        if(!i==1){
-        write.csv(
-          final_output[,append(1,((i - 1) * 1000 + 1):dim(final_output)[2])],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
-        )
-        }
-        else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
-        }
-      }
-      else{
-        if(!i==1){
-          write.csv(
-            final_output[,append(1,((i - 1) * 1000 + 1):(i * 1000))],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T
-          )
-        }
-        else{
-          write.csv(final_output[,((i - 1) * 1000 + 1):(i * 1000)],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
-        }
-      }
-    }
-    return(final_output)
+  sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
+  rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
+  if (is.null(list_of_scores)) {
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
   }
+  else{
+    #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
+    scores_mtx = matrix(NA,nrow = length(list_of_scores),ncol = length(list_of_scores[[1]]))
+    scores_mtx_names=c();
+    for(i in seq(1,length(list_of_scores))){
+      scores_mtx[i,] = list_of_scores[[i]]
+      scores_mtx_names[i] = names(list_of_scores)[i];
+    }
+    rownames(scores_mtx) = scores_mtx_names;
+    final_output = rbind(variations_matrix,structure_matrix,structure_numbers,scores_mtx);
+  }
+  files_no = ceiling(dim(final_output)[2] / 1000);
+  for (i in seq(1,files_no,1)) {
+    write.csv(final_output[,((i - 1) * 1000 + 1):dim(final_output)[2]],file = paste(FILENAME,"_",i,".csv",sep = ""), row.names = T)
+  }
+  return(final_output)
+}
 TG_conservativity <- function(var_aa) {
   max_cons = c();
   for (i in seq(1,length(var_aa$matrix[1,]),1)) {
@@ -833,7 +816,6 @@ entropy_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
   #k- possible entropy score iterator
   megalist=list()
   for (k in seq(1,length(prot_cons))){
-    
     for(i in seq(1,stru_numb)){
       profilet[[i]]=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[k]], i)
       #profilet[[i]]<- setNames(mapply(paste("stru",i))

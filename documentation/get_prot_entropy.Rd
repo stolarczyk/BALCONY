@@ -5,7 +5,7 @@
 Get MSA-based calculated entropy for choosen protein.
 }
 \description{
-Using this function it is possible to obtain vector of entropy for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
+This function allows to obtain vector of entropies for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
 }
 \usage{
 ProtConservation=get_prot_entropy(whole_prot,entropyScores_list,score_descript)
@@ -29,7 +29,7 @@ This function can be used on list of entropies or on vector for one entropy scor
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Płuciennik & Michał Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -41,16 +41,7 @@ Alicja Płuciennik & Michał Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-FIX ME
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x) 
-{
-  }
-}
+FIX ME!!!!!!!!!!!!!!!!!!!!!
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ ~kwd1 }
