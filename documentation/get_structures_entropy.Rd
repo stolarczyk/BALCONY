@@ -2,22 +2,22 @@
 \alias{get_structures_entropy}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Get entropy/conservation for previously choosen amino acids in given protein.
+Get entropy/conservation for previously choosen amino acids (which for structure/region of interest) in given protein.
 }
 \description{
-This function allows to get vlaues of entropy/conservation for amino acids dispersed in sequence of given protein. It works well with list of dispersed amino acids in one protein.
+This function allows to get values of entropy/conservation for amino acids dispersed in sequence of given protein. It works well with list of dispersed amino acids in one protein.
 }
 \usage{
 EntropyStructures=get_structures_entropy(structure_index,Score_list,names)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{structure_index}{ is a list of indexes in alignment of protein and structures}
+  \item{structure_index}{ is a list of indices in alignment of protein and structures}
   \item{Score_list}{ list of entropies for whole alignment}
   \item{names}{names of entropy scores}
 }
 \details{
-Function allows to obtain entropy (calculated on MSA) for dispersed amino acids in protein (like surface, binding site, tunnels, etc). The input might be a list of few structure indexes in given protein sequence. Function calculates position of those residues in aligned sequence and returns vector/matrix or a list of matrices with entropy values. 
+Function allows to obtain entropy (calculated on MSA) for dispersed amino acids in protein e.g. surface, binding site, tunnels, etc. The input might be a list of few structure indices in given protein sequence. Function calculates position of those in aligned sequence and returns vector/matrix or a list of matrices with entropy values. 
 }
 \value{
 
@@ -28,7 +28,7 @@ Function allows to obtain entropy (calculated on MSA) for dispersed amino acids 
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Płuciennik & Michał Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -39,15 +39,7 @@ Alicja Płuciennik & Michał Stolarczyk
 \seealso{
 create_structure_seq(), read_structure()
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x) 
-{
-  }
-}
+FIXME!!!!!!!!!!!!!!!
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ ~kwd1 }

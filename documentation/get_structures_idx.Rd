@@ -14,11 +14,11 @@ structure_index=get_structure_idx(structure)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{structure}{
-structure - the aligned quasi-sequence of protein (contains gaps "-",and marked aminoacids which are part of crystal structure "T" or not "N")
+structure - the aligned quasi-sequence of protein (contains gaps "-",and marked aminoacids which are part of structure of interest "T" or not "N")
 }
 }
 \details{
-It facilitate to menage and operate on the entropy values calculated for given MSA
+It facilitates the management and oparation on the entropy values calculated for given MSA
 }
 \value{
 Output is a list of two elements:
@@ -30,7 +30,7 @@ Output is a list of two elements:
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Płuciennik & Michał Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 %%  ~~further notes~~
@@ -42,16 +42,8 @@ Alicja Płuciennik & Michał Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-FIXME
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+FIXME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-## The function is currently defined as
-function (x) 
-{
-  }
-}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ ~kwd1 }
