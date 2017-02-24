@@ -843,3 +843,40 @@ entropy_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
   }
   return(megalist)
 }
+
+plot_structure_on_protein<- function(protein_entropy, structure_profils, pdb_name, colors, structure_names=NULL){
+  #protein entropy- list of an entropy values (with different scores)
+  #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
+  # and [[2]] index in protein
+  protein_entropy=prot_cons
+  structure_profils=profils_for_structure
+  
+  if(length(protein_entropy) == length(structure_profils)){
+    score_names=names(protein_entropy)
+    prot_lenght=length(protein_entropy[[1]])
+    StruLen=length(structure_profils[[1]])
+    if(missing(colors)) {
+      colors=rainbow(StruLen)
+    } 
+    if(is.null(structure_names)){
+      structure_names=c()
+      for(i in seq(1,StruLen)){
+        structure_names[i]=paste("stru", i)
+      }
+    }
+    for(i in seq(1, length(protein_entropy))){
+      
+      plot(protein_entropy[[i]], col ="black",type="l", main=paste(score_names[i]," score for ", pdb_name),pch = 20, xlim=c(0,prot_lenght),
+           ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
+      for(j in seq(1,StruLen)){
+        par(new=T)
+        plot(structure_profils[[i]][[j]][[2]],structure_profils[[i]][[j]][[1]], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
+             ylim=c(0.0,1.0), xlab='', ylab='')
+      }
+      legend('topleft',c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))
+      
+      
+    }
+  }
+  else print("The lists contain different number of conservation/entropy scores!")
+}

@@ -10,18 +10,21 @@ plot_entropy(prot_cons)
 #get entropy for your structure
 stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
 profils_for_structure=entropy_for_all(structure_list,uniprot,file,3,prot_cons)
+
+### PLOT STRUCTURE
+plot_structure_on_protein(prot_cons, profils_for_structure,pdb_name)
 #######TUNNELS ENTROPY 
 EntropyTunel=list()
 lengths=list()
 for (i in seq(1:length(structure))){
-  lengths[[i]]=length(tunnel_index[[i]])
-  Shannon_tunel=entropy_data[[1]][tunnel_index[[i]]]
-  Schneider_tunel=entropy_data[[2]][tunnel_index[[i]]]
-  Kabat_tunel=entropy_data[[3]][tunnel_index[[i]]]
-  Landgraf_tunel=entropy_data[[4]][tunnel_index[[i]]]
-  TG_tunel=entropy_data[[5]][tunnel_index[[i]]]
+  lengths[[i]]=length(tunnel_index$structureIndices[[i]])
+  #Shannon_tunel=entropy_data[[1]][tunnel_index[[i]]]
+  Schneider_tunel=entropy_data[[1]][tunnel_index$structureIndices[[i]]]
+  TG_tunel=entropy_data[[2]][tunnel_index$structureIndices[[i]]]
+  Kabat_tunel=entropy_data[[3]][tunnel_index$structureIndices[[i]]]
+  #Landgraf_tunel=entropy_data[[4]][tunnel_index[[i]]]
   
-  a=rbind(Shannon_tunel,Schneider_tunel,Kabat_tunel,Landgraf_tunel,TG_tunel)
+  a=rbind(Schneider_tunel,TG_tunel,Kabat_tunel)
   EntropyTunel[[i]]=a
 }
 Names=c("Shannon","Schneider", "Kabat", "Landgraf", "TG")
