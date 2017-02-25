@@ -382,7 +382,17 @@ calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
     
     keyaas_gr = t(keyaas_gr[,1:i]); #transpose matrix
     keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
-    return(list(AA = keyaas_gr,per = keyaas_per_gr))
+    
+    #merging key AAs symbols table with key AAs percentages table
+    size = dim(keyaas_gr);
+    output = matrix("-",size[1] * 2,size[2]);
+    j = 1;
+    for (i in seq(1,size[1] * 2,2)) {
+      output[i,] = keyaas_gr[j,];
+      output[i + 1,] = keyaas_per_gr[j,];
+      j = j + 1;
+    }
+    return(list(AA = keyaas_gr,per = keyaas_per_gr,matrix=output))
   }
 noteworthy_sequences <- function(percentage, alignment_file){
   max = which.max(percentage)
