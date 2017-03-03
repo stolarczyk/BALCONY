@@ -2,9 +2,9 @@
 library(seqinr)
 library(Biostrings)
 # Source of BALCONY functions
-source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
+#source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
 # Set working directory
-setwd("~/Uczelnia/PROJEKT/BALCONY")
+#setwd("~/Uczelnia/PROJEKT/BALCONY/")
 getwd()
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
