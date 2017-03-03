@@ -49,23 +49,24 @@ consensus <-  function(alignment, thresh) {
     }
     return(consens)
   }
-cons2seqs_ident <-  function(alignment_sequence, number_of_seq, consensusus_seq) {
+cons2seqs_ident <-  function(alignment,consensusus_seq) {
     #alignment_sequence- file[[3]]
     # number_of_seq- file[[1]]
     #consensus- calculated consensusus (output of my_consensusus())
     true_percentage = c();
-    for (i in seq(1,number_of_seq)) {
+    for (i in seq(1,alignment_parameters(alignment)$row_no)) {
       true_percentage[i] = length(which((
-        consensus_seq == s2c(alignment_sequence[i])
+        consensus_seq == s2c(alignment$seq[i])
       ) == TRUE)) / length(consensus_seq);# true percentage calculation (number of the same AAs in consensusus and in each sequence/number of all AAs)
     }
     return(true_percentage)
   }
-alignment_parameters <- function(alignment_sequences) {
-  #alignment_sequences= file[[3]]
+alignment_parameters <- function(alignment) {
+  #alignment data
   #return list of alignment size [row_numbers, col_numbers]
-  row_num = length(alignment_sequences)
-  col_num = length(s2c(alignment_sequences[1]))
+  aligned_sequences = alignment$seq
+  row_num = length(aligned_sequences)
+  col_num = length(s2c(aligned_sequences[1]))
   param = list(row_no = row_num, col_no = col_num)
   return(param)
 }
@@ -291,14 +292,14 @@ cons2seqs_sim <-  function(prmt, aligned_sequences_matrix, consensus_seq, groupi
     return(true_percentage_G)
 }
 
-alignment2matrix <- function(prmt, aligned_sequences) {
+alignment2matrix <- function(prmt, alignment) {
   #prmt= output of get_parameters
-  #alignment_sequences=file[[3]]
+  #alignment data
   #returns alignment as a matrix
   aligned_sequences_matrix = matrix("-", prmt$row_no, prmt$col_no);
   for (i in seq(1,prmt$row_no)) {
     #Putting aligned seqs into matrix
-    temp = s2c(aligned_sequences[i])
+    temp = s2c(alignment$seq)
     for (j in seq(1,prmt$col_no)) {
       aligned_sequences_matrix[i,j] = temp[j];
     }
