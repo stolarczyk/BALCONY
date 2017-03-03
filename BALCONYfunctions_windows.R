@@ -916,3 +916,28 @@ plot_structure_on_protein<- function(protein_entropy, structure_profils, pdb_nam
   }
   else print("The lists contain different number of conservation/entropy scores!")
 }
+
+compare_cons_metrics<- function(protein, structures_cons, pdb_name){
+  #protein- list of conservation scores for proteins
+  #structure cons- list of conservation scores for [[list]] of strustures with [[list]] scores and indices
+  #pdb_name - protein name
+  metrics_count=length(protein)
+  structures_count=length(structure_cons[[1]])
+  colors=rainbow(structures_count)
+  structure_names=c()
+  for(i in seq(1,structures_count)){
+    structure_names[i]=paste("stru", i)}
+  for(i in seq(1, metrics_count)){
+    for(j in seq(1, metrics_count)){
+      if(i!=j){
+        plot(protein[[i]], protein[[j]],main=paste('Scatterplot of', names(protein)[i],"vs. ", names(protein)[j]), xlim=c(0,1), ylim=c(0,1), xlab=names(protein)[i],ylab=names(protein)[j],pch=20, col="black")
+        for(k in seq(1,structures_count)){
+          par(new=T)
+          plot(structure_cons[[i]][[k]][[1]], structure_cons[[j]][[k]][[1]], col=colors[k], pch = k, main="", xlim=c(0,1), ylim=c(0,1), xlab="",ylab="")
+        }
+        legend('bottomright',c(pdb_name,structure_names),pch=c(20,seq(1,k)),col=c("black",colors))
+      }
+    }
+  }
+  
+}

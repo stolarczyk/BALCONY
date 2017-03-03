@@ -124,74 +124,51 @@ plot_structure_on_protein<- function(protein_entropy, structure_profils, pdb_nam
   }
   else print("The lists contain different number of conservation/entropy scores!")
 }
-plot_structure_entropy(profils_for_structure, prot_cons,prot_descript, pdb_name)
-plot_structure_entropy<-function(global_profil, prot_cons, prot_descript, pdb_name, strucure_names, colors ){
-  #dodać wejście funkcji - listę entropii
-  #global_profil-lista indeksów AAi ich entropii dla wszystkich struktur
-  #wyświetli wykresy max dla 25 struktur
-  #global_profil=profils_for_structure
-  #global_profil[[i=1]]
-  num_stru=length(global_profil[[1]])
-  if(missing(strucure_names)) {
-    strucure_names=c()
-    for(f in seq(1,num_stru)){
-      strucure_names[f]=paste("stru",f)
-    }
-  if(missing(colors)) {
-    colors=rainbow(num_stru)
-  } 
-  NAMES<- paste(names(prot_cons))
-  for( i in seq(1, length(global_profil))){
-    len=c()
-    TMPlist=global_profil[[i]]
-    for (k in seq(1, length(TMPlist))){
-      len[k]=length(TMPlist[[k]][[1]])
-    }
-    StruLen=max(len)
-    plot(prot_cons[[i]], col ="black",type="l", main=paste(NAMES[i],"entropy score for ",prot_descript, pdb_name),pch = 20, xlim=c(0,length(prot_cons[[1]])),
-         ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
-    for (j in seq(1,length(len))){
 
-      par(new=T)
-      plot(TMPlist[[i]][[2]],TMPlist[[i]][[1]],col=colors[j],xlim=c(0,length(prot_cons[[1]])),ylim=c(0,1),xlab="",ylab="",main="",pch=j)
-      
+# STATISTICS --------------------------------------------------------------
+protein=prot_cons
+structure_cons=profils_for_structure
+compare_cons_metrics(prot_cons,profils_for_structure, pdb_name)
+compare_cons_metrics<- function(protein, structures_cons, pdb_name){
+  metrics_count=length(protein)
+  structures_count=length(structure_cons[[1]])
+  colors=rainbow(structures_count)
+  structure_names=c()
+  for(i in seq(1,structures_count)){
+    structure_names[i]=paste("stru", i)}
+  for(i in seq(1, metrics_count)){
+    for(j in seq(1, metrics_count)){
+      if(i!=j){
+        plot(protein[[i]], protein[[j]],main=paste('Scatterplot of', names(protein)[i],"vs. ", names(protein)[j]), xlim=c(0,1), ylim=c(0,1), xlab=names(protein)[i],ylab=names(protein)[j],pch=20, col="black")
+        for(k in seq(1,structures_count)){
+          par(new=T)
+          plot(structure_cons[[i]][[k]][[1]], structure_cons[[j]][[k]][[1]], col=colors[k], pch = k, main="", xlim=c(0,1), ylim=c(0,1), xlab="",ylab="")
+        }
+        legend('bottomright',c(pdb_name,structure_names),pch=c(20,seq(1,k)),col=c("black",colors))
+      }
     }
-    legend('topleft',c("protein",structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=colors)
   }
-  }
-}
-Names=c("Shannon","Schneider", "Kabat", "Landgraf", "TG")
-bezTuneli=list()
-profilet=list()
-prot_cons=2
-i=2
-for(i in seq(1:length(prot_cons))){
-  profilet[[i]]=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], [[i]]) 
-  profilet2=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 2) 
-  profilet3=entropy_profile(tunnel_file, uniprot, file, shift,prot_cons[[i]], 3)
-  bezTuneli[[i]]=prot_cons[[i]][-intersect(intersect(profilet1[[2]],profilet3[[2]]),profilet3[[2]])]
-  profilet3
-  StruLen=max(length(profilet3[[1]]),length(profilet2[[1]]),length(profilet1[[1]]))
-  ###################### STRUCTURES ON PROTEIN
-  plot(prot_cons[[i]], col ="black",type="l", main=paste(Names[i],"entropy score for ",prot_descript, pdb_name),pch = 20, xlim=c(0,my_seq$len),
-       ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
-  par(new=T)
-  plot(profilet1[[2]],prot_cons[[i]][profilet1[[2]]],col="blue",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=21)
-  par(new=T)
-  plot(profilet2[[2]],prot_cons[[i]][profilet2[[2]]], col="green",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=20)
-  par(new=T)
-  plot(profilet3[[2]],prot_cons[[i]][profilet3[[2]]],col="red",xlim=c(0,my_seq$len),ylim=c(0,1),xlab="",ylab="",main="",pch=22)
-  legend('topleft',c("protein","T1","T2","T3"),lty=c(1,0,0,0),pch=c(-1,21,20,22),lwd=c(2.5,2.5),col=c("black","blue","green","red")) 
-  ##############################3 PROFILES OF TUNNEL
-  plot(profilet1[[1]], type="l", main=paste(Names[i]," entropy profile for tunnels in", pdb_name),xlim=c(0,StruLen),ylim=c(0,1), col="blue", xlab="distance from acitve site [AA]",ylab=paste(Names[i]," entropy score"))
-  par(new=T)
-  plot(profilet2[[1]], type="l", main="",xlim=c(0,StruLen),ylim=c(0,1), col="red", xlab="",ylab="")
-  par(new=T)
-  plot(profilet3[[1]], type="l", main="",xlim=c(0,StruLen),ylim=c(0,1), col="green", xlab="",ylab="")
-  par(new=T)
-  legend('bottomright',c("T1","T2","T3"),lty=c(1,1,1),lwd=c(2.5,2.5),col=c("blue","green","red")) 
   
 }
+protein_cons=protein
+smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,plot=T){
+  metrics_count=length(protein_cons)
+  structures_count=length(structure_cons[[1]])
+  alt_hip=c("two.sided","less", "greater")[alternative]
+  for(i in seq(1,metrics_count)){
+    for(j in seq(1, structures_count)){
+      i=1; j=1
+      reference=protein_cons[[i]][-structure_cons[[i]][[j]][[2]]]
+      ks.test(reference, structure_cons[[1]][[1]][[1]])$p.value
+      }
+  }
+  if(plot=T){
+    colors=rainbow(structures_count)
+  }
+}
+
+# READ NEW STRUCTURE FILE -------------------------------------------------
+
 
 nowa_struktura=read_structure("1QCZ_wt_petla.txt",uniprot,file, 3)
 read_structure<- function(structure_file, sequence_id, alignment_file, shift){
