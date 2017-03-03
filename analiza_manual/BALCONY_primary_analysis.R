@@ -66,12 +66,13 @@ consensus_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
 group_consensus=cons2seqs_sim(alignment,consensus_seq,grouping_method);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
-outliers=noteworthy_sequences(consensus_sequences_identity, file);
+outliers=noteworthy_sequences(consensus_sequences_identity, alignment);
 # Calculating amino acids variations on each alignment (protein) position
-var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variations);
+var_aa = calculate_AA_variation(alignment, threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position
-var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
+var_group = calculate_AA_variation(alignment,threshold_variations, grouped = T, grouping_method = "general");
 variations_matrix = var_aa$matrix;
+variations_matrix_group = var_group$matrix;
 #find reference sequence
 uniprot=find_seqid(pdb_name,lib);
 my_seq=find_seq(uniprot, file);

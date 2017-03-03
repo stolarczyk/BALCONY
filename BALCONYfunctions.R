@@ -308,13 +308,17 @@ alignment2matrix <- function(alignment) {
   }
   return(aligned_sequences_matrix)
 }
-calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
+calculate_AA_variation <-  function(alignment, threshold, grouped = F, grouping_method = "general") {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
+    prmt = alignment_parameters(alignment = alignment)
     keyaas_treshold = prmt$row_no * (threshold / 100);
-    aligned_sequences_matrix = alignment2matrix(prmt,sequence_alignment);
+    aligned_sequences_matrix = alignment2matrix(alignment = alignment);
+    if (grouped == T){
+      aligned_sequences_matrix = aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method = grouping_method)
+    }
     keyaas = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
     keyaas_per = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
     
@@ -345,87 +349,9 @@ calculate_AA_variation <-  function(prmt, sequence_alignment, threshold) {
     
     return(list(AA = keyaas,percentage = keyaas_per, matrix = output))
   }
-calculate_GROUP_variation <-  function(prmt, sequence_alignment, threshold) {
-    #prmt- size of alignment (output of get_parameter())
-    #sequence_alignment-file[[3]]
-    #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
-    #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
-    keyaas_treshold = prmt$row_no * (threshold / 100);
-    #returns list of matrices with tabled symbols of the most common AA in alignment column and percentage values for contributed AA
-    aligned_sequences_matrix = alignment2matrix(prmt,sequence_alignment);
-    keyaas_gr = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
-    keyaas_per_gr = matrix("n",dim(aligned_sequences_matrix)[2],20 * 2);
-    
-    grupy = matrix("",dim(aligned_sequences_matrix)[1],dim(aligned_sequences_matrix)[2]);
-    for (i in seq(1,(dim(aligned_sequences_matrix)[1]),by = 1)) {
-      for (j in seq(1,(dim(aligned_sequences_matrix)[2]),by = 1)) {
-        if (aligned_sequences_matrix[i,j] == "I" ||
-            aligned_sequences_matrix[i,j] == "L" ||
-            aligned_sequences_matrix[i,j] == "V")
-          grupy[i,j] = "G1"
-        if (aligned_sequences_matrix[i,j] == "F" ||
-            aligned_sequences_matrix[i,j] == "Y" ||
-            aligned_sequences_matrix[i,j] == "W")
-          grupy[i,j] = "G2"
-        if (aligned_sequences_matrix[i,j] == "A" ||
-            aligned_sequences_matrix[i,j] == "G" ||
-            aligned_sequences_matrix[i,j] == "S")
-          grupy[i,j] = "G3"
-        if (aligned_sequences_matrix[i,j] == "P")
-          grupy[i,j] = "G4"
-        if (aligned_sequences_matrix[i,j] == "N" ||
-            aligned_sequences_matrix[i,j] == "Q")
-          grupy[i,j] = "G5"
-        if (aligned_sequences_matrix[i,j] == "R" ||
-            aligned_sequences_matrix[i,j] == "H" ||
-            aligned_sequences_matrix[i,j] == "K")
-          grupy[i,j] = "G6"
-        if (aligned_sequences_matrix[i,j] == "D" ||
-            aligned_sequences_matrix[i,j] == "E" ||
-            aligned_sequences_matrix[i,j] == "T")
-          grupy[i,j] = "G7"
-        if (aligned_sequences_matrix[i,j] == "M" ||
-            aligned_sequences_matrix[i,j] == "C")
-          grupy[i,j] = "G8"
-        if (aligned_sequences_matrix[i,j] == "-")
-          grupy[i,j] = "-"
-      }
-    }
-    
-    for (i in seq(1,dim(grupy)[2])) {
-      table = (sort(table(grupy[,i]),decreasing = T)); #Czestosci i ridzaje wystepowania AA
-      aas = names(table);
-      keyaas_gr[i,1:length(matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
-                                                                                            keyaas_treshold)])))] = matrix(aas[which(table >= keyaas_treshold)],1,length(aas[which(table >=
-                                                                                                                                                                                     keyaas_treshold)])); #jeżeli są jakieś AA (=zawsze) to wpisywane są one do macierzy keyaas (odpowiendia ilość za sprawą sprawdzenia)
-      keyaas_per_gr[i,1:length(matrix((table)[which(table >= keyaas_treshold)],1,length((table)[which(table >=
-                                                                                                        keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] /
-                                                                                                                                               prmt$row_no,3) * 100,1,length(aas[which(table >= keyaas_treshold)])); #podobne wpisanie w odpowiedi wiersz macierzy dla ilości AA
-    }
-    
-    i = 1;
-    while (length(which(keyaas_gr[,i] != "n")) > 0) {
-      i = i + 1;
-    }
-    i = i - 1;
-    
-    keyaas_gr = t(keyaas_gr[,1:i]); #transpose matrix
-    keyaas_per_gr = t(keyaas_per_gr[,1:i]) #transpose matrix
-    
-    #merging key AAs symbols table with key AAs percentages table
-    size = dim(keyaas_gr);
-    output = matrix("-",size[1] * 2,size[2]);
-    j = 1;
-    for (i in seq(1,size[1] * 2,2)) {
-      output[i,] = keyaas_gr[j,];
-      output[i + 1,] = keyaas_per_gr[j,];
-      j = j + 1;
-    }
-    return(list(AA = keyaas_gr,per = keyaas_per_gr,matrix=output))
-  }
-noteworthy_sequences <- function(percentage, alignment_file){
+noteworthy_sequences <- function(percentage, alignment){
   max = which.max(percentage)
-  namelist = alignment_file[[2]]
+  namelist = alignment[[2]]
   out.max = list(c(namelist[max], max)) #output is a name of sequence and position in alignment
   min = which.min(percentage) #percentage is an output of calculate_group_consensus or calculate_tru_consensus
   out.min = list(c(namelist[min], min)) #output is a name of sequence and position in alignment

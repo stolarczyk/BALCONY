@@ -2,29 +2,27 @@
 \alias{calculate_AA_variation}
 
 \title{
-Calculate AA variations
+Calculate AA variations on each position of the multiple sequence alignment
 }
 \description{
- This function calculates AA diversity on each position of the alignment.
+ This function calculates AA variations on each position of the alignment which may be further used for the conservativity study of the set of sequences in quiestion
 }
 \usage{
-calculate_AA_variation(prmt, sequence_alignment, threshold)
+calculate_AA_variation(alignment, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{prmt}{output of alignment_parameters())}
-  \item{sequence_alignment}{the third element of the list loaded with read.alignment() function }
-  \item{threshold}{number in range 0-100 of minimal frequency of occurences}
-  
-
+  \item{alignment}{The data loaded with read.alignment() function }
+  \item{threshold}{A number in range 0-100. A of minimal frequency of occurences of amino acids at each position}
 }
 \details{
 The output consists of amino acids and their fractions on each position of alignment. Amino acids with occurence frequencies lower than the threshold of user's choice are excluded.
 }
 \value{
 Returns list of two matrices with tabelarized symbols of the most common AA in alignment column and percentage values for contributed AA
- \item{var_aa$AA }{Matrix of AA on all alignment positions with decreasing frequencies in columns}
- \item{var_aa$per}{percentage of AA frequencies corresponding to the $AA}
+ \item{var_aa$AA }{A matrix of AA on all alignment positions with decreasing frequencies in columns}
+ \item{var_aa$per}{The percentage of AA frequencies corresponding to the $AA}
+ \item{var_aa$matrix}{A combination of this two. The best suited element for visual inspection of the variability at each position}
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -39,12 +37,9 @@ Alicja Pluciennik & Michal Stoalrczyk
 alignment_parameters(), distplay_AA_variation()
 }
 \examples{
-alignment=read.alignment(file="alignment.mfa", format="fasta", forceToLower=F)
-aligned_sequences=alignment[[3]]
-prmt=alignment_parameters(aligned_sequences)
+load(alignment)
 threshold=10
-var_aa=calculate_AA_variation(prmt,aligned_sequences,threshold)
-display_AA_variation(var_aa)
+var_aa=calculate_AA_variation(alignment, threshold)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
