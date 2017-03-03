@@ -2,10 +2,10 @@
 \alias{noteworthy_sequences}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Finds noteworthy sequences in the dataset (most common, closest to the consensus and most different from the consesus)
+Find noteworthy sequences in the dataset (aligned sequences)
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+This function detects noteworthy sequences (most common, closest to the consensus and most different from the consesus) to facilitate convenient detection of outlying sequences that might be excluded from the further analysis.
 }
 \usage{
 noteworthy_sequences(percentage, alignment_file)
@@ -13,7 +13,7 @@ noteworthy_sequences(percentage, alignment_file)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{percentage}{The identity of each sequence in the alignment to the consensus sequence}
-  \item{alignment_file}{Alignment loaded with read.alignment() function}
+  \item{alignment}{Alignment loaded with read.alignment() function}
   
 }
 \details{
@@ -40,13 +40,9 @@ Alicja Pluciennik & Michal Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-file=read.alignment(file="alignment.fasta", format="fasta", forceToLower=F)
-aligned_sequences=file[[3]];
-seq_count=file[[1]];
-threshold_consensus=30;
-consensus_seq=consensus(file, threshold_consensus);
-consensus_sequences_identity=cons2seqs_ident(aligned_sequences, seq_count, consensus_seq)
-outliers=noteworthy_sequences(consensus_sequences_identity, file);
+load(alignment)
+consensus_to_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
+noteworthy_sequences(consensus_to_sequences_identity, alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

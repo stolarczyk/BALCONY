@@ -5,7 +5,7 @@
 Find sequence by id in alignment.
 }
 \description{
-This function allows to search current large alignent for a sequence with its id.
+This function allows to search for a sequence with its id. Useful for browsing a larg multiple sequence alignment data or for automatization purposes.
 }
 \usage{
 find_seq(sequence_id, alignment_file)
@@ -13,7 +13,7 @@ find_seq(sequence_id, alignment_file)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sequence_id}{identifier of desired sequence from alignment}
-  \item{alignment_file}{alignment file, see package seqinr }
+  \item{alignment_file}{alignment file loaded with read.alignment() }
 }
 \details{
 
@@ -38,12 +38,12 @@ Alicja Pluciennik & Michal Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-alignment=read.alignment(file="test.mfa", format="fasta", forceToLower=F)
+load(alignment)
 #creating library uniprot - PDB
 lib=list(c("Q6U6J0","4QLA"), 
          c("Q9UR30","3G0I","3G02","1QO7"))
-sequence_id=find_UPid(3G0I,lib)
-sequence=find_seq(sequence_id, alignment_file)
+sequence_id=find_seqid("4QLA",lib)
+sequence=find_seq(sequence_id, alignment)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
