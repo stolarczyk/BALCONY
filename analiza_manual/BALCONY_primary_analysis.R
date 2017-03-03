@@ -60,11 +60,11 @@ ilosc_seq=file[[1]];
 # Get alignment parameters (#rows,#columns)
 parameters=alignment_parameters(alignment);
 # Convert aligned sequences to matrix
-aligned_sequences_matrix=alignment2matrix(parameters,alignment);
+aligned_sequences_matrix=alignment2matrix(alignment);
 # Calculate the identidy of consensus sequence to each sequence in the dataset
-consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consensus_seq)
+consensus_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
-group_consensus=cons2seqs_sim(parameters,aligned_sequences_matrix,consensus_seq,grouping_method);
+group_consensus=cons2seqs_sim(alignment,consensus_seq,grouping_method);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
 outliers=noteworthy_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position

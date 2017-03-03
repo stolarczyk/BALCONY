@@ -186,7 +186,9 @@ aligned_sequences_matrix2groups <-
     return(aligned_sequences_matrixG)
   }
 
-cons2seqs_sim <-  function(prmt, aligned_sequences_matrix, consensus_seq, grouping_method) {
+cons2seqs_sim <-  function(alignment, consensus_seq, grouping_method) {
+    prmt = alignment_parameters(alignment = alignment)
+    aligned_sequences_matrix = alignment2matrix(alignment)
     aligned_sequences_matrixG = aligned_sequences_matrix2groups(aligned_sequences_matrix, grouping_method)
     consensusG = rep(x = "-",length(consensus_seq));
     true_percentage_G = c();
@@ -292,14 +294,14 @@ cons2seqs_sim <-  function(prmt, aligned_sequences_matrix, consensus_seq, groupi
     return(true_percentage_G)
 }
 
-alignment2matrix <- function(prmt, alignment) {
-  #prmt= output of get_parameters
+alignment2matrix <- function(alignment) {
   #alignment data
   #returns alignment as a matrix
+  prmt = alignment_parameters(alignment = alignment)
   aligned_sequences_matrix = matrix("-", prmt$row_no, prmt$col_no);
   for (i in seq(1,prmt$row_no)) {
     #Putting aligned seqs into matrix
-    temp = s2c(alignment$seq)
+    temp = s2c(alignment$seq[i])
     for (j in seq(1,prmt$col_no)) {
       aligned_sequences_matrix[i,j] = temp[j];
     }
