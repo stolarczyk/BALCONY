@@ -51,16 +51,16 @@ lib = list(
   c("G9BEX6","4O08","4IO0","2E3J","4INZ"),
   c("Q41413","3CXU","2CJP")
 )
-# Calculating consensus sequence 
+# Calculating consensus sequence                      
 consensus_seq=consensus(file, threshold_consensus);
 # Extract just the sequences
 aligned_sequences=file[[3]];
 # Extract just the number of sequences
 ilosc_seq=file[[1]];
 # Get alignment parameters (#rows,#columns)
-parameters=alignment_parameters(aligned_sequences);
+parameters=alignment_parameters(alignment);
 # Convert aligned sequences to matrix
-aligned_sequences_matrix=alignment2matrix(parameters,aligned_sequences);
+aligned_sequences_matrix=alignment2matrix(parameters,alignment);
 # Calculate the identidy of consensus sequence to each sequence in the dataset
 consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
