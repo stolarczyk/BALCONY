@@ -40,9 +40,10 @@ Alicja Pluciennik & Michal Stolarczyk
 \examples{
 load(alignment)
 #creating library uniprot - PDB
-lib=list(c("Q6U6J0","4QLA"), 
-         c("Q9UR30","3G0I","3G02","1QO7"))
-sequence_id=find_seqid("4QLA",lib)
+lib=list(  c("Q84HB8","4I19","4QA9"),
+  c("P34913","4JNC"),
+  c("P34914","1EK2","1CR6","1EK1","1CQZ"),)
+sequence_id=find_seqid("1CQZ,lib)
 sequence=find_seq(sequence_id, alignment)
 
 }

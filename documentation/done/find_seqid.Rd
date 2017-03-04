@@ -42,12 +42,11 @@ Alicja Pluciennik & Michal Stolarczyk
 }
 \examples{
 #creating library uniprot - PDB
-lib=list(c("Q6U6J0","4QLA"),
-         c("Q84HB8","4I19","4QA9"),
-         c("P34913","4JNC"),
-         c("Q41413","3CXU","2CJP"))
+lib=list(  c("Q84HB8","4I19","4QA9"),
+  c("P34913","4JNC"),
+  c("P34914","1EK2","1CR6","1EK1","1CQZ"))
 
-uniprot=read_file(filename="4JNC", lib);
+uniprot=read_file(filename="1CQZ", lib);
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
