@@ -28,7 +28,7 @@ display_structure(structure, structure_file)
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Pluciennik & Michal Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk}
 \note{
 %%  ~~further notes~~
 }

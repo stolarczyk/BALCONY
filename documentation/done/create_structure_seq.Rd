@@ -23,7 +23,8 @@ This function is useful to create sequence covered with structure element. This 
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
-\item{structure}{A list of vector(s) of characters T and N marking on sequence the structural element; T-amino acid which forms analyzed structure, N-amino acid which not build a structure}
+\item{structure$structure_matrix}{A matrix of characters T and N marking on sequence the structural element; T-amino acid which forms analyzed structure, N-amino acid which not build a structure. Number of rows of the matrix corresponds to the number of structures analyzed.}
+\item{structure$structure_numbers}{A list of vector containing the numbers of just the amino acids in the aligned sequences (no gaps)}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
@@ -51,6 +52,8 @@ lib=list(c("Q84HB8","4I19","4QA9"),
 uniprot=find_seqid(pdb_name,lib)
 shift=3
 tunnel=create_structure_seq(structure_data,uniprot,alignment,shift)
+tunnel_numbers = tunnel$structure_numbers
+tunnel_matrix = tunnel$structure_matrix
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

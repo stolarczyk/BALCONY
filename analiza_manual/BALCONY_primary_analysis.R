@@ -16,7 +16,7 @@ file = delete_isoforms(file);
 myFiles <- list.files(pattern = "*.txt");
 structure_names = c();
 for (i in seq(1,length(myFiles),by = 1)){
-  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[1]][1]);
+  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
 }
 structure_names_list = as.list(structure_names)
 structure_list = list();
@@ -78,9 +78,9 @@ uniprot=find_seqid(pdb_name,lib);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,shift);
-structure_matrix=display_structure(structure,structure_list); rownames(structure_matrix) = structure_names
+structure_matrix=structure$structure_matrix; rownames(structure_matrix) = structure_names
 # set residue indexes
-structure_numbers=show_numbers(structure);
+structure_numbers=structure$structure_numbers;
 # bind the results into one table 
 final_output=rbind(variations_matrix,structure_matrix,structure_numbers);
 # Calculate TG entropy score for all alignment positions

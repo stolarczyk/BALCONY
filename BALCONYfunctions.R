@@ -1,5 +1,8 @@
 
 # Conservation analysis ---------------------------------------------------
+isUpper <- function(s) {
+  return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
+}
 
 delete_isoforms <- function(alignment){
   # This functions searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
@@ -390,7 +393,7 @@ find_seqid <- function(sequence,library) {
   return(seqid)
 }
 get_seq_names <- function(alignment) {
-  names = file[[2]];
+  names = alignment[[2]];
   return(names)
 }
 find_seq <- function(sequence_id, alignment_file) {
@@ -412,52 +415,79 @@ find_seq <- function(sequence_id, alignment_file) {
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
-create_structure_seq <-  function(tunnel_file, sequence_id, alignment_file, shift) {
-    #tunnel_file-> list of tunnels in protein
-    #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
-    #alignment_file-> file wiht alignment (alignment.fst)
-    seq = list();
-    tunnel = list();
-    #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file)
-    for (i in seq(1,length(tunnel_file))) {
-      tunnels_indices = as.vector(tunnel_file[[i]][[1]]);
-      tunnels_names = as.vector(tunnel_file[[i]][[2]]);
-      tunnels_indices = tunnels_indices[-1];
-      tunnel_idx = as.numeric(tunnels_indices)
-      tunnels_names = tunnels_names[-1];
-      if (shift != 0) {
-        tunnel_idx = tunnel_idx + rep(shift,length(tunnels_indices))
-      }
-      seq[[i]] = rep("N",each = base_seq$len);
-      seq[[i]][tunnel_idx] = "T"
-      aa_positions = which(s2c(base_seq$sequence) != "-")
-      just_align = alignment_file[[3]]
-      paramet = alignment_parameters(just_align)
-      length_alignment = dim(alignment2matrix(paramet, just_align))[2]
-      tunnel[[i]] = rep("-",each = length_alignment);
-      j = 1;
-      for (a in aa_positions) {
-        #aligning the tunnels information with the alignment sequence
-        tunnel[[i]][a] = seq[[i]][j];
-        j = j + 1;
-      }
+create_structure_seq <-  function(structure_file, sequence_id, alignment, shift) {
+  #structure_file-> list of structures in protein
+  #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
+  #alignment-> file with alignment (alignment.fasta)
+  seq = list();
+  structure = list();
+  #finds an uniprot name from alignent- extract uniprot seq from alignment
+  base_seq = find_seq(sequence_id, alignment)
+  for (i in seq(1,length(structure_file),by=1)) {
+    structures_indices = as.vector(structure_file[[i]][[1]]);
+    structures_names = as.vector(structure_file[[i]][[2]]);
+    structures_indices = structures_indices[-1];
+    structure_idx = as.numeric(structures_indices)
+    structures_names = structures_names[-1];
+    if (shift != 0) {
+      structure_idx = structure_idx + rep(shift,length(structures_indices))
     }
-    return(tunnel)
+    seq[[i]] = rep("N",each = base_seq$len);
+    seq[[i]][structure_idx] = "T"
+    aa_positions = which(s2c(base_seq$sequence) != "-")
+    just_align = alignment[[3]]
+    length_alignment = alignment_parameters(alignment)$col_no
+    structure[[i]] = rep("-",each = length_alignment);
+    j = 1;
+    for (a in aa_positions) {
+      #aligning the structures information with the alignment sequence
+      structure[[i]][a] = seq[[i]][j];
+      j = j + 1;
+    }
   }
-display_structure <- function(structure,structure_file) {
+  
   struc_length = length(structure[[1]])
   count = length(structure_file);
   output = matrix("-",count,struc_length);
-  v = seq(1,count,1)
+  v = seq(1,count,by = 1)
   for (i in v) {
     output[i,] = structure[[i]]
   }
-  return((output))
+  nr_stru = rep("-",length(structure[[1]]));
+  j = 1;
+  for (i in seq(1,length(structure[[1]]),1)) {
+    if (structure[[1]][i] != "-") {
+      nr_stru[i] = j
+      j = j + 1;
+    }
+  }
+  return(list(structure_matrix=output,structure_numbers=nr_stru))
 }
-isUpper <- function(s) {
-  return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
-}
+
+##The functions below became redundant (now are merged into the create_structure_seq)
+# display_structure <- function(structure,structure_file) {
+#   struc_length = length(structure[[1]])
+#   count = length(structure_file);
+#   output = matrix("-",count,struc_length);
+#   v = seq(1,count,1)
+#   for (i in v) {
+#     output[i,] = structure[[i]]
+#   }
+#   return((output))
+# }
+# 
+# show_numbers <- function(structure) {
+#   nr_stru = rep("-",length(structure[[1]]));
+#   j = 1;
+#   for (i in seq(1,length(structure[[1]]),1)) {
+#     if (structure[[1]][i] != "-") {
+#       nr_stru[i] = j
+#       j = j + 1;
+#     }
+#   }
+#   return(nr_stru)
+# }
+
 barplotshow <- function(position,AA_variation) {
   #position=position-1;
   row = max(which(AA_variation$percentage[,position]!="n"));#checking how many different AA is on the position
@@ -473,17 +503,6 @@ barplotshow <- function(position,AA_variation) {
     x = plot,y = x_val / 2,cex = 1.0,labels = paste(as.character(x_val),"%",sep = ""),xpd =
       T
   )
-}
-show_numbers <- function(structure) {
-  nr_stru = rep("-",length(structure[[1]]));
-  j = 1;
-  for (i in seq(1,length(structure[[1]]),1)) {
-    if (structure[[1]][i] != "-") {
-      nr_stru[i] = j
-      j = j + 1;
-    }
-  }
-  return(nr_stru)
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
   sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
