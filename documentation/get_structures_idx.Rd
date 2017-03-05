@@ -22,8 +22,8 @@ It facilitates the management and oparation on the entropy values calculated for
 }
 \value{
 Output is a list of two elements:
-  \item{$proteinIndices}{ sorted vector of structure amino acids in MSA}
-  \item{$strucureIndices}{list of sorted vectors of amino acids in aligned sequence for each structure }
+  \item{$proteinIndices}{A sorted vector of structure amino acids in MSA}
+  \item{$strucureIndices}{A list of sorted vectors of amino acids in aligned sequence for each structure }
 %% ...
 }
 \references{

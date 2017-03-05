@@ -2,7 +2,7 @@
 \alias{barplotshow}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Shows barplot with amino acid variation on the specified position.
+Shows barplot with amino acid variation on the specified position
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
@@ -12,8 +12,8 @@ barplotshow(position, AA_variation)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{position}{column of alignment to be visualized}
-  \item{AA_variation}{percentage frequency of amino acids in the alignment, calculated with display_AA_variation() function}
+  \item{position}{A cumber of column of alignment to be visualized}
+  \item{AA_variation}{A percentage frequency of amino acids in the alignment, calculated with display_AA_variation() function}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -41,14 +41,11 @@ Alicja Pluciennik & Michal Stolarczyk
 display_AA_variation(), calculate_AA_variation()
 }
 \examples{
-seq=read.alignment("aligment.mfa")
-aligned_sequences=seq[[3]]
-prmt=alignnment_parameters(aligned_sequences)
-threshold=4 # exemplary threshold, percentage, 4\%, below this value AA are not included into displayed matrix
-var_aa=calculate_AA_variation(prmt,aligned_sequences,4)
-AA_variation=display_AA_variation(var_aa)
-barplotshow(AA_variation)}
+load(alignment)
+position = 13
+var_aa = alignment
+barplotshow(position, var_aa)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{barplot}
+\keyword{amino acids variation}% __ONLY ONE__ keyword per line

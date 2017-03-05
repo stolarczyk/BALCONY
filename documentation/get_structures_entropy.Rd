@@ -12,9 +12,8 @@ EntropyStructures=get_structures_entropy(structure_index,Score_list,names)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{structure_index}{ is a list of indices in alignment of protein and structures}
-  \item{Score_list}{ list of entropies for whole alignment}
-  \item{names}{names of entropy scores}
+  \item{structure_index}{A is a list of indices in alignment of protein and structures}
+  \item{score_list}{A list of entropies for whole alignment}
 }
 \details{
 Function allows to obtain entropy (calculated on MSA) for dispersed amino acids in protein e.g. surface, binding site, tunnels, etc. The input might be a list of few structure indices in given protein sequence. Function calculates position of those in aligned sequence and returns vector/matrix or a list of matrices with entropy values. 

@@ -5,19 +5,20 @@
 Get names of sequences from alignment
 }
 \description{
-This simple function allows to get sequence names/identifies from alignment.
+This function allows to get sequence names/identifires from alignment.
 }
 \usage{
 get_seq_names(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{alignment structure (list)}
+  \item{alignment}{The alignment object read with read.alignment() function}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
 }
-\value{names} list of names from alignment
+\value{
+\item{names}{A vector of characters with names of each sequence from the alignment}
 
 }
 \references{
@@ -36,10 +37,10 @@ Alicja Pluciennik & Michal Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-alignment=read.alignment(file="test.mfa", format="fasta", forceToLower=F)
-list_names=get_seq_names(alignment)
+load(alignment)
+sequences_names=get_seq_names(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ alignment }
+\keyword{ sequences names }% __ONLY ONE__ keyword per line

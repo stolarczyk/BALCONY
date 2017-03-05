@@ -17,7 +17,9 @@ grouped_aligned_sequences_matrix = aligned_sequences_matrix2groups(aligned_seque
 }
 \details{
 }
-\value{grouped_aligned_sequences_matrix}{A matrix of size of the input matrix but with group symbols instead of amino acid symbols}
+\value{
+\item{grouped_aligned_sequences_matrix}{A matrix of size of the input matrix but with group symbols instead of amino acid symbols}
+}
 \references{
 %% ~put references to the literature/web site here ~
 }
@@ -31,10 +33,13 @@ Alicja Pluciennik & Michal Stolarczyk
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-alignment2matrix()
+alignment2matrix(), read.alignment()
 }
 \examples{
-FIXME!!!!!!!!!!!!!!!
+load(alignment)
+grouping_method = "general"
+aligned_sequences_matrix = alignment2matrix(alignment)
+grouped_aligned_sequences_matrix = aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
