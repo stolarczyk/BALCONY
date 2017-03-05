@@ -6,11 +6,11 @@ Calculate substitution rate matrix between two amino acids
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-This function is used to calculate Landgraf conservation metric. D_matrix contains substitution rates between two aminoacids in the alignment, according to the following formula:
-D(a,b)= (d(a,a)-d(a,b))/d(a,a),       
-where 
-d(a,a) is a probability of AA substitution by itself
-d(a,b) is a probability of substitution of amino acid a with other amino acid.
+This function is used to calculate Landgraf conservation metric. D_matrix contains substitution rates between two aminoacids in the alignment, according to the following formula:\cr \cr
+D(a,b)= (d(a,a)-d(a,b))/d(a,a),\cr \cr
+where:\cr
+- d(a,a) is a probability of AA substitution by itself\cr
+- d(a,b) is a probability of substitution of amino acid a with other amino acid.
 }
 \usage{
 
@@ -46,8 +46,6 @@ Alicja Pluciennik & Michal Stolarczyk
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-frequencies=substitution_mtx("PAM250.txt")
-distance=D_matrix(frequencies)
-conservation_for_column(distance,column,weigts)
-
-
+load(gonnet)
+distance=D_matrix(gonnet)
+}

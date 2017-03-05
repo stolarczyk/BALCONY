@@ -78,7 +78,8 @@ uniprot=find_seqid(pdb_name,lib);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,shift);
-structure_matrix=structure$structure_matrix; rownames(structure_matrix) = structure_names
+structure_matrix=structure$structure_matrix; 
+rownames(structure_matrix) = structure_names
 # set residue indexes
 structure_numbers=structure$structure_numbers;
 # bind the results into one table 
@@ -92,7 +93,7 @@ conservativity = conservativity(aligned_sequences_matrix)
 #lub
 aligned_sequences_matrix_groups = aligned_sequences_matrix2groups(aligned_sequences_matrix,'general')
 conservativity_groups = conservativity(aligned_sequences_matrix_groups)
-Landgraf = Landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
+Landgraf = landgraf_conservation(matrix_name,alignment,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
 entropy_data=list(Schneider.entropy=conservativity$Schneider,Landgraf.entropy = Landgraf,TG.entropy = TG_entropy,Kabat.entropy = conservativity$Kabat)
