@@ -586,7 +586,7 @@ create_structure_seq <-
       if (structure[[1]][i] != "-") {
         nr_stru[i] = j
         j = j + 1
-              }
+      }
     }
     rownames(output) = names(structure_file)
     return(list(structure_matrix = output, structure_numbers = nr_stru))
@@ -636,7 +636,7 @@ create_final_CSV <-
     structure_output_names = append(rownames(structure$structure_matrix),"Structure numbers")
     rownames(structure_output) = structure_output_names
     rownames(AA_variations$matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1] /
-                                        2)
+                                           2)
     if (is.null(list_of_scores)) {
       final_output = rbind(AA_variations$matrix,sequnece, structure_output)
     }
