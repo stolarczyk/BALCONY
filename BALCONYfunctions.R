@@ -24,12 +24,16 @@ delete_isoforms <- function(alignment) {
     }
   }
   new = list()
-  
-  new$nb = alignment$nb - (length(lines_to_delete))
-  new$nam = alignment$nam[-lines_to_delete]
-  new$seq = alignment$seq[-lines_to_delete]
-  output = new
-  
+  if (length(lines_to_delete>=1)){
+    new$nb = alignment$nb - (length(lines_to_delete))
+    new$nam = alignment$nam[-lines_to_delete]
+    new$seq = alignment$seq[-lines_to_delete]
+    output = new
+  }
+  else{
+    output = alignment
+    warning("No isoforms detected")
+  }
   return(output)
 }
 consensus <-  function(alignment, thresh) {
@@ -62,7 +66,7 @@ consensus <-  function(alignment, thresh) {
   }
   return(consens)
 }
-cons2seqs_ident <-  function(alignment, consensusus_seq) {
+cons2seqs_ident <-  function(alignment, consensus_seq) {
   #alignment_sequence- file[[3]]
   # number_of_seq- file[[1]]
   #consensus- calculated consensusus (output of my_consensusus())
@@ -897,8 +901,8 @@ D_matrix <- function(sub_mtx) {
 landgraf_conservativity <-
   function(matrix_name = NULL, alignment_file, weights) {
     if (is.null(matrix_name)) {
-      load("sub_mat/Gonnet_matrix.rda")
-      pre_dissim_mtx = gonnet_matrix
+      load("Gonnet_mtx.rd") # Proper path?
+      pre_dissim_mtx = gonnet_mtx
     }
     else{
       pre_dissim_mtx = substitution_mtx(matrix_name)
@@ -1069,7 +1073,6 @@ get_structure_idx <- function(structure) {
   stru_index = list()
   for (i in seq(1:length(structure))) {
     stru_index[[i]] = which(structure[[i]] == "T")
-    
   }
   whole_prot = which(structure[[1]] != "-")
   
@@ -1236,7 +1239,7 @@ plot_structure_on_protein <-
   }
 
 compare_cons_metrics <-
-  function(protein, structures_cons, pdb_name) {
+  function(protein, structure_cons, pdb_name) {
     #protein- list of conservation scores for proteins
     #structure cons- list of conservation scores for [[list]] of strustures with [[list]] scores and indices
     #pdb_name - protein name
