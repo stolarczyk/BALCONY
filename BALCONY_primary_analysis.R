@@ -16,7 +16,7 @@ file = delete_isoforms(file);
 myFiles <- list.files(pattern = "*.txt");
 structure_names = c();
 for (i in seq(1,length(myFiles),by = 1)){
-  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[1]][1]);
+  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
 }
 structure_names_list = as.list(structure_names)
 structure_list = list();
@@ -55,48 +55,38 @@ dictionary = list(
 )
 # Calculating consensus sequence 
 consensus_seq=consensus(file, threshold_consensus);
-# Extract just the sequences
-aligned_sequences=file[[3]];
-# Extract just the number of sequences
-ilosc_seq=file[[1]];
-# Get alignment parameters (#rows,#columns)
-parameters=alignment_parameters(aligned_sequences);
 # Convert aligned sequences to matrix
-aligned_sequences_matrix=alignment2matrix(parameters,aligned_sequences);
+aligned_sequences_matrix=alignment2matrix(file);
 # Calculate the identidy of consensus sequence to each sequence in the dataset
-consensus_sequences_identity=cons2seqs_ident(aligned_sequences,ilosc_seq, consensus_seq)
+consensus_sequences_identity=cons2seqs_ident(file, consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
-group_consensus=cons2seqs_sim(parameters,aligned_sequences_matrix,consensus_seq,grouping_method);
+group_consensus=cons2seqs_sim(file,consensus_seq,grouping_method);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
 noteworthy_seqs= noteworthy_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position
-var_aa = calculate_AA_variation(parameters,aligned_sequences,threshold_variations);
+var_aa = calculate_AA_variation(file,threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position
-var_group = calculate_GROUP_variation(parameters,aligned_sequences,threshold_variations);
+var_aa_group = calculate_AA_variation(file,threshold_variations, grouped = T,grouping_method = "general");
 variations_matrix = var_aa$matrix;
+variations_matrix_grouped=var_aa_group$matrix
+View(variations_matrix_grouped)
 #find reference sequence
 uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,3);
-#names(structure)=structure_names
-structure_matrix=display_structure(structure,structure_list); rownames(structure_matrix) = structure_names
-# set residue indexes
-structure_numbers=show_numbers(structure);
+
 # bind the results into one table 
-final_output=rbind(variations_matrix,structure_matrix,structure_numbers);
+final_output=rbind(variations_matrix,structure$structure_matrix,structure$structure_numbers);
 # Calculate TG entropy score for all alignment positions
-TG_entropy=TG_conservativity(var_aa);
+TG_entropy=TG_conservativity(file);
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
-conservativity = conservativity(aligned_sequences_matrix)
-Landgraf = Landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
+conservativity = kabat_conservativity(file)
+Landgraf = landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
-#entropy_data=list(Schneider.entropy=conservativity$Schneider,Landgraf.entropy = Landgraf,TG.entropy = TG_entropy,Kabat.entropy = conservativity$Kabat)
-entropy_data=list(Schneider.entropy=conservativity$Schneider,TG.entropy = TG_entropy,Kabat.entropy = conservativity$Kabat)
+entropy_data=list(Schneider.entropy=schneider_conservativity(file),TG.entropy = TG_conservativity(file),Kabat.entropy =  kabat_conservativity(file))
 
-final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix, structure_matrix,structure_numbers,uniprot,file,entropy_data)
-# or
-seq_csv = s2c(my_seq$sequence)
-final_CSV=create_final_CSV("BALCONY_OUTPUT",variations_matrix,seq_csv,structure_numbers,uniprot,file,entropy_data)
+final_CSV=create_final_CSV("BALCONY_OUTPUT",var_aa, structure,uniprot,file,entropy_data)
 
+barplotshow(position = 1000, AA_variation = var_aa)
