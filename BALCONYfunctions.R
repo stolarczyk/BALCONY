@@ -1,6 +1,7 @@
 
 
 
+
 # Conservation analysis ---------------------------------------------------
 isUpper <- function(s) {
   return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
@@ -24,7 +25,7 @@ delete_isoforms <- function(alignment) {
     }
   }
   new = list()
-  if (length(lines_to_delete>=1)){
+  if (length(lines_to_delete >= 1)) {
     new$nb = alignment$nb - (length(lines_to_delete))
     new$nam = alignment$nam[-lines_to_delete]
     new$seq = alignment$seq[-lines_to_delete]
@@ -43,7 +44,7 @@ consensus <-  function(alignment, thresh) {
   alignment_matrix = as.matrix(as.character(alignment[[3]]))
   
   count_cols = length(alignment_matrix)
-  vec = seq(1, length(s2c(alignment_matrix[1,])))
+  vec = seq(1, length(s2c(alignment_matrix[1, ])))
   len_of_vers = length(vec)
   mat = matrix("-", count_cols, len_of_vers)
   
@@ -239,7 +240,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
+          consensusG == (aligned_sequences_matrixG[i, ])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -269,7 +270,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
+          consensusG == (aligned_sequences_matrixG[i, ])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -295,7 +296,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
+          consensusG == (aligned_sequences_matrixG[i, ])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -312,7 +313,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
+          consensusG == (aligned_sequences_matrixG[i, ])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -389,9 +390,9 @@ calculate_AA_variation <-
     j = 1
     
     for (i in seq(1, size[1] * 2, 2)) {
-      output[i,] = keyaas[j,]
+      output[i, ] = keyaas[j, ]
       
-      output[i + 1,] = keyaas_per[j,]
+      output[i + 1, ] = keyaas_per[j, ]
       
       j = j + 1
       
@@ -580,7 +581,7 @@ create_structure_seq <-
     
     v = seq(1, count, by = 1)
     for (i in v) {
-      output[i,] = structure[[i]]
+      output[i, ] = structure[[i]]
     }
     nr_stru = rep("-", length(structure[[1]]))
     
@@ -637,12 +638,13 @@ create_final_CSV <-
            list_of_scores = NULL) {
     sequence = s2c(find_seq(uniprot, alignment)$sequence)
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
-    structure_output_names = append(rownames(structure$structure_matrix),"Structure numbers")
+    structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
     rownames(AA_variations$matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1] /
                                            2)
     if (is.null(list_of_scores)) {
-      final_output = rbind(AA_variations$matrix,sequnece, structure_output)
+      alignment_position = seq(1,dim(AA_variations$matrix)[2],by = 1)
+      final_output = rbind(alignment_position, AA_variations$matrix, sequnece, structure_output)
     }
     else{
       #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
@@ -652,38 +654,41 @@ create_final_CSV <-
       scores_mtx_names = c()
       
       for (i in seq(1, length(list_of_scores))) {
-        scores_mtx[i,] = list_of_scores[[i]]
+        scores_mtx[i, ] = list_of_scores[[i]]
         scores_mtx_names[i] = names(list_of_scores)[i]
         
       }
       rownames(scores_mtx) = scores_mtx_names
-      
-      final_output = rbind(AA_variations$matrix,
+      alignment_position = seq(1,dim(AA_variations$matrix)[2],by = 1)
+      final_output = rbind(alignment_position,
+                           AA_variations$matrix,
                            sequence,
                            structure_output,
                            scores_mtx)
       
     }
     files_no = ceiling(dim(final_output)[2] / 1000)
-    
     for (i in seq(1, files_no, 1)) {
-      write.csv(
-        final_output[, ((i - 1) * 1000 + 1):dim(final_output)[2]],
-        file = paste(FILENAME, "_", i, ".csv", sep = ""),
-        row.names = T
-      )
+      if (!i == files_no) {
+        output = final_output[, ((i - 1) * 1000 + 1):(i * 1000)]
+      }
+      else{
+        output = final_output[, ((i - 1) * 1000 + 1):dim(final_output)[2]]
+      }
+      write.table(output,file = paste(FILENAME, "_", i, ".csv", sep = ""),
+                row.names = T,col.names = F,sep = ",")
     }
-    if (Sys.info()[[1]] == "Linux"){
-      print(paste("Output written to: ",getwd(),"/",FILENAME,".csv",sep = ""))
+    if (Sys.info()[[1]] == "Linux") {
+      print(paste("Output written to: ", getwd(), "/", FILENAME, ".csv", sep = ""))
     }
     return(final_output)
   }
 
 TG_conservativity <- function(alignment) {
-  var_aa = calculate_AA_variation(alignment,threshold = 0.01)
+  var_aa = calculate_AA_variation(alignment, threshold = 0.01)
   max_cons = c()
   
-  for (i in seq(1, length(var_aa$matrix[1,]), 1)) {
+  for (i in seq(1, length(var_aa$matrix[1, ]), 1)) {
     if (is.na(as.numeric(var_aa$matrix[2, i])) == FALSE) {
       max_cons[i] = as.numeric(var_aa$matrix[2, i])
     }
@@ -859,7 +864,7 @@ weights <- function(file,
   length_cons_seq = length(consensus_seq)
   
   for (i in seq(1, dim(aligned_sequences_matrix)[1], by = 1)) {
-    eq = length(which(consensus_seq == aligned_sequences_matrix[i,]))
+    eq = length(which(consensus_seq == aligned_sequences_matrix[i, ]))
     
     score[i] = eq / length_cons_seq
     
@@ -970,17 +975,17 @@ sequence_stats <-
     
     return_table = matrix("", 6, length(sequence))
     
-    return_table[1,] = sequence
+    return_table[1, ] = sequence
     
-    return_table[2,] = protein_positions
+    return_table[2, ] = protein_positions
     
-    return_table[3,] = alignment_positions
+    return_table[3, ] = alignment_positions
     
-    return_table[4,] = landgraf_metric
+    return_table[4, ] = landgraf_metric
     
-    return_table[5,] = schneider_metric
+    return_table[5, ] = schneider_metric
     
-    return_table[6,] = TG_metric
+    return_table[6, ] = TG_metric
     
     rownames(return_table) = c(
       "sequence",
@@ -1141,7 +1146,7 @@ get_structures_entropy <- function(structure_index, score_list) {
     lengths[[i]] = length(t_index[[i]])
     output = matrix(NA, nrow = length(score_list), ncol = lengths[[i]])
     for (j in seq(1:length(score_list))) {
-      output[j,] = score_list[[j]][t_index[[i]]]
+      output[j, ] = score_list[[j]][t_index[[i]]]
     }
     rownames(output) <- names(score_list)
     Entropy[[i]] = output
