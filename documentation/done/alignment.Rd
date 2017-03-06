@@ -7,7 +7,9 @@ Sample alignment of soluable epoxide hydrolase family
 \description{
 This alignment consists of 52 proteins which belong to the soluable epoxide hydrolase family. The amino acid sequences were aligned using MUSCLE algorithm with default settings.
 }
+
 \usage{load("alignment")}
+
 \format{
   An alignment object read with read.alignment() function from seqinr package.
   \describe{
