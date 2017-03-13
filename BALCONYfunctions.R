@@ -1101,7 +1101,16 @@ correct_structure_seq_missing <- function(structure,pdb_path,chain_identifier){
   
 }
 missing_aa2list <- function(remark465_data){
-  #cdn
+  remark465_data$aa_numbers = append(remark465_data$aa_numbers,remark465_data$aa_numbers[length(remark465_data$aa_numbers)]+2) # wydluzenie o sztuczna wartosc wieksza od ostatniej rzeczywistej o 2
+  diffs = diff(remark465_data$aa_numbers)
+  ind = append(remark465_data$aa_numbers[1],remark465_data$aa_numbers[which(diffs != 1)+1])
+  cnt=1
+  lengths = c()
+  for (i in seq(2,length(ind),by = 1)){
+    lengths[cnt] = which(remark465_data$aa_numbers == ind[i]) - which(remark465_data$aa_numbers == ind[i-1])
+    cnt=cnt+1
+  }
+  ind = ind[-length(ind)] # usuniecie sztucznej wartosci
 }
 get_structure_idx <- function(structure) {
   #documentation get_structure_idx.Rd
