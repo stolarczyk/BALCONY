@@ -1068,8 +1068,41 @@ entropy_profile <-
     return(output)
   }
 
-# Structure analysis ------------------------------------------------------
 
+# Structure analysis ------------------------------------------------------
+get_remarks465_pdb <- function(pdb_path,chain_identifier){
+  #pdb_path: a path to the pdb file
+  #chain_identifier: a character spcifying the chain to analyze
+  #returns: list of 1) numbers of aminocids which are missing 2) chain identifier
+  require(Rpdb)
+  pdb_file = read.pdb(file = pdb_path, REMARK = T,ATOM = T, CRYST1 = F,TITLE = T,MODEL = F,HETATM = F,CONECT = F)
+  pdb_file = pdb_file$remark
+  pattern = "REMARK 465"
+  indices = grep(perl = T,
+              pattern = pattern,
+              x = pdb_file)
+  remarks = pdb_file[indices[8:length(indices)]]
+  aa_number=c()
+  chain=c()
+  for(i in seq(1,length(remarks),by = 1)){
+    remark_line = strsplit(remarks[i],split = " ")
+    x = remark_line[[1]]
+    aa_number[i] = x[which(x!="")][length(x[which(x!="")])]
+    chain[i] = x[which(x!="")][length(x[which(x!="")])-1]
+  }
+  aa_number=as.numeric(aa_number)
+  chain_indices = which(chain==chain_identifier)
+  aa_number=aa_number[chain_indices]
+  chain=chain[chain_indices]
+  return(list(aa_numbers = aa_number,chain=chain))
+}
+
+correct_structure_seq_missing <- function(structure,pdb_path,chain_identifier){
+  
+}
+missing_aa2list <- function(remark465_data){
+  #cdn
+}
 get_structure_idx <- function(structure) {
   #documentation get_structure_idx.Rd
   #get idx of structure in alignemnt
