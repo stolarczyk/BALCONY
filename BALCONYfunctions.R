@@ -1094,12 +1094,13 @@ get_remarks465_pdb <- function(pdb_path,chain_identifier){
   chain_indices = which(chain==chain_identifier)
   aa_number=aa_number[chain_indices]
   chain=chain[chain_indices]
-  return(list(aa_numbers = aa_number,chain=chain))
+  return(list(aa_numbers = aa_number,chain=unique(chain)))
 }
 
 correct_structure_seq_missing <- function(structure,pdb_path,chain_identifier){
   
 }
+
 missing_aa2list <- function(remark465_data){
   remark465_data$aa_numbers = append(remark465_data$aa_numbers,remark465_data$aa_numbers[length(remark465_data$aa_numbers)]+2) # wydluzenie o sztuczna wartosc wieksza od ostatniej rzeczywistej o 2
   diffs = diff(remark465_data$aa_numbers)
@@ -1111,6 +1112,7 @@ missing_aa2list <- function(remark465_data){
     cnt=cnt+1
   }
   ind = ind[-length(ind)] # usuniecie sztucznej wartosci
+  return(list(indices = ind, lengths = lengths))
 }
 get_structure_idx <- function(structure) {
   #documentation get_structure_idx.Rd
