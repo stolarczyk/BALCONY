@@ -69,7 +69,6 @@ var_aa = calculate_AA_variation(file,threshold_variations);
 var_aa_group = calculate_AA_variation(file,threshold_variations, grouped = T,grouping_method = "general");
 variations_matrix = var_aa$matrix;
 variations_matrix_grouped=var_aa_group$matrix
-View(variations_matrix_grouped)
 #find reference sequence
 uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
