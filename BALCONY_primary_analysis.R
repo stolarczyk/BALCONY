@@ -73,7 +73,7 @@ variations_matrix_grouped=var_aa_group$matrix
 uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
-structure=create_structure_seq(structure_list,uniprot,file,3);
+structure=create_structure_seq(structure_list,uniprot,file,pdb_path = "1cqz.pdb",chain_identifier = "B");
 # bind the results into one table 
 final_output=rbind(variations_matrix,structure$structure_matrix,structure$structure_numbers);
 # Calculate TG entropy score for all alignment positions

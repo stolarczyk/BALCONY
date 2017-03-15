@@ -549,66 +549,52 @@ create_structure_seq <-
       missing = find_consecutive_seq(
         get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
       )
-      
     } else{
       missing=NULL
     }
     
     #finds an uniprot name from alignent- extract uniprot seq from alignment
     base_seq = find_seq(sequence_id, alignment)
-    for (i in seq(1, length(structure_file), by = 1)) {
+    for(i in seq(1, length(structure_file), by = 1)) {
       structures_indices = as.vector(structure_file[[i]][[1]])
-      
       structures_names = as.vector(structure_file[[i]][[2]])
-      
       structures_indices = structures_indices[-1]
-      
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
-      if (length(missing) != 0) {
-        for (z in seq(1, length(missing$values))) {
-          for (l in seq(1, length(structure_idx))) {
-            if (structure_idx[l] >= missing$values[z]) {
+      if(length(missing) != 0) {
+        for(z in seq(1, length(missing$values))) {
+          for(l in seq(1, length(structure_idx))) {
+            if(structure_idx[l] >= missing$values[z]) {
               structure_idx[l] = structure_idx[l] + missing$lengths[z]
             }
           }
         }
       }
-      
       seqs[[i]] = rep("N", each = base_seq$len)
-      
       seqs[[i]][structure_idx] = "T"
       aa_positions = which(s2c(base_seq$sequence) != "-")
       just_align = alignment[[3]]
       length_alignment = alignment_parameters(alignment)$col_no
       structure[[i]] = rep("-", each = length_alignment)
-      
       j = 1
-      
-      for (a in aa_positions) {
+      for(a in aa_positions) {
         #aligning the structures information with the alignment sequence
         structure[[i]][a] = seqs[[i]][j]
-        
         j = j + 1
         
       }
     }
-    
     struc_length = length(structure[[1]])
     count = length(structure_file)
-    
     output = matrix("-", count, struc_length)
-    
     v = seq(1, count, by = 1)
-    for (i in v) {
+    for(i in v) {
       output[i,] = structure[[i]]
     }
     nr_stru = rep("-", length(structure[[1]]))
-    
     j = 1
-    
-    for (i in seq(1, length(structure[[1]]), 1)) {
-      if (structure[[1]][i] != "-") {
+    for(i in seq(1, length(structure[[1]]), 1)) {
+      if(structure[[1]][i] != "-") {
         nr_stru[i] = j
         j = j + 1
       }
@@ -1135,36 +1121,6 @@ get_remarks465_pdb <- function(pdb_path, chain_identifier) {
   chain = chain[chain_indices]
   return(list(aa_numbers = aa_number, chain = unique(chain)))
 }
-
-correct_structure_seq_missing <-
-  function(structure, pdb_path, chain_identifier) {
-    missing = find_consecutive_seq(
-      get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
-    )
-    corrected_structure_matrix = matrix(NaN,nrow = dim(structure$structure_matrix)[1],ncol = dim(structure$structure_matrix)[2])
-    missing_sp = missing$values
-    missing_lengths = missing$lengths
-    for (struc in seq(1,dim(structure$structure_matrix)[1],by = 1)) {
-      ori_struc_indices = which(structure$structure_matrix[struc,] == "T")
-      ori_nonstruc_indices = which(structure$structure_matrix[struc,] == "N")
-      for (i in seq(1, length(missing_sp), by = 1)) {
-        x = which(as.numeric(structure$structure_numbers)>=missing_sp[i])
-        ktore = intersect(ori_struc_indices,x)
-        ori_struc_indices[which(ori_struc_indices==ktore)] =  ori_struc_indices[which(ori_struc_indices==ktore)] + missing_lengths[i]
-        print(ori_struc_indices)
-      }
-      new_structure = rep(x = "-",
-                          times = length(structure$structure_numbers))
-      new_structure[which(structure$structure_numbers != "-")] = "N"
-      for (pos in seq(1, length(structure$structure_numbers), by = 1)) {
-        if(length(any(ori_struc_indices == as.numeric(structure$structure_numbers[pos])))!=0) {
-          new_structure[pos] = "T"
-        }
-      }
-      corrected_structure_matrix[struc, ] = new_structure
-    }
-    return(correct_structure_matrix)
-  }
 
 find_consecutive_seq <- function(vector) {
   vector = append(vector, vector[length(vector)] + 2) # wydluzenie o sztuczna wartosc wieksza od ostatniej rzeczywistej o 2
