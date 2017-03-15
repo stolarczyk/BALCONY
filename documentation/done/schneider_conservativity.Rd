@@ -8,7 +8,7 @@ Calculate Schneider conservation metric
 This function facilitates the calculation of Schneider conservation metric.
 }
 \usage{
-conservation_score = schneider_conservation(alignment)
+conservation_score = schneider_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,16 +28,18 @@ Alicja Plucennik & Michal Stolarczyk
 }
 \note{
 Please note that the Schneider matric formula can be found in the paper listed in "See Also" section below.
+Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+\deqn{conservation = 1 - entropy}
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract
+\url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
 }
 \examples{
 load(alignment)
-conservation_score = schneider_conservation(alignment)
+conservation_score = schneider_conservativity(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

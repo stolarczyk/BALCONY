@@ -34,7 +34,7 @@ Alicja Pluciennik & Michal Stolarczyk
 \note{}
 
 \seealso{
-read.alignment()
+read.alignment(), \pkg{seqinr}
 }
 \examples{
 load(alignment)

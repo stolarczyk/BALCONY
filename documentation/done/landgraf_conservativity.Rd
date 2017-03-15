@@ -33,13 +33,17 @@ score = landgraf_conservativity(matrix_name = NULL, alignment_file, weights)
 Michal Stolarczyk & Alicja Pluciennik
 }
 \note{
-%%  ~~further notes~~
+Please note that the Shannon matric formula can be found in the paper listed in "See Also" section below.
+Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+\deqn{conservation = 1 - entropy}
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 consensus(), cons2seqs_ident(), read.alignment()
+
+\url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
 }
 \examples{
 load(alignment)

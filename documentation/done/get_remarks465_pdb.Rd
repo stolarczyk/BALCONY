@@ -31,13 +31,13 @@ remark465data = get_remarks465_pdb(pdb_file_path,chain_identifier)
 Michal Stolarczyk & Alicja Pluciennik
 }
 \note{
-%%  ~~further notes~~
+
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-Rpdb package, read.pdb()
+\pkg{Rpdb}, \code{\link[Rpdb]{read.pdb()}}
 }
 \examples{
 chain_identifier = "A"

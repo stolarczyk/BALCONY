@@ -42,8 +42,8 @@ Alicja Pluciennik & Michal Stolarczyk}
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-get_remarks465_pdb(), find_consecutive_seq()
-}
+\code{\link{get_remarks465_pdb}, \code{\link{find_consecutive_seq}
+}}}
 \examples{
 load(alignment)
 load(structure_data)
