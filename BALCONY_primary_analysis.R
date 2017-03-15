@@ -82,7 +82,7 @@ final_output=rbind(variations_matrix,structure$structure_matrix,structure$struct
 TG_entropy=TG_conservativity(file);
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
 conservativity = kabat_conservativity(file)
-Landgraf = landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
+#Landgraf = landgraf_conservation(matrix_name,aligned_sequences_matrix,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
 entropy_data=list(Schneider.entropy=schneider_conservativity(file),TG.entropy = TG_conservativity(file),Kabat.entropy =  kabat_conservativity(file))

@@ -499,6 +499,9 @@ create_structure_seq <- function(tunnel_file, sequence_id, alignment_file, shift
     #tunnel_file-> list of tunnels in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment_file-> file wiht alignment (alignment.fst)
+    #tunnel_file=structure_list
+    #alignment_file=file
+    #sequence_id=uniprot
     
     seq = list();
     tunnel = list();
@@ -575,7 +578,7 @@ show_numbers <- function(structure) {
 }
 create_final_CSV <-  function(FILENAME,variations_matrix,structure_matrix,structure_numbers,uniprot,alignment_file,list_of_scores = NULL) {
   sequence = s2c(find_seq(uniprot,alignment_file)$sequence);
-  rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1]/2)
+  rownames(variations_matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix[[1]])[1]/2)
   if (is.null(list_of_scores)) {
     final_output = rbind(variations_matrix,structure_matrix,structure_numbers);
   }
