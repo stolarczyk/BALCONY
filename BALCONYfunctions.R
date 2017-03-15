@@ -571,7 +571,7 @@ create_structure_seq <-
         }
       }
       seqs[[i]] = rep("N", each = base_seq$len)
-      seqs[[i]][structure_idx] = "T"
+      seqs[[i]][structure_idx] = "S"
       aa_positions = which(s2c(base_seq$sequence) != "-")
       just_align = alignment[[3]]
       length_alignment = alignment_parameters(alignment)$col_no
@@ -922,7 +922,7 @@ D_matrix <- function(sub_mtx) {
 landgraf_conservativity <-
   function(matrix_name = NULL, alignment_file, weights) {
     if (is.null(matrix_name)) {
-      load("Gonnet_mtx.rd") # Proper path?
+      load("../documentation/data/Gonnet_mtx.rd") # Proper path?
       pre_dissim_mtx = gonnet_mtx
     }
     else{
@@ -1143,7 +1143,7 @@ get_structure_idx <- function(structure) {
   #the first element is indices of whole protein in alignment
   stru_index = list()
   for (i in seq(1:length(structure))) {
-    stru_index[[i]] = which(structure[[i]] == "T")
+    stru_index[[i]] = which(structure[[i]] == "S")
   }
   whole_prot = which(structure[[1]] != "-")
   

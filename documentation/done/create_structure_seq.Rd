@@ -24,7 +24,7 @@ This function is useful to create sequence covered with structural data provided
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
-\item{structure_matrix}{A matrix of characters T and N marking on sequence the structural element; T-amino acid forms the analyzed structure, N-amino acid which does not form the structure. Number of rows of the matrix corresponds to the number of structures analyzed.}
+\item{structure_matrix}{A matrix of characters "S" and "N" marking on sequence the structural element; "S" - amino acid forms the analyzed structure, "N" - amino acid which does not form the structure. Number of rows of the matrix corresponds to the number of structures analyzed}
 \item{structure_numbers}{A vector containing the numbers of the amino acids in the sequence of interest (no gaps)}
 }
 %%  \item{comp2 }{Description of 'comp2'}
