@@ -43,7 +43,7 @@ plot_entropy<- function(prot_cons, colors,impose=NULL){
     par(new=impose)
     plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
   }
-  legend("topleft",names(prot_cons), col=colors, lty =c(1))
+  legend("bottomleft",names(prot_cons), col=colors, lty =c(1))
 }
 
 ### entropy for stuff
@@ -85,8 +85,9 @@ entropy_for_all<- function(tunnel_file, uniprot, file, shift,prot_cons){
   return(megalist)
 }
 
-profils_for_structure=profile_for_all(tunnel_file,uniprot,file,3,prot_cons)
-length(profils_for_structure$s)
+#profils_for_structure=profile_for_all(tunnel_file,uniprot,file,3,prot_cons)
+#length(profils_for_structure$s)
+
 ##### FINISH ME! :D 
 plot_structure_on_protein<- function(protein_entropy, structure_profils, pdb_name, colors, structure_names=NULL){
   #protein entropy- list of an entropy values (with different scores)
@@ -117,7 +118,7 @@ plot_structure_on_protein<- function(protein_entropy, structure_profils, pdb_nam
         plot(structure_profils[[i]][[j]][[2]],structure_profils[[i]][[j]][[1]], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
              ylim=c(0.0,1.0), xlab='', ylab='')
       }
-      legend('topleft',c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))
+      legend('bottomleft',c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))
       
       
     }
@@ -130,7 +131,7 @@ protein=prot_cons
 library(scales)
 structure_cons=profils_for_structure
 compare_cons_metrics(prot_cons,profils_for_structure, pdb_name)
-compare_cons_metrics<- function(protein, structures_cons, pdb_name){
+compare_cons_metrics<- function(protein, structure_cons, pdb_name){
   metrics_count=length(protein)
   structures_count=length(structure_cons[[1]])
   colors=rainbow(structures_count)

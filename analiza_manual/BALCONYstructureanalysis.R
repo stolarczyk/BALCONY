@@ -23,7 +23,12 @@ compare_cons_metrics(prot_cons,profils_for_structure, pdb_name)
 
 #KOLMOGOROV-SMIRNOF TEST FOR QUALITY OF DISTRIBURIONS
 EQUAL=smirnof_kolmogorov_test(prot_cons, profils_for_structure,1, pdb_name,T)
+write(EQUAL, file = "SK_twosided.txt", sep = " ")
+LESS=smirnof_kolmogorov_test(prot_cons, profils_for_structure,2, pdb_name,F)
+write(LESS, file = "LESS.txt", sep = " ")
 
+GREATER=smirnof_kolmogorov_test(prot_cons, profils_for_structure,3, pdb_name,F)
+write(GREATER, file = "GREATER.txt", sep = " ")
 
 
 
