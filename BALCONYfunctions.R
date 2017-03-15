@@ -2,6 +2,8 @@
 
 
 
+
+
 # Conservation analysis ---------------------------------------------------
 isUpper <- function(s) {
   return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
@@ -643,8 +645,11 @@ create_final_CSV <-
     rownames(AA_variations$matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1] /
                                            2)
     if (is.null(list_of_scores)) {
-      alignment_position = seq(1,dim(AA_variations$matrix)[2],by = 1)
-      final_output = rbind(alignment_position, AA_variations$matrix, sequnece, structure_output)
+      alignment_position = seq(1, dim(AA_variations$matrix)[2], by = 1)
+      final_output = rbind(alignment_position,
+                           AA_variations$matrix,
+                           sequnece,
+                           structure_output)
     }
     else{
       #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
@@ -659,12 +664,14 @@ create_final_CSV <-
         
       }
       rownames(scores_mtx) = scores_mtx_names
-      alignment_position = seq(1,dim(AA_variations$matrix)[2],by = 1)
-      final_output = rbind(alignment_position,
-                           AA_variations$matrix,
-                           sequence,
-                           structure_output,
-                           scores_mtx)
+      alignment_position = seq(1, dim(AA_variations$matrix)[2], by = 1)
+      final_output = rbind(
+        alignment_position,
+        AA_variations$matrix,
+        sequence,
+        structure_output,
+        scores_mtx
+      )
       
     }
     files_no = ceiling(dim(final_output)[2] / 1000)
@@ -675,8 +682,13 @@ create_final_CSV <-
       else{
         output = final_output[, ((i - 1) * 1000 + 1):dim(final_output)[2]]
       }
-      write.table(output,file = paste(FILENAME, "_", i, ".csv", sep = ""),
-                row.names = T,col.names = F,sep = ",")
+      write.table(
+        output,
+        file = paste(FILENAME, "_", i, ".csv", sep = ""),
+        row.names = T,
+        col.names = F,
+        sep = ","
+      )
     }
     if (Sys.info()[[1]] == "Linux") {
       print(paste("Output written to: ", getwd(), "/", FILENAME, ".csv", sep = ""))
@@ -1070,46 +1082,77 @@ entropy_profile <-
 
 
 # Structure analysis ------------------------------------------------------
-get_remarks465_pdb <- function(pdb_path,chain_identifier){
+get_remarks465_pdb <- function(pdb_path, chain_identifier) {
   #pdb_path: a path to the pdb file
   #chain_identifier: a character spcifying the chain to analyze
   #returns: list of 1) numbers of aminocids which are missing 2) chain identifier
   require(Rpdb)
-  pdb_file = read.pdb(file = pdb_path, REMARK = T,ATOM = T, CRYST1 = F,TITLE = T,MODEL = F,HETATM = F,CONECT = F)
+  pdb_file = read.pdb(
+    file = pdb_path,
+    REMARK = T,
+    ATOM = T,
+    CRYST1 = F,
+    TITLE = T,
+    MODEL = F,
+    HETATM = F,
+    CONECT = F
+  )
   pdb_file = pdb_file$remark
   pattern = "REMARK 465"
   indices = grep(perl = T,
-              pattern = pattern,
-              x = pdb_file)
+                 pattern = pattern,
+                 x = pdb_file)
   remarks = pdb_file[indices[8:length(indices)]]
-  aa_number=c()
-  chain=c()
-  for(i in seq(1,length(remarks),by = 1)){
-    remark_line = strsplit(remarks[i],split = " ")
+  aa_number = c()
+  chain = c()
+  for (i in seq(1, length(remarks), by = 1)) {
+    remark_line = strsplit(remarks[i], split = " ")
     x = remark_line[[1]]
-    aa_number[i] = x[which(x!="")][length(x[which(x!="")])]
-    chain[i] = x[which(x!="")][length(x[which(x!="")])-1]
+    aa_number[i] = x[which(x != "")][length(x[which(x != "")])]
+    chain[i] = x[which(x != "")][length(x[which(x != "")]) - 1]
   }
-  aa_number=as.numeric(aa_number)
-  chain_indices = which(chain==chain_identifier)
-  aa_number=aa_number[chain_indices]
-  chain=chain[chain_indices]
-  return(list(aa_numbers = aa_number,chain=unique(chain)))
+  aa_number = as.numeric(aa_number)
+  chain_indices = which(chain == chain_identifier)
+  aa_number = aa_number[chain_indices]
+  chain = chain[chain_indices]
+  return(list(aa_numbers = aa_number, chain = unique(chain)))
 }
 
-correct_structure_seq_missing <- function(structure,pdb_path,chain_identifier){
-  
-}
+correct_structure_seq_missing <-
+  function(structure, pdb_path, chain_identifier) {
+    missing = find_consecutive_seq(
+      get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
+    )
+    missing_sp = missing$values
+    missing_lengths = missing$lengths
+    for (struc in dim(structure$structure_matrix)[1]) {
+      ori_struc_indices = which(structure$structure_matrix[struc,] == "T")
+      ori_nonstruc_indices = which(structure$structure_matrix[struc,] == "N")
+      for (i in seq(1, length(missing_sp), by = 1)) {
+        ori_struc_indices[missing_sp[i]:length(ori_struc_indices)] = ori_struc_indices[missing_sp[i]:length(ori_struc_indices)] +
+          rep(x = missing_lengths[i], times = (length(ori_struc_indices) - missing_sp[i]))
+      }
+      new_structure = rep(x = "-",
+                          times = length(structure$structure_numbers))
+      new_structure[which(structure$structure_numbers) != "-"] = "N"
+      for (pos in seq(1, length(structure$structure_numbers), by = 1)) {
+        if (any(ori_struc_indices == as.numeric(structure$structure_numbers[pos]))) {
+          new_structure[pos] = ori_struc_indices[which(ori_struc_indices == as.numeric(structure$structure_numbers[pos]))] = "T"
+        }
+      }
+      corrected_structure_matrix[struc, ] = new_structure
+    }
+  }
 
-find_consecutive_seq<- function(vector){
-  vector = append(vector,vector[length(vector)]+2) # wydluzenie o sztuczna wartosc wieksza od ostatniej rzeczywistej o 2
+find_consecutive_seq <- function(vector) {
+  vector = append(vector, vector[length(vector)] + 2) # wydluzenie o sztuczna wartosc wieksza od ostatniej rzeczywistej o 2
   diffs = diff(vector)
-  ind = append(vector[1],vector[which(diffs != 1)+1])
-  cnt=1
+  ind = append(vector[1], vector[which(diffs != 1) + 1])
+  cnt = 1
   lengths = c()
-  for (i in seq(2,length(ind),by = 1)){
-    lengths[cnt] = which(vector == ind[i]) - which(vector == ind[i-1])
-    cnt=cnt+1
+  for (i in seq(2, length(ind), by = 1)) {
+    lengths[cnt] = which(vector == ind[i]) - which(vector == ind[i - 1])
+    cnt = cnt + 1
   }
   ind = ind[-length(ind)] # usuniecie sztucznej wartosci
   return(list(values = ind, lengths = lengths))
