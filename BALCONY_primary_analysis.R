@@ -1,6 +1,6 @@
 # Load libraries
-library(seqinr)
-library(Biostrings)
+require(seqinr)
+require(Biostrings)
 # Source of BALCONY functions
 source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
 # Set working directory
@@ -72,8 +72,6 @@ uniprot=find_seqid(pdb_name,dictionary);
 my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list,uniprot,file,pdb_path = "1cqz.pdb",chain_identifier = "B");
-# bind the results into one table 
-final_output=rbind(variations_matrix,structure$structure_matrix,structure$structure_numbers);
 # Calculate TG entropy score for all alignment positions
 TG_entropy=TG_conservativity(file);
 # Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
@@ -82,7 +80,6 @@ Landgraf = landgraf_conservativity(alignment_file = file,weights = consensus_seq
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
 entropy_data=list(Schneider.entropy=schneider_conservativity(file),TG.entropy = TG_conservativity(file),Kabat.entropy =  kabat_conservativity(file))
-
 final_CSV=create_final_CSV("BALCONY_OUTPUT",var_aa, structure,uniprot,file,entropy_data)
 
 barplotshow(position = 34, AA_variation = var_aa)
