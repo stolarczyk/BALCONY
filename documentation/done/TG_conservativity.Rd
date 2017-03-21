@@ -2,7 +2,7 @@
 \alias{TG_conservation}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Calculate Tunneling Group (TG) conservation metric
+Calculate the Tunneling Group (TG) conservation metric
 }
 \description{
 This function facilitates the calculation of TG conservation metric.
@@ -30,7 +30,7 @@ The conservativity score is calculated according to the following formula:
 %% ~put references to the literature/web site here ~
 }
 \author{
-Alicja Plucennik & Michal Stolarczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
 Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:

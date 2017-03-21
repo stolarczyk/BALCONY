@@ -46,7 +46,7 @@ Alicja Pluciennik & Michal Stolarczyk}
 }}}
 \examples{
 load(alignment)
-load(structure_data)
+load(structure)
 #creating library uniprot - PDB
 lib=list(c("Q84HB8","4I19","4QA9"),
         c("P34913","4JNC"),
@@ -54,7 +54,7 @@ lib=list(c("Q84HB8","4I19","4QA9"),
 pdb_name = "1CQZ"
 uniprot=find_seqid(pdb_name,lib)
 chain_identifier = "B"
-tunnel=create_structure_seq(structure_data,uniprot,alignment,pdb_path,chain_identifier)
+tunnel=create_structure_seq(structure,uniprot,alignment,pdb_path,chain_identifier)
 tunnel_numbers = tunnel$structure_numbers
 tunnel_matrix = tunnel$structure_matrix
 }
