@@ -535,10 +535,11 @@ create_structure_seq <-
            sequence_id,
            alignment,
            pdb_path = NULL,
-           chain_identifier = NULL) {
+           chain_identifier = NULL,shift = NULL) {
     #structure_file-> list of structures in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment-> file with alignment (alignment.fasta)
+    #shift-> if there is missing domain in structure
     seqs = list()
     structure = list()
     if(!is.null(pdb_path)){
@@ -561,6 +562,10 @@ create_structure_seq <-
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
+      if(!is.null(shift)){
+        structure_idx=structure_idx + rep(shift, length(structure_idx))
+      }
+      
       if(length(missing) != 0) {
         for(z in seq(1, length(missing$values))) {
           for(l in seq(1, length(structure_idx))) {
@@ -1048,7 +1053,6 @@ entropy_profile <-
   function(tunnel_file,
            sequence_id,
            alignment_file,
-           shift,
            prot_entropy,
            index) {
     #tunnel_file-> list of tunnels in protein
@@ -1071,9 +1075,7 @@ entropy_profile <-
     tunnel_idx = as.numeric(tunnels_indices)
     tunnels_names = tunnels_names[-1]
     
-    if (shift != 0) {
-      tunnel_idx = tunnel_idx + rep(shift, length(tunnels_indices))
-    }
+    
     #profile=tunnel_idx
     #for(i in seq(1:length(profile))){
     # id=tunnel_idx[i]
@@ -1136,178 +1138,148 @@ find_consecutive_seq <- function(vector) {
   return(list(values = ind, lengths = lengths))
 }
 
-get_structure_idx <- function(structure) {
+get_structures_idx<- function(structure){
   #documentation get_structure_idx.Rd
   #get idx of structure in alignemnt
   #return sorted list of indices in MSA, one list element is one structure
   #the first element is indices of whole protein in alignment
-  stru_index = list()
-  for (i in seq(1:length(structure))) {
-    stru_index[[i]] = which(structure[[i]] == "S")
+  structure=structure$structure_matrix
+  stru_index=list()
+  for (i in seq(1:length(structure[,1]))){
+    stru_index[[i]]=which(structure[i,]=="S");
   }
-  whole_prot = which(structure[[1]] != "-")
-  
-  out = list(proteinIndices = whole_prot, structureIndices = stru_index)
-  names(out[[2]]) = names(structure)
+  whole_prot=which(structure[1,]!="-");
+  out=list(proteinIndices=whole_prot,structureIndices=stru_index)
+  names(out[[2]])= rownames(structure)
   return(out)
 }
-
-get_prot_entropy <- function(whole_prot, score_list) {
+get_prot_entropy<- function(whole_prot,score_list){
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
-  
-  prot_cons = list()
-  for (i in seq(1, length(score_list))) {
-    prot_cons[[i]] = score_list[[i]][whole_prot]
+  if(is.list(score_list))
+  {
+    prot_cons=list()
+    for(i in seq(1, length(score_list))){
+      prot_cons[[i]]=score_list[[i]][whole_prot]
+    }
+    names(prot_cons)<-names(score_list)
   }
-  names(prot_cons) <- names(score_list)
+  else{
+    print("score_list is not a list!")
+    stop()
+  }
   return(prot_cons)
 }
-plot_entropy <- function(prot_cons, colors, impose = NULL) {
+
+# Corrected struct functions ----------------------------------------------
+
+
+plot_entropy<- function(prot_cons, colors,impose=NULL, prot_name=NULL, legend_pos=NULL){
   #plots scores on one plot, if colors are not specified plot as rainbow
   #automagically uses name of pdb FIXME
   # recive list of entropy scores and list of Names in this list
-  if (missing(colors)) {
-    colors <- rainbow(length(prot_cons))
+  if(missing(colors)){
+    colors<- rainbow(length(prot_cons))
   }
-  if (is.null(impose)) {
-    impose <- T
+  if(is.null(impose)){
+    impose<-T
   }
-  
-  plot(
-    prot_cons[[1]],
-    ylim = c(0, 1),
-    col = colors[1],
-    xlab = "amino acid",
-    ylab = "entropy score",
-    main = paste("entropy score for ", pdb_name),
-    type = "l"
-  )
-  for (i in seq(2, length(prot_cons))) {
-    par(new = impose)
-    plot(
-      prot_cons[[i]],
-      ylim = c(0, 1),
-      col = colors[i],
-      xlab = "",
-      ylab = "",
-      main = "",
-      type = "l"
-    )
+  if(!is.null(pdb_name)){
+    title_str=paste("for ",prot_name)
   }
-  legend("topleft",
-         names(prot_cons),
-         col = colors,
-         lty = c(1))
+  else
+  {title_str=""}
+  if(is.null(legend_pos)){
+    legend_pos="bottomleft"
+  }
+  plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score",title_str) , type="l")
+  for(i in seq(2, length(prot_cons))){
+    par(new=impose)
+    plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
+  }
+  legend(legend_pos,names(prot_cons), col=colors, lty =c(1))
 }
-get_structures_entropy <- function(structure_index, score_list) {
-  #structure_index is a list of indexes in alignment of protein and structures
-  #score_list list of entropies for whole alignment
+
+### entropy for stuff
+get_structures_entropy<- function(structure_index, score_list){
+  #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures 
+  #SCORE_LIST list of entropies for whole alignment
   #output is a list of matrixes where each row contains values of entropy for AA in structure
-  t_index = structure_index$structureIndices
-  Entropy = list()
-  lengths = list()
-  for (i in seq(1:length(t_index))) {
-    lengths[[i]] = length(t_index[[i]])
-    output = matrix(NA, nrow = length(score_list), ncol = lengths[[i]])
-    for (j in seq(1:length(score_list))) {
-      output[j, ] = score_list[[j]][t_index[[i]]]
+  t_index=structure_index$structureIndices
+  Entropy=list()
+  lengths=list()
+  for (i in seq(1:length(t_index))){
+    lengths[[i]]=length(t_index[[i]])
+    output=matrix(NA,nrow=length(score_list),ncol=lengths[[i]])
+    for (j in seq(1:length(score_list))){
+      output[j,]=score_list[[j]][t_index[[i]]]
     }
-    rownames(output) <- names(score_list)
-    Entropy[[i]] = output
+    rownames(output)<-names(score_list)
+    Entropy[[i]]=output
     
   }
   return(Entropy)
 }
-entropy_for_all <-
-  function(tunnel_file,
-           uniprot,
-           file,
-           shift,
-           prot_cons) {
-    profilet = list()
-    stru_numb = length(tunnel_file)
-    names <- paste(names(prot_cons))
-    #k- possible entropy score iterator
-    megalist = list()
-    for (k in seq(1, length(prot_cons))) {
-      for (i in seq(1, stru_numb)) {
-        profilet[[i]] = entropy_profile(tunnel_file, uniprot, file, shift, prot_cons[[k]], i)
-        #profilet[[i]]<- setNames(mapply(paste("stru",i))
+
+prepare_structure_profile<- function(structure, structure_entropy){
+  #structure-> output of create_structure_seq
+  #structure_entropy -> list of entropy scores for alignment
+  megalist=list()
+  score_count=length(structure_entropy)
+  names<- rownames(structure[[1]])
+  for(i in seq(1, length(structure[[1]][,1]))){
+    StruEnt=list(entropy=c(), idx=c())
+    StruEnt$idx=as.numeric(structure[[2]][which(structure[[1]][i,]=="S")])
+    entropy_mtx=matrix(NaN, nrow = score_count, ncol=length(StruEnt$idx))
+    for(j in seq(1, score_count)){
+      entropy_mtx[j,]=structure_entropy[[i]][j, ]
+    }
+    rownames(entropy_mtx)<- rownames(structure_entropy[[1]])
+    StruEnt$entropy=entropy_mtx
+    megalist[[i]]=StruEnt
+  }
+  names(megalist)<- names
+  return(megalist)
+}
+plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_name, colors, structure_names=NULL, legend_pos=NULL){
+  #protein entropy- list of an entropy values (with different scores)
+  #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
+  # and [[2]] index in protein
+  
+  
+  if(length(protein_entropy) == length(structure_profiles[[1]][[1]][,1])){
+    score_names=names(protein_entropy)
+    prot_lenght=length(protein_entropy[[1]])
+    StruLen=length(structure_profiles)
+    if(missing(colors)) {
+      colors=rainbow(StruLen)
+    } 
+    if(is.null(structure_names)){
+      structure_names=c()
+      for(i in seq(1,StruLen)){
+        structure_names[i]=paste("stru", i)
       }
-      megalist[[names[k]]] <- profilet
+    }
+    if(is.null(legend_pos)){
+      legend_pos="bottomleft"
+    }
+    for(i in seq(1,length(score_names))){
+      
+      plot(protein_entropy[[i]], col ="black",type="l", main=paste(score_names[i]," score for ", pdb_name), xlim=c(0,prot_lenght),
+           ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
+      for(j in seq(1,StruLen)){
+        par(new=T)
+        plot(structure_profils[[j]][[2]],structure_profils[[j]][[1]][i,], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
+             ylim=c(0.0,1.0), xlab='', ylab='')
+      }
+      legend(legend_pos,c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))
+      
       
     }
-    return(megalist)
   }
-
-plot_structure_on_protein <-
-  function(protein_entropy,
-           structure_profils,
-           pdb_name,
-           colors,
-           structure_names = NULL) {
-    #protein entropy- list of an entropy values (with different scores)
-    #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
-    # and [[2]] index in protein
-    protein_entropy = prot_cons
-    structure_profils = profils_for_structure
-    
-    if (length(protein_entropy) == length(structure_profils)) {
-      score_names = names(protein_entropy)
-      prot_lenght = length(protein_entropy[[1]])
-      StruLen = length(structure_profils[[1]])
-      if (missing(colors)) {
-        colors = rainbow(StruLen)
-      }
-      if (is.null(structure_names)) {
-        structure_names = c()
-        for (i in seq(1, StruLen)) {
-          structure_names[i] = paste("stru", i)
-        }
-      }
-      for (i in seq(1, length(protein_entropy))) {
-        plot(
-          protein_entropy[[i]],
-          col = "black",
-          type = "l",
-          main = paste(score_names[i], " score for ", pdb_name),
-          pch = 20,
-          xlim = c(0, prot_lenght),
-          ylim = c(0.0, 1.0),
-          xlab = 'Amino Acid',
-          ylab = 'Entropy'
-        )
-        for (j in seq(1, StruLen)) {
-          par(new = T)
-          plot(
-            structure_profils[[i]][[j]][[2]],
-            structure_profils[[i]][[j]][[1]],
-            col = colors[[j]],
-            main = "",
-            pch = j,
-            xlim = c(0, prot_lenght),
-            ylim = c(0.0, 1.0),
-            xlab = '',
-            ylab = ''
-          )
-        }
-        legend(
-          'topleft',
-          c(pdb_name, structure_names),
-          lty = c(1, rep(0, j)),
-          pch = c(-1, seq(1, j)),
-          lwd = c(2.5, 2.5),
-          col = c("black", colors)
-        )
-        
-        
-      }
-    }
-    else
-      print("The lists contain different number of conservation/entropy scores!")
-  }
+  else print("The lists contain different number of conservation/entropy scores!")
+}
 
 compare_cons_metrics <-
   function(protein, structure_cons, pdb_name) {
