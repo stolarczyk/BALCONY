@@ -13,21 +13,22 @@ file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #
 file = delete_isoforms(file);
 
 # Read structure data files 
+# myFiles <- list.files(pattern = "*.txt");
+# structure_names = c();
+# for (i in seq(1,length(myFiles),by = 1)){
+#   structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
+# }
+# structure_names_list = as.list(structure_names)
+# structure_list = list();
+# i=1;
+# for (structure in myFiles){
+#   temp = read.table(structure)
+#   structure_list[[i]]= temp;
+#   i = i + 1;
+# }
+# names(structure_list)=structure_names
 myFiles <- list.files(pattern = "*.txt");
-structure_names = c();
-for (i in seq(1,length(myFiles),by = 1)){
-  structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
-}
-structure_names_list = as.list(structure_names)
-structure_list = list();
-i=1;
-for (structure in myFiles){
-  temp = read.table(structure)
-  structure_list[[i]]= temp;
-  i = i + 1;
-}
-names(structure_list)=structure_names
-
+structure_list = read_structure(myFiles)
 # Set PDB name
 #pdb_name = "4JNC"; 
 pdb_name = "1CQZ"; 

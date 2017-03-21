@@ -12,7 +12,7 @@ create_structure_seq(structure_list, sequence_id, alignment, pdb_path = NULL, ch
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{structure_list}{A list of strucure data used for furhter evolutionary analysis. It can be text file(s) read by the read.table() function (text file with 2 columns: numbers of amino acids and 3-letters codes of AA; First row needs to contain markers)}
+  \item{structure_list}{A list of strucure data used for further evolutionary analysis. It can be text file(s) read by the read.table() function (text file with 2 columns: numbers of amino acids and 3-letters codes of AA; First row needs to contain markers)}
   \item{sequence_id}{The id/name of the target sequence in alignment which will be a base of structure sequence}
   \item{alignment}{ alignment read with read.alignment() function , must contain the target sequence}
   \item{pdb_path}{A string specifying the path to the PDB file with structural information. Optional parameter, required if the structure is incomplete e.g. fragments such as loops are missing}

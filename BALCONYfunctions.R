@@ -5,6 +5,23 @@
 
 
 # Conservation analysis ---------------------------------------------------
+read_structure <- function(file_names){
+  structure_names = c();
+  for (i in seq(1,length(file_names),by = 1)){
+    structure_names= append(structure_names,strsplit(file_names,"[.]")[[i]][1]);
+  }
+  structure_names_list = as.list(structure_names)
+  structure_list = list();
+  i=1;
+  for (structure in file_names){
+    temp = read.table(structure)
+    structure_list[[i]]= temp;
+    i = i + 1;
+  }
+  names(structure_list)=structure_names
+  return(structure_list)
+}
+
 isUpper <- function(s) {
   return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
 }
