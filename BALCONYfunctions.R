@@ -535,10 +535,11 @@ create_structure_seq <-
            sequence_id,
            alignment,
            pdb_path = NULL,
-           chain_identifier = NULL) {
+           chain_identifier = NULL,shift = NULL) {
     #structure_file-> list of structures in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment-> file with alignment (alignment.fasta)
+    #shift-> if there is missing domain in structure
     seqs = list()
     structure = list()
     if(!is.null(pdb_path)){
@@ -561,6 +562,10 @@ create_structure_seq <-
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
+      if(!is.null(shift)){
+        structure_idx=structure_idx + rep(shift, length(structure_idx))
+      }
+      
       if(length(missing) != 0) {
         for(z in seq(1, length(missing$values))) {
           for(l in seq(1, length(structure_idx))) {
