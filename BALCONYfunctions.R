@@ -674,9 +674,9 @@ create_final_CSV <-
            list_of_scores = NULL) {
     sequence = s2c(find_seq(uniprot, alignment)$sequence)
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
-    structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
+    structure_output_names = append(rownames(structure$structure_matrix), "structure_numbers")
     rownames(structure_output) = structure_output_names
-    rownames(AA_variations$matrix) = rep(c("AA name", "Percentage"), dim(variations_matrix)[1] /
+    rownames(AA_variations$matrix) = rep(c("AA_name", "percentage"), dim(variations_matrix)[1] /
                                            2)
     if (is.null(list_of_scores)) {
       alignment_position = seq(1, dim(AA_variations$matrix)[2], by = 1)
