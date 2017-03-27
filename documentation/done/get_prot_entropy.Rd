@@ -2,7 +2,7 @@
 \alias{get_prot_entropy}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Get MSA-based calculated entropy for chosen protein.
+Get MSA-based entropy for chosen protein.
 }
 \description{
 This function allows to obtain vector of entropies for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
@@ -12,7 +12,7 @@ prot_entropy=get_prot_entropy(whole_prot, entropy_scores_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{whole_prot}{Indices of given protein aminoacids in aligned sequence}
+  \item{whole_prot}{Indices of given protein amino acids in aligned sequence}
   \item{entropy_scores_list}{A list of entropy scores calculated for MSA }
 }
 \details{

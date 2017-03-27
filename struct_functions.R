@@ -155,11 +155,13 @@ compare_cons_metrics<- function(protein, structure_cons, pdb_name){
 
 smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name, plott){
  ###FIXME! CZY WSZYSTKIE STRUKTURY DLA DANEGO WSPÓŁCZYNNIKA POWINNY BYC NA JEDNYM WYKRESIE?
+  #protein_cons=prot_cons
+  #structure_cons=profiles_for_structure
    if(is.null(plott)){
     plott<-T
   }
   metrics_count=length(protein_cons)
-  structures_count=length(structure_cons[[1]])
+  structures_count=length(structure_cons)
   structure_names=c()
   for(i in seq(1,structures_count)){
     structure_names[i]=paste("stru", i)}
@@ -170,8 +172,8 @@ smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_n
   colnames(pval_mtx)<- structure_names
   for(i in seq(1,metrics_count)){
     for(j in seq(1, structures_count)){
-      reference=protein_cons[[i]][-structure_cons[[i]][[j]][[2]]]
-      temp=structure_cons[[i]][[j]][[1]]
+      reference=protein_cons[[i]][-c(seq(1,233),structure_cons[[j]][[2]])]
+      temp=structure_cons[[j]][[1]][i,]
       pval_mtx[i,j]=ks.test(reference, temp,alternative = alt_hip)$p.value
       }
   }
@@ -181,9 +183,9 @@ smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_n
     for(i in seq(1,metrics_count)){
       par(new=F)
       for(j in seq(1,structures_count)){
-        reference=protein_cons[[i]][-structure_cons[[i]][[j]][[2]]]
+        reference=protein_cons[[i]][-c(seq(1,233),structure_cons[[j]][[2]])]
         cumulative_distribution=ecdf(reference)
-        temp=ecdf(structure_cons[[i]][[j]][[1]])
+        temp=ecdf(structure_cons[[j]][[1]][i,])
         plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
         par(new=T)
         plot(temp, xlim=c(0,1),ylim=c(0,1),col=alpha(colors[j],0.7), ylab="",xlab="",main="")

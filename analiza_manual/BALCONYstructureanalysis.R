@@ -3,18 +3,19 @@
 
 
 # get indices of tunnels in alignment
-tunnel_index=get_structure_idx(structure)
-
+tunnel_index=get_structures_idx(structure)
+vex=list()
+vex[[1]]=entropy_data[[1]]
 #find indices of protein in MSA 
 prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
 #plot entropy
-plot_entropy(prot_cons)
+plot_entropy(prot_cons, legend_pos = "topleft")
 #get entropy for your structure
 stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
-profils_for_structure=entropy_for_all(structure_list,uniprot,file,3,prot_cons)
+profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
 
 ### PLOT STRUCTURE
-plot_structure_on_protein(prot_cons, profils_for_structure,pdb_name)
+plot_structure_on_protein(prot_cons, profils_for_structure,pdb_name,structure_names = c("T1", "T2", "T3"), legend_pos = "topleft")
 #######TUNNELS ENTROPY 
 
 ## SCATTERPLOTS FOR PROTEINS AND TUNNELS
