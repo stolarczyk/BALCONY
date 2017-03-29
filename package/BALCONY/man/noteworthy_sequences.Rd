@@ -27,7 +27,8 @@ Alicja Pluciennik & Michal Stolarczyk
 }
 
 \examples{
-load(alignment)
+data("alignment")
+consensus_seq = consensus(alignment, 30)
 consensus_to_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
 noteworthy_sequences(consensus_to_sequences_identity, alignment)
 }

@@ -30,8 +30,11 @@ Michal Stolarczyk & Alicja Pluciennik
 \code{\link[Rpdb]{read.pdb}}
 }
 \examples{
+require(Rpdb)
 chain_identifier = "A"
-pdb_file_path = "path_to_file"
+pdb_file_path = system.file("extdata", "1cqz.pdb", package = "BALCONY")
+print(pdb_file_path)
+#pdb_file_path = "path_to_file"
 remark465_data = get_remarks465_pdb(pdb_file_path,chain_identifier)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

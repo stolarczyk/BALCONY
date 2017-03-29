@@ -25,7 +25,7 @@ Alicja Pluciennik & Michal Stolarczyk
 }
 
 \examples{
-load(alignment)
+data("alignment")
 sequences_names=get_seq_names(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

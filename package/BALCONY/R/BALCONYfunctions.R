@@ -872,8 +872,8 @@ D_matrix <- function(sub_mtx) {
 landgraf_conservativity <-
   function(matrix_name = NULL, alignment_file, weights) {
     if (is.null(matrix_name)) {
-      load("../documentation/data/Gonnet_mtx.rd") # Proper path?
-      pre_dissim_mtx = gonnet_mtx
+      data("gonnet") # Proper path?
+      pre_dissim_mtx = gonnet
     }
     else{
       pre_dissim_mtx = substitution_mtx(matrix_name)

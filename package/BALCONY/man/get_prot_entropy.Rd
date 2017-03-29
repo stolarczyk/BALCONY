@@ -33,7 +33,7 @@ data("alignment")
 pdb_name = "1CQZ" #A string with path to PDB file
 uniprot="P43914"
 chain_identifier = "B"
-structure_index=get_structures_idx(tunnel)
+structure_index=get_structures_idx(structure)
 entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),TG_entropy = TG_conservativity(alignment))
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
 

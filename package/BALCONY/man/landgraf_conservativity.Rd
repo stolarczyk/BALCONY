@@ -38,9 +38,10 @@ Also, this function originally calculates the entropy values which can be used t
 \url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
 }
 \examples{
-load(alignment)
+data("small_alignment")
+alignment = small_alignment
 threshold_consensus = 30
-consensus_seq=consensus(file, threshold_consensus);
+consensus_seq=consensus(alignment, threshold_consensus);
 consensus_sequences_identity=cons2seqs_ident(alignment, consensus_seq)
 score = landgraf_conservativity(alignment_file = alignment, weights = consensus_sequences_identity)
 }

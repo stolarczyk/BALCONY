@@ -2,7 +2,7 @@
 \alias{consensus}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-consensus
+Consensus sequence determination
 }
 \description{
 Function calculates consensus sequence for given alignment with a threshold of user's choice.
@@ -16,7 +16,6 @@ consensus_sequence = consensus(alignment, threshold)
   \item{threshold}{minimal fraction of amino acids on the certain position in all sequences of the alignment to be taken for consensus letter on this position; number in range 0-100.  }
   }
 %%     ~~Describe \code{x} here~~
-}
 \details{
 %%  ~~ If necessary, more details than the description above ~~
 If maximum fraction of any amino acid on the certain position is lower than a threshold then "*" is printed instead.

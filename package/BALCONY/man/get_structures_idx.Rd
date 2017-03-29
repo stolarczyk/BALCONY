@@ -29,7 +29,7 @@ Output is a list of two elements:
 Alicja Pluciennik & Michal Stolarczyk
 }
 \examples{
-load(structure)
+data("structure")
 
 #creating library uniprot - PDB
 lib=list(c("Q84HB8","4I19","4QA9"),
@@ -37,8 +37,7 @@ lib=list(c("Q84HB8","4I19","4QA9"),
         c("P34914","1EK2","1CR6","1EK1","1CQZ"))
 pdb_name = "1CQZ" #A string with path to PDB file
 uniprot=find_seqid(pdb_name,lib)
-chain_identifier = "B"
-tunnel=create_structure_seq(structure,uniprot,alignment,pdb_path,chain_identifier)
+tunnel=create_structure_seq(structure,uniprot,alignment)
 structure_index=get_structures_idx(tunnel)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

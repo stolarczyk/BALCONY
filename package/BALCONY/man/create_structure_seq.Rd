@@ -36,6 +36,7 @@ Alicja Pluciennik & Michal Stolarczyk}
 }
 \examples{
 data("alignment")
+data("structure")
 #creating library uniprot - PDB
 lib=list(c("Q84HB8","4I19","4QA9"),
         c("P34913","4JNC"),

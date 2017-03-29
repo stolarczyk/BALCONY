@@ -8,7 +8,7 @@ Calculate Kabat conservation metric
 This function facilitates the calculation of Kabat conservation metric.
 }
 \usage{
-conservation_score = kabat_conservation(alignment)
+conservation_score = kabat_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,8 +32,8 @@ Also, this function originally calculates the entropy values which can be used t
 \url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
 }
 \examples{
-load(alignment)
-conservation_score = kabat_conservation(alignment)
+data("alignment")
+conservation_score = kabat_conservativity(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
