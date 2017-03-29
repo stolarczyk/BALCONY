@@ -27,7 +27,7 @@ Michal Stolarczyk & Alicja Pluciennik
 }
 
 \examples{
-path = "GONNET.txt"
+path = system.file("extdata", "GONNET.txt", package = "BALCONY")
 sub_mat = substitution_mtx(path)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

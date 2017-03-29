@@ -22,6 +22,7 @@ The tunnel analysis with CAVER was performed on murine epoxide hydrolase structu
 \url{http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002708}
 }
 \examples{
-load(structure)
+data("structure")
+structure
 }
 \keyword{datasets}

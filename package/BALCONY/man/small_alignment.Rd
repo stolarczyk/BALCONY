@@ -2,10 +2,10 @@
 \alias{alignment}
 \docType{data}
 \title{
-Sample alignment of soluable epoxide hydrolase family
+Sample small alignment of soluable epoxide hydrolase family
 }
 \description{
-This alignment consists of 311 proteins which belong to the soluable epoxide hydrolase family. The amino acid sequences were aligned using MUSCLE algorithm with default settings.
+This alignment consists of 10 proteins which belong to the soluable epoxide hydrolase family. The amino acid sequences were aligned using MUSCLE algorithm with default settings.
 }
 
 \format{
@@ -16,8 +16,11 @@ This alignment consists of 311 proteins which belong to the soluable epoxide hyd
     \item{alignment$seq}{A vector of characters: amino acid sequences}
   }
 }
+\details{
+This is a smaller version of sample alignment which facilitates faster presentation of the functions capabilities.
+}
 \examples{
-data("alignment")
-alignment
+data("small_alignment")
+small_alignment
 }
 \keyword{datasets}

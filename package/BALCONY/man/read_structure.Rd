@@ -7,11 +7,11 @@ Read structure data from a text file
 \description{
 By using this function you can read text file and create an stucture list which can be used in furter evolutionary analysis with BALCONY package. Text file should comprise 2 columns: first one should contain indices (positions) of amino acids in the protein, the scecond one should contain amino acid symbols on specified positions.}
 \usage{
-structure = read_structure(structure_file_names)
+structure = read_structure(file_names)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{structure_files_names}{A vector of strings with stucture file(s) name(s)}
+  \item{file_names}{A vector of strings with stucture file(s) name(s)}
 }
 \details{
 The files should be formatted as follows:\cr
@@ -41,7 +41,7 @@ fileConn<-file("exemplary_input2.txt")
 writeLines(c("5 ALA","6 ILE", "18 GLY", "40 PHE"), fileConn)
 close(fileConn)
 
-structure_list = read_structure(structure_file_names = c("exemplary_input1.txt", "exemplary_input2.txt"))
+structure_list = read_structure(file_names = c("exemplary_input1.txt", "exemplary_input2.txt"))
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

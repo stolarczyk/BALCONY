@@ -63,12 +63,12 @@ consensus <-  function(alignment, thresh) {
   alignment_matrix = as.matrix(as.character(alignment[[3]]))
 
   count_cols = length(alignment_matrix)
-  vec = seq(1, length(s2c(alignment_matrix[1, ])))
+  vec = seq(1, length(seqinr::s2c(alignment_matrix[1, ])))
   len_of_vers = length(vec)
   mat = matrix("-", count_cols, len_of_vers)
 
   for (i in seq(1, count_cols)) {
-    temp = s2c(alignment_matrix[i])
+    temp = seqinr::s2c(alignment_matrix[i])
     for (j in vec) {
       mat[i, j] = temp[j]
     }
@@ -93,7 +93,7 @@ cons2seqs_ident <-  function(alignment, consensus_seq) {
   true_percentage = c()
 
   for (i in seq(1, alignment_parameters(alignment)$row_no)) {
-    true_percentage[i] = length(which((consensus_seq == s2c(alignment$seq[i])) == TRUE)) / length(consensus_seq)
+    true_percentage[i] = length(which((consensus_seq == seqinr::s2c(alignment$seq[i])) == TRUE)) / length(consensus_seq)
     # true percentage calculation (number of the same AAs in consensusus and in each sequence/number of all AAs)
   }
   return(true_percentage)
@@ -103,7 +103,7 @@ alignment_parameters <- function(alignment) {
   #return list of alignment size [row_numbers, col_numbers]
   aligned_sequences = alignment$seq
   row_num = length(aligned_sequences)
-  col_num = length(s2c(aligned_sequences[1]))
+  col_num = length(seqinr::s2c(aligned_sequences[1]))
   param = list(row_no = row_num, col_no = col_num)
   return(param)
 }
@@ -348,7 +348,7 @@ alignment2matrix <- function(alignment) {
 
   for (i in seq(1, prmt$row_no)) {
     #Putting aligned seqs into matrix
-    temp = s2c(alignment$seq[i])
+    temp = seqinr::s2c(alignment$seq[i])
     for (j in seq(1, prmt$col_no)) {
       aligned_sequences_matrix[i, j] = temp[j]
 
@@ -431,7 +431,7 @@ noteworthy_sequences <- function(percentage, alignment) {
   out.min = list(c(namelist[min], min)) #output is a name of sequence and position in alignment
   value = which.max(table(percentage))
   vector = which(percentage %in% names(value))
-  names = match(vector, file[[2]])
+  names = match(vector, alignment[[2]])
   out.common = namelist[vector]
   out = list(
     best_consensus = out.max,
@@ -542,7 +542,7 @@ find_seq <- function(sequence_id, alignment_file) {
   }
   seqs = mat[which(which_uniprot == 1)]
   #seq of protein uniprot ID
-  seqs_character = length(which(s2c(seqs) != "-") == T)
+  seqs_character = length(which(seqinr::s2c(seqs) != "-") == T)
 
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
@@ -594,7 +594,7 @@ create_structure_seq <-
       }
       seqs[[i]] = rep("N", each = base_seq$len)
       seqs[[i]][structure_idx] = "S"
-      aa_positions = which(s2c(base_seq$sequence) != "-")
+      aa_positions = which(seqinr::s2c(base_seq$sequence) != "-")
       just_align = alignment[[3]]
       length_alignment = alignment_parameters(alignment)$col_no
       structure[[i]] = rep("-", each = length_alignment)
@@ -664,7 +664,7 @@ create_final_CSV <-
            uniprot,
            alignment,
            list_of_scores = NULL) {
-    sequence = s2c(find_seq(uniprot, alignment)$sequence)
+    sequence = seqinr::s2c(find_seq(uniprot, alignment)$sequence)
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
     structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
@@ -872,7 +872,7 @@ D_matrix <- function(sub_mtx) {
 landgraf_conservativity <-
   function(matrix_name = NULL, alignment_file, weights) {
     if (is.null(matrix_name)) {
-      data("gonnet") # Proper path?
+      data("gonnet")
       pre_dissim_mtx = gonnet
     }
     else{
@@ -1056,7 +1056,7 @@ plot_entropy<- function(prot_cons, colors,impose=NULL, prot_name=NULL, legend_po
   if(is.null(impose)){
     impose<-T
   }
-  if(!is.null(pdb_name)){
+  if(!is.null(prot_name)){
     title_str=paste("for ",prot_name)
   }
   else
@@ -1097,7 +1097,7 @@ prepare_structure_profile<- function(structure, structure_entropy){
   #structure-> output of create_structure_seq
   #structure_entropy -> list of entropy scores for alignment
   megalist=list()
-  score_count=length(structure_entropy)
+  score_count=dim(structure_entropy[[1]])[1] # ????
   names<- rownames(structure[[1]])
   for(i in seq(1, length(structure[[1]][,1]))){
     StruEnt=list(entropy=c(), idx=c())
@@ -1113,7 +1113,7 @@ prepare_structure_profile<- function(structure, structure_entropy){
   names(megalist)<- names
   return(megalist)
 }
-plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_name, colors, structure_names=NULL, legend_pos=NULL){
+plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_name=NULL, colors=NULL, structure_names=NULL, legend_pos=NULL){
   #protein entropy- list of an entropy values (with different scores)
   #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
   # and [[2]] index in protein
@@ -1123,7 +1123,10 @@ plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_na
     score_names=names(protein_entropy)
     prot_lenght=length(protein_entropy[[1]])
     StruLen=length(structure_profiles)
-    if(missing(colors)) {
+    if(is.null(pdb_name)) {
+      pdb_name = " "
+    }
+    if(is.null(colors)) {
       colors=rainbow(StruLen)
     }
     if(is.null(structure_names)){
@@ -1141,7 +1144,7 @@ plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_na
            ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
       for(j in seq(1,StruLen)){
         par(new=T)
-        plot(structure_profils[[j]][[2]],structure_profils[[j]][[1]][i,], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
+        plot(structure_profiles[[j]][[2]],structure_profiles[[j]][[1]][i,], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
              ylim=c(0.0,1.0), xlab='', ylab='')
       }
       legend(legend_pos,c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))

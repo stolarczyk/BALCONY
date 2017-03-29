@@ -30,17 +30,14 @@ Alicja Pluciennik & Michal Stolarczyk
 }
 
 \examples{
-load(structure)
-load(alignment)
-pdb_name = "1CQZ" #A string with path to PDB file
-uniprot="P43914"
-chain_identifier = "B"
-tunnel=create_structure_seq(structure,uniprot,alignment,pdb_path,chain_identifier)
-structure_index=get_structures_idx(tunnel)
+data("alignment")
+data("structure")
+uniprot="P34914"
+structure_index=get_structures_idx(structure)
 entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),TG_entropy = TG_conservativity(alignment))
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
 
-plot_entropy(prot_entropy, colors = c("red","green","blue"), impose = T, prot_name = "Murine Epoxide Hydrolase", legend_pos = "bottomright")
+plot_entropy(prot_entropy, colors = c("red","green","blue"), impose = TRUE, prot_name = "Murine Epoxide Hydrolase", legend_pos = "bottomright")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
