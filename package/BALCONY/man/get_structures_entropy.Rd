@@ -8,7 +8,7 @@ Get entropy of amino acids (for region of interest) in given protein
 This function allows to get values of entropy/conservation for amino acids dispersed in sequence of given protein. It works well with a list of dispersed amino acids in one protein.
 }
 \usage{
-structure_entropy=get_structures_entropy(structure_index,score_list)
+get_structures_entropy(structure_index,score_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -8,7 +8,7 @@ This function combines the entropy data for structure building amino acids with 
 This function combines the entropy data for structure building amino acids with its indices. It prepares the data for convenient visualization or processing.
 }
 \usage{
-structure_profile = prepare_structure_profile(structure, structure_entropy)
+prepare_structure_profile(structure, structure_entropy)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

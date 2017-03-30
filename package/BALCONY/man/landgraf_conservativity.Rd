@@ -8,7 +8,7 @@ Calculate Landgraf conservation score
 This function calculates Landgraf conservarion score
 }
 \usage{
-score = landgraf_conservativity(matrix_name = NULL, alignment_file, weights)
+landgraf_conservativity(matrix_name = NULL, alignment_file, weights)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

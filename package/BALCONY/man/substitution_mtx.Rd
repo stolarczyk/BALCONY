@@ -8,11 +8,11 @@ Read a substitution matrix
 This function facilitates reading of substitution matrices for further use
 }
 \usage{
-substitution_mtx(sub_mat)
+substitution_mtx(matrix_name)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{sub_mat}{
+  \item{matrix_name}{
 A string with path to the substitution matrix in a text file to be read
 }
 }

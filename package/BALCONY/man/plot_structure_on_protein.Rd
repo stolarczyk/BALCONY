@@ -8,11 +8,11 @@ Plot structure entropy on protein background
 This function enables to visually asses the stucture(s) entropy in comparison with protein's entropy
 }
 \usage{
-plot_structure_on_protein(prot_entropy, structure_profiles, pdb_name, colors, structure_names, legend_pos)
+plot_structure_on_protein(protein_entropy, structure_profiles, pdb_name, colors, structure_names, legend_pos)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{prot_entropy}{A list of entropy values for protein of interest. Output of get_prot_entropy() function}
+  \item{protein_entropy}{A list of entropy values for protein of interest. Output of get_prot_entropy() function}
   \item{structure_profiles}{Output of prepare_structure_profile() function}
   \item{pdb_name}{(optional) A string with protein's name e.g. PDB ID, default: none}
   \item{colors}{(optional) A vector of strings with colors to be used to plot the stucture markers of length equal to number of structures in structure profiles, default: rainbow()}

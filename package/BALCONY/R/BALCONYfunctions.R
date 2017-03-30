@@ -22,8 +22,8 @@ read_structure <- function(file_names){
   return(structure_list)
 }
 
-is_upper <- function(s) {
-  return (all(grepl("[[:upper:]]", strsplit(s, "")[[1]])))
+is_upper <- function(string) {
+  return (all(grepl("[[:upper:]]", strsplit(string, "")[[1]])))
 }
 
 delete_isoforms <- function(alignment) {
@@ -56,10 +56,10 @@ delete_isoforms <- function(alignment) {
   }
   return(output)
 }
-consensus <-  function(alignment, thresh) {
+consensus <-  function(alignment, threshold) {
   #Function which calculates consensus
   #alignment-output of read.alignment()
-  #thresh-given threshold of conservation (%)
+  #threshold-given threshold of conservation (%)
   alignment_matrix = as.matrix(as.character(alignment[[3]]))
 
   count_cols = length(alignment_matrix)
@@ -80,7 +80,7 @@ consensus <-  function(alignment, thresh) {
     m = names(sort(table(alignment_col), decreasing = T))
     num = sort(table(alignment_col), decreasing = T)[1]
     value = num / length(alignment_col) * 100
-    if (value >= thresh) {
+    if (value >= threshold) {
       consens[j] = m[1]
     }
   }
@@ -500,11 +500,11 @@ convert_AA_symbol <- function(amino_acids) {
          function(x)
            paste(map[x], collapse = ""))
 }
-find_seqid <- function(sequence, library) {
+find_seqid <- function(sequence_id, library) {
   ktory = c()
-  sequence=toupper(sequence)
+  sequence_id=toupper(sequence_id)
   for (i in seq(1, length(library))) {
-    ktory[i] = length(which((library[[i]] == sequence) == TRUE))
+    ktory[i] = length(which((library[[i]] == sequence_id) == TRUE))
 
     ktory1 = which(ktory == 1)
 
@@ -548,12 +548,13 @@ find_seq <- function(sequence_id, alignment_file) {
   return(seq)
 }
 create_structure_seq <-
-  function(structure_file,
+  function(structure_list,
            sequence_id,
            alignment,
            pdb_path = NULL,
-           chain_identifier = NULL,shift = NULL) {
-    #structure_file-> list of structures in protein
+           chain_identifier = NULL,
+           shift = NULL) {
+    #structure_list-> list of structures in protein
     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
     #alignment-> file with alignment (alignment.fasta)
     #shift-> if there is missing domain in structure
@@ -573,9 +574,9 @@ create_structure_seq <-
 
     #finds an uniprot name from alignent- extract uniprot seq from alignment
     base_seq = find_seq(sequence_id, alignment)
-    for(i in seq(1, length(structure_file), by = 1)) {
-      structures_indices = as.vector(structure_file[[i]][[1]])
-      structures_names = as.vector(structure_file[[i]][[2]])
+    for(i in seq(1, length(structure_list), by = 1)) {
+      structures_indices = as.vector(structure_list[[i]][[1]])
+      structures_names = as.vector(structure_list[[i]][[2]])
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
@@ -607,7 +608,7 @@ create_structure_seq <-
       }
     }
     struc_length = length(structure[[1]])
-    count = length(structure_file)
+    count = length(structure_list)
     output = matrix("-", count, struc_length)
     v = seq(1, count, by = 1)
     for(i in v) {
@@ -621,7 +622,7 @@ create_structure_seq <-
         j = j + 1
       }
     }
-    rownames(output) = names(structure_file)
+    rownames(output) = names(structure_list)
     return(list(structure_matrix = output, structure_numbers = nr_stru))
   }
 
@@ -658,8 +659,8 @@ barplotshow <- function(position, AA_variation) {
   )
 }
 create_final_CSV <-
-  function(FILENAME,
-           AA_variations,
+  function(filename,
+           variations_matrix,
            structure,
            uniprot,
            alignment,
@@ -668,12 +669,12 @@ create_final_CSV <-
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
     structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
-    rownames(AA_variations$matrix) = rep(c("AA name", "Percentage"), (dim(AA_variations$matrix)[1] /
-                                           2))
+    rownames(variations_matrix$matrix) = rep(c("AA name", "Percentage"), (dim(variations_matrix$matrix)[1] /
+                                                                            2))
     if (is.null(list_of_scores)) {
-      alignment_position = seq(1, dim(AA_variations$matrix)[2], by = 1)
+      alignment_position = seq(1, dim(variations_matrix$matrix)[2], by = 1)
       final_output = rbind(alignment_position,
-                           AA_variations$matrix,
+                           variations_matrix$matrix,
                            sequnece,
                            structure_output)
     }
@@ -690,10 +691,10 @@ create_final_CSV <-
 
       }
       rownames(scores_mtx) = scores_mtx_names
-      alignment_position = seq(1, dim(AA_variations$matrix)[2], by = 1)
+      alignment_position = seq(1, dim(variations_matrix$matrix)[2], by = 1)
       final_output = rbind(
         alignment_position,
-        AA_variations$matrix,
+        variations_matrix$matrix,
         sequence,
         structure_output,
         scores_mtx
@@ -710,14 +711,14 @@ create_final_CSV <-
       }
       write.table(
         output,
-        file = paste(FILENAME, "_", i, ".csv", sep = ""),
+        file = paste(filename, "_", i, ".csv", sep = ""),
         row.names = T,
         col.names = F,
         sep = ","
       )
     }
     if (Sys.info()[[1]] == "Linux") {
-      print(paste("Output written to: ", getwd(), "/", FILENAME, ".csv", sep = ""))
+      print(paste("Output written to: ", getwd(), "/", filename, ".csv", sep = ""))
     }
     return(final_output)
   }
@@ -754,8 +755,8 @@ TG_conservativity <- function(alignment) {
   return(return_data)
 }
 
-kabat_conservativity <- function(alignment_file) {
-  aligned_sequences_matrix = alignment2matrix(alignment = alignment_file)
+kabat_conservativity <- function(alignment) {
+  aligned_sequences_matrix = alignment2matrix(alignment = alignment)
   Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -778,8 +779,8 @@ kabat_conservativity <- function(alignment_file) {
   return(Kabat_entropy_normalized)
 }
 
-schneider_conservativity <- function(alignment_file) {
-  aligned_sequences_matrix = alignment2matrix(alignment = alignment_file)
+schneider_conservativity <- function(alignment) {
+  aligned_sequences_matrix = alignment2matrix(alignment = alignment)
   sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -809,8 +810,8 @@ schneider_conservativity <- function(alignment_file) {
   return(sum_schneider)
 }
 
-shannon_conservativity <- function(alignment_file) {
-  aligned_sequences_matrix = alignment2matrix(alignment_file)
+shannon_conservativity <- function(alignment) {
+  aligned_sequences_matrix = alignment2matrix(alignment)
   sum = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -847,10 +848,10 @@ substitution_mtx <- function (matrix_name) {
   sub_mtx = list(names = alphabet,matrix = mtx)
   return(sub_mtx)
 }
-D_matrix <- function(sub_mtx) {
-  values = as.numeric(as.matrix(sub_mtx[[2]]))
-  dim(values) <- dim(sub_mtx[[2]])
-  k = dim(sub_mtx[[2]])[1]
+D_matrix <- function(substitution_matrix) {
+  values = as.numeric(as.matrix(substitution_matrix[[2]]))
+  dim(values) <- dim(substitution_matrix[[2]])
+  k = dim(substitution_matrix[[2]])[1]
   distance = matrix(0, k, k)
   #CREATE DISTANCE MATRIX
   for (i in 1:k) {
@@ -866,7 +867,7 @@ D_matrix <- function(sub_mtx) {
 
     }
   }
-  output = list(sub_mtx[[1]], distance)
+  output = list(substitution_matrix[[1]], distance)
   return(output)
 }
 landgraf_conservativity <-
@@ -960,12 +961,12 @@ entropy_profile <-
 
 
 # Structure analysis ------------------------------------------------------
-get_remarks465_pdb <- function(pdb_path, chain_identifier) {
-  #pdb_path: a path to the pdb file
+get_remarks465_pdb <- function(pdb_file_path, chain_identifier) {
+  #pdb_file_path: a path to the pdb file
   #chain_identifier: a character spcifying the chain to analyze
   #returns: list of 1) numbers of aminocids which are missing 2) chain identifier
-    pdb_file = Rpdb::read.pdb(
-    file = pdb_path,
+  pdb_file = Rpdb::read.pdb(
+    file = pdb_file_path,
     REMARK = T,
     ATOM = T,
     CRYST1 = F,
@@ -1024,20 +1025,20 @@ get_structures_idx<- function(structure){
   names(out[[2]])= rownames(structure)
   return(out)
 }
-get_prot_entropy<- function(whole_prot,score_list){
+get_prot_entropy<- function(whole_prot,entropy_scores_list){
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
-  if(is.list(score_list))
+  if(is.list(entropy_scores_list))
   {
     prot_cons=list()
-    for(i in seq(1, length(score_list))){
-      prot_cons[[i]]=score_list[[i]][whole_prot]
+    for(i in seq(1, length(entropy_scores_list))){
+      prot_cons[[i]]=entropy_scores_list[[i]][whole_prot]
     }
-    names(prot_cons)<-names(score_list)
+    names(prot_cons)<-names(entropy_scores_list)
   }
   else{
-    print("score_list is not a list!")
+    print("entropy_scores_list is not a list!")
     stop()
   }
   return(prot_cons)
@@ -1046,12 +1047,12 @@ get_prot_entropy<- function(whole_prot,score_list){
 # Corrected struct functions ----------------------------------------------
 
 
-plot_entropy<- function(prot_cons, colors,impose=NULL, prot_name=NULL, legend_pos=NULL){
+plot_entropy<- function(protein_conservation, colors,impose=NULL, prot_name=NULL, legend_pos=NULL){
   #plots scores on one plot, if colors are not specified plot as rainbow
   #automagically uses name of pdb FIXME
   # recive list of entropy scores and list of Names in this list
   if(missing(colors)){
-    colors<- rainbow(length(prot_cons))
+    colors<- rainbow(length(protein_conservation))
   }
   if(is.null(impose)){
     impose<-T
@@ -1064,12 +1065,12 @@ plot_entropy<- function(prot_cons, colors,impose=NULL, prot_name=NULL, legend_po
   if(is.null(legend_pos)){
     legend_pos="bottomleft"
   }
-  plot(prot_cons[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score",title_str) , type="l")
-  for(i in seq(2, length(prot_cons))){
+  plot(protein_conservation[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score",title_str) , type="l")
+  for(i in seq(2, length(protein_conservation))){
     par(new=impose)
-    plot(prot_cons[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
+    plot(protein_conservation[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
   }
-  legend(legend_pos,names(prot_cons), col=colors, lty =c(1))
+  legend(legend_pos,names(protein_conservation), col=colors, lty =c(1))
 }
 
 ### entropy for stuff
@@ -1155,10 +1156,9 @@ plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_na
   else print("The lists contain different number of conservation/entropy scores!")
 }
 
-compare_cons_metrics<- function(protein, structure_cons, pdb_name){
-  #requireNamespace(scales)
-  metrics_count=length(protein)
-  structures_count=length(structure_cons)
+compare_cons_metrics<- function(protein_entropy, structure_profile, pdb_name){
+  metrics_count=length(protein_entropy)
+  structures_count=length(structure_profile)
   colors=rainbow(structures_count)
   structure_names=c()
   for(i in seq(1,structures_count)){
@@ -1166,10 +1166,10 @@ compare_cons_metrics<- function(protein, structure_cons, pdb_name){
   for(i in seq(1, metrics_count)){
     for(j in seq(1, metrics_count)){
       if(i!=j){
-        plot(protein[[i]], protein[[j]],main=paste('Scatterplot of', names(protein)[i],"vs. ", names(protein)[j]), xlim=c(0,1), ylim=c(0,1), xlab=names(protein)[i],ylab=names(protein)[j],pch=20, col=alpha("slategray", 0.5))
+        plot(protein_entropy[[i]], protein_entropy[[j]],main=paste('Scatterplot of', names(protein_entropy)[i],"vs. ", names(protein_entropy)[j]), xlim=c(0,1), ylim=c(0,1), xlab=names(protein_entropy)[i],ylab=names(protein_entropy)[j],pch=20, col=alpha("slategray", 0.5))
         for(k in seq(1,structures_count)){
           par(new=T)
-          plot(structure_cons[[k]][[1]][i,], structure_cons[[k]][[1]][j,], col=alpha(colors[k],0.7), pch = k, main="", xlim=c(0,1), ylim=c(0,1), xlab="",ylab="")
+          plot(structure_profile[[k]][[1]][i,], structure_profile[[k]][[1]][j,], col=alpha(colors[k],0.7), pch = k, main="", xlim=c(0,1), ylim=c(0,1), xlab="",ylab="")
         }
         legend('bottomright',c(pdb_name,structure_names),pch=c(20,seq(1,k)),col=scales::alpha(c("slategray",colors), 0.5))
       }

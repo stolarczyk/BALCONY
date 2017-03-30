@@ -8,7 +8,7 @@ Calculate Schneider conservation metric
 This function facilitates the calculation of Schneider conservation metric.
 }
 \usage{
-conservation_score = schneider_conservativity(alignment)
+schneider_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

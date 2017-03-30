@@ -8,7 +8,7 @@ Delete protein isoforms from alignment object
 This function searches for isoforms in the alignment object (entries with "-digit|" in the name) and deletes them
 }
 \usage{
-alignment_no_iso = delete_isoforms(alignment)
+delete_isoforms(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

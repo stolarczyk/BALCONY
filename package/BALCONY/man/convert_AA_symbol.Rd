@@ -8,11 +8,11 @@ Amino acids symbols conversion
 This function facilitates the conversion of three letter amino acids' codes to one letter equivalents.
 }
 \usage{
-convert_AA_symbol(x) = (amino_acid)
+convert_AA_symbol(amino_acids)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{amino_acid}{
+  \item{amino_acids}{
 A character or vector of characters with amino acid(s) three letter code(s)
 }
 }

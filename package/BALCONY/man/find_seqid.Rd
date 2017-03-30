@@ -5,7 +5,7 @@
 Find sequence identifier by other sequence identifier in given alignment within a specified library
 }
 \description{
-This function allows to find sequence id form alignment file corresponding to the given sequence id. Function requires library of equivalent sequences id defined by user and it is useful to find sequences from other databases in alignment for examined sequence from other database (like PDB sequence for structure and UniProt sequences in alignment).
+This function allows to find sequence id from alignment file corresponding to the given sequence id. Function requires library of equivalent sequences id defined by user and it is useful to find sequences from other databases in alignment for examined sequence from other database (like PDB sequence for structure and UniProt sequences in alignment).
 %
 }
 \usage{
@@ -13,14 +13,13 @@ find_seqid(sequence_id, library)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{sequence_id}{id of e.g. PDB sequence}
-  \item{library}{defined by user library e.g. of UniProt ids and PDB ids}
-
+  \item{sequence_id}{A string. An ID of e.g. PDB structure identifier}
+  \item{library}{A list of vectors which contain a defined by user library e.g. of UniProt ids <-> PDB ids. See examples}
 }
 
 \value{
 
-\item{seqid}{function gives sequence name (character)}
+\item{seqid}{A string. The equivalent ID to the one provided as the input.}
 
 }
 

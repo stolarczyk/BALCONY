@@ -8,7 +8,7 @@ Get "REMARK 465" data from PDB file
 This function extracts the data concerning missing amino acids in PDB protein structure from the PDB file
 }
 \usage{
-remark465data = get_remarks465_pdb(pdb_file_path,chain_identifier)
+get_remarks465_pdb(pdb_file_path,chain_identifier)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

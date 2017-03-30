@@ -8,12 +8,12 @@ Identity of each sequence in the alignment to the consensus sequence.
 The function calculates identity of consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment. Also, it can be used to weight conservativity metrics results in further steps of analysis with BALCONY package.
 }
 \usage{
-cons2seqs_ident(alignment, consensus)
+cons2seqs_ident(alignment, consensus_seq)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{Data loaded with read.alignment() function }
-  \item{consensus}{Consensus sequence (output of consensus() function)}
+  \item{consensus_seq}{Consensus sequence (output of consensus() function)}
 %%     ~~Describe \code{x} here~~
 }
 \details{

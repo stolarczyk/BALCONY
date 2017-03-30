@@ -8,11 +8,11 @@ Plot entropies for protein
 This function plots entropies of protein. Plots might be superimposed or not.
 }
 \usage{
-plot_entropy(prot_conservation, colors, impose, prot_name, legend_pos)
+plot_entropy(protein_conservation, colors, impose = NULL, prot_name = NULL, legend_pos = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{prot_conservation}{A list or a vectors of protein conservation/entropies. The output of prot_entropy() function}
+  \item{protein_conservation}{A list or a vectors of protein conservation/entropies. The output of prot_entropy() function}
   \item{colors}{(optional) A vector of colors for each plot, default: rainbow}
   \item{impose}{(optional) A boolean, if True/T plots are superimposed, if False/F plots are printed separately, default: T}
   \item{prot_name}{(optional) A string with structure name (to be used in the tile of the plot), default: none}

@@ -8,7 +8,7 @@ Group consensus to each sequence in the alignment similarity
 The function calculates similarity of group consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment. Grouping amino acids allows to check similiarity between sequences by amino acids properties of user's choice.
 }
 \usage{
-consensus_to_seqs_similarity = cons2seq_sim(alignment, consensus_seq, grouping_method)
+cons2seqs_sim(alignment, consensus_seq, grouping_method)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

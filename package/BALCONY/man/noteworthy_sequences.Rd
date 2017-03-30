@@ -8,7 +8,7 @@ Find noteworthy sequences in the dataset (aligned sequences)
 This function detects noteworthy sequences (most common, closest to the consensus and most different from the consesus) to facilitate convenient detection of outlying sequences that might be excluded from the further analysis.
 }
 \usage{
-noteworthy_sequences(percentage, alignment_file)
+noteworthy_sequences(percentage, alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

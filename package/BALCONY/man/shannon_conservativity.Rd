@@ -8,7 +8,7 @@ Calculate Shannon conservation metric
 This function facilitates the calculation of Shannon conservation metric.
 }
 \usage{
-conservation_score = shannon_conservation(alignment)
+shannon_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -13,11 +13,11 @@ where:\cr
 \eqn{d(a,b)} is a probability of substitution of amino acid a with other amino acid.
 }
 \usage{
-substitution_rates = D_matrix(substitution_matrix)
+D_matrix(substitution_matrix)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{frequencies}{A matrix with probablity of substitutions, e.g.  Gonnet substitution matrix
+  \item{substitution_matrix}{A matrix with probablity of substitutions, e.g.  Gonnet substitution matrix
 %%     ~~Describe \code{x} here~~
 }
 }

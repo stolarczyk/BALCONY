@@ -8,7 +8,7 @@ Calculate Kabat conservation metric
 This function facilitates the calculation of Kabat conservation metric.
 }
 \usage{
-conservation_score = kabat_conservativity(alignment)
+kabat_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

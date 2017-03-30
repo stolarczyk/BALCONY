@@ -1,8 +1,8 @@
 Package: BALCONY
 Type: Package
 Title: BALCONY - Better ALignment CONsensus analYsis
-Version: 0.1.0
-Author: Alicja Płuciennik & Michał Stolarczyk 
+Version: 0.1.1
+Authors: Alicja Płuciennik & Michał Stolarczyk 
 Maintainer: Michał Stolarczyk <stolarczyk.michal93@gmail.com>
 Description: BALCONY is an R package which facilitates the evolutionary analysis and structure conservation study of specified amino acids in proteins.
 License: GPL

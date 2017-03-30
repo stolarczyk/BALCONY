@@ -5,13 +5,12 @@
 \description{The function loads alignment into matrix to facilitate a convenient data manipulation
 }
 \usage{
-matrix = alignment2matrix(prmt,alignment_squences)
+alignment2matrix(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
  \item{alignment}{data loaded with read.alignment() function }
- \item{prmt}{output of alignment_parameters() function. Number of sequences in the alignment and length of aligned sequences}
-}
+ }
 \value{
 \item{matrix}{Aligned sequences matrix where number of rows equals to number of aligned sequences and number of columns equals to the length length of aligned sequences}
 }

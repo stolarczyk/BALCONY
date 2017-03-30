@@ -8,7 +8,7 @@ Get IDs of structure(s) elements from aligned sequences (MSA)
 This function allows to obtain positions in aligned sequences for analyzed structure (e.g. functionally related amino acids dispersed in sequence) based on sequence corresponding to the crystal structure.
 }
 \usage{
-structure_index=get_structures_idx(structure)
+get_structures_idx(structure)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

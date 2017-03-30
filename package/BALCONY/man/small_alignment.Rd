@@ -1,5 +1,5 @@
-\name{alignment}
-\alias{alignment}
+\name{small_alignment}
+\alias{small_alignment}
 \docType{data}
 \title{
 Sample small alignment of soluable epoxide hydrolase family

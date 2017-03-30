@@ -8,7 +8,7 @@ Get alignment dimensions
 This function returns size of alignment, which facilitates the convenient performing upcoming steps of analysis.
 }
 \usage{
-alignment_parameters = alignment_parameters(alignment)
+alignment_parameters(alignment)
 }
 
 \arguments{

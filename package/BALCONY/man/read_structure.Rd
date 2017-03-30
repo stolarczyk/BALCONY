@@ -7,7 +7,7 @@ Read structure data from a text file
 \description{
 By using this function you can read text file and create an stucture list which can be used in furter evolutionary analysis with BALCONY package. Text file should comprise 2 columns: first one should contain indices (positions) of amino acids in the protein, the scecond one should contain amino acid symbols on specified positions.}
 \usage{
-structure = read_structure(file_names)
+read_structure(file_names)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

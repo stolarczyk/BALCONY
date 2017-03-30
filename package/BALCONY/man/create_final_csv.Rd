@@ -32,7 +32,7 @@ Alicja Pluciennik & Michal Stolarczyk
 
 
 \seealso{
-\code{\link{create_structure_seq}}, \code{\link{schenider_conservativity}}, \code{\link{TG_conservativity}}, \code{\link{landgraf_conservativity}}, \code{\link[seqinr]{read.alignment}}
+\code{\link{create_structure_seq}}, \code{\link{schneider_conservativity}}, \code{\link{TG_conservativity}}, \code{\link{landgraf_conservativity}}, \code{\link[seqinr]{read.alignment}}
 }
 \examples{
 data("alignment")

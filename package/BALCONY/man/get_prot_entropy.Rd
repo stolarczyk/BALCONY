@@ -8,7 +8,7 @@ Get MSA-based calculated entropy for chosen protein.
 This function allows to obtain vector of entropies for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
 }
 \usage{
-prot_entropy=get_prot_entropy(whole_prot, entropy_scores_list)
+get_prot_entropy(whole_prot, entropy_scores_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

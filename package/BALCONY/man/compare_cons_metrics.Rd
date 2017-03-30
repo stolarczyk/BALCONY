@@ -8,7 +8,7 @@ compare_cons_metrics
 This function is designed to compare the conservation metrics used in the analysis. This way the user can notice the significant correlation or differences between these to evaluate their performance in a specific case.
 }
 \usage{
-compare_cons_metrics(prot_entropy, structure_profile)
+compare_cons_metrics(protein_entropy, structure_profile, pdb_name)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -44,8 +44,8 @@ entropy_scores_list=list(
 structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
 
 structure_profile = prepare_structure_profile(tunnel, structure_entropy)
-prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
-compare_cons_metrics(prot_entropy, structure_profile, "1CQZ")
+protein_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
+compare_cons_metrics(protein_entropy, structure_profile, "1CQZ")
 
 }
 

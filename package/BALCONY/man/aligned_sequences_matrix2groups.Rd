@@ -8,11 +8,11 @@ Convert amino acid symbols to groups according to their properties of user's cho
 This function performs a conversion of amino acid symbols to group symbols according to their properties. Implemented grouping methods are: general (majority of properties taken into account), hydrophobicity, size and aromaticity. "GX", where X stands for group number, are group symbols.
 }
 \usage{
-grouped_aligned_sequences_matrix = aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
+aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{aligned_sequneces_matrix}{A matrix that contains aligned sequences. It is an output of alignment2matrix() function}
+  \item{aligned_sequences_matrix}{A matrix that contains aligned sequences. It is an output of alignment2matrix() function}
   \item{grouping_method}{A string which specifies the grouping method to be used. One of following: 'general', 'hydrophobicity', 'size', 'aromaticity' }
 }
 \value{

@@ -8,7 +8,7 @@ Consensus sequence determination
 Function calculates consensus sequence for given alignment with a threshold of user's choice.
 }
 \usage{
-consensus_sequence = consensus(alignment, threshold)
+consensus(alignment, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

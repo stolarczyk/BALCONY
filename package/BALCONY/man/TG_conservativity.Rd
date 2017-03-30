@@ -8,7 +8,7 @@ Calculate the Tunneling Group (TG) conservation metric
 This function facilitates the calculation of TG conservation metric.
 }
 \usage{
-conservation_score = TG_conservation(alignment)
+TG_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

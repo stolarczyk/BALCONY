@@ -8,7 +8,7 @@ Find sequences of numbers in a numeric vector
 This function finds sequences of consecutive numbers in numeric vectors
 }
 \usage{
-x = find_consecutive_seq(vector)
+find_consecutive_seq(vector)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
