@@ -30,16 +30,16 @@ Michal Stolarczyk & Alicja Pluciennik
 }
 \examples{
 data("alignment")
-structure_files = c(system.file("extdata", "T1_mouse_1cqz.txt", package = "BALCONY"),
-                    system.file("extdata", "T2_mouse_1cqz.txt", package = "BALCONY"),
-                    system.file("extdata", "T3_mouse_1cqz.txt", package = "BALCONY")
+structure_files = c(system.file("extdata", "T1_4JNC.txt", package = "BALCONY"),
+                    system.file("extdata", "T2_4JNC.txt", package = "BALCONY"),
+                    system.file("extdata", "T3_4JNC.txt", package = "BALCONY")
                     )
 structure_list = read_structure(structure_files)
 #creating library uniprot - PDB
 lib=list(c("Q84HB8","4I19","4QA9"),
         c("P34913","4JNC"),
         c("P34914","1EK2","1CR6","1EK1","1CQZ"))
-pdb_name = "1CQZ"
+pdb_name = "4JNC"
 uniprot=find_seqid(pdb_name,lib)
 tunnel=create_structure_seq(structure_list,uniprot,alignment)
 tunnel_excluded = exclude_low_probability_structures(tunnel, 0.5)

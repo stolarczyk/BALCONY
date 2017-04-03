@@ -17,11 +17,11 @@ read_structure(file_names)
 The files should be formatted as follows:\cr
 
 \code{
-res AA\cr
-2  ASP\cr
-6   TYR\cr
-11  PHE\cr
-6   TYR}
+res AA 100\cr
+2  ASP 100\cr
+6   TYR 80\cr
+11  PHE 30\cr
+6   TYR 30}
 }
 \value{
   \item{strucure_list}{A list with read structure data. Number of elements of this list equals to the number of files specified.}
@@ -35,10 +35,10 @@ Alicja Pluciennik & Michal Stolarczyk
 \examples{
 #Generating exemplary input files for the function
 fileConn<-file("exemplary_input1.txt")
-writeLines(c("2 TYR","3 LEU", "7 VAL", "10 PHE", "20 SER"), fileConn)
+writeLines(c("2 TYR 100","3 LEU 100", "7 VAL 50", "10 PHE 30", "20 SER 20"), fileConn)
 close(fileConn)
 fileConn<-file("exemplary_input2.txt")
-writeLines(c("5 ALA","6 ILE", "18 GLY", "40 PHE"), fileConn)
+writeLines(c("5 ALA 100","6 ILE 100", "18 GLY 100", "40 PHE 100"), fileConn)
 close(fileConn)
 
 structure_list = read_structure(file_names = c("exemplary_input1.txt", "exemplary_input2.txt"))
