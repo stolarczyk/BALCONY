@@ -574,6 +574,7 @@ create_structure_seq <-
 
     #finds an uniprot name from alignent- extract uniprot seq from alignment
     base_seq = find_seq(sequence_id, alignment)
+    structure_probabilities = list()
     for(i in seq(1, length(structure_list), by = 1)) {
       structures_indices = as.vector(structure_list[[i]][[1]])
       structures_names = as.vector(structure_list[[i]][[2]])
@@ -609,6 +610,7 @@ create_structure_seq <-
         structure[[i]][a] = seqs[[i]][j]
         j = j + 1
       }
+      structure_probabilities[[i]] = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
     }
     struc_length = length(structure[[1]])
     count = length(structure_list)
@@ -626,7 +628,6 @@ create_structure_seq <-
       }
     }
     rownames(output) = names(structure_list)
-    structure_probabilities = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
     return(list(structure_matrix = output, structure_numbers = nr_stru, stucture_probabilities = structure_probabilities))
   }
 
