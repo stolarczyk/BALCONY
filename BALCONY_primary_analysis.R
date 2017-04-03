@@ -12,26 +12,11 @@ file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #
 #file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
 file = delete_isoforms(file);
 
-# Read structure data files 
-# myFiles <- list.files(pattern = "*.txt");
-# structure_names = c();
-# for (i in seq(1,length(myFiles),by = 1)){
-#   structure_names= append(structure_names,strsplit(myFiles,"[.]")[[i]][1]);
-# }
-# structure_names_list = as.list(structure_names)
-# structure_list = list();
-# i=1;
-# for (structure in myFiles){
-#   temp = read.table(structure)
-#   structure_list[[i]]= temp;
-#   i = i + 1;
-# }
-# names(structure_list)=structure_names
 myFiles <- list.files(pattern = "*.txt");
 structure_list = read_structure(myFiles)
 # Set PDB name
-#pdb_name = "4JNC"; 
-pdb_name = "1CQZ"; 
+#pdb_name = "4JNC";
+pdb_name = "1CQZ";
 # Specify alignment position to examine
 alignmnent_position = 925;
 # Set the threshold for consensus calculation
@@ -44,7 +29,7 @@ threshold_variations = 0.01;
 matrix_name="GONNET.txt";
 # Library mapping Uniprot names to PDB
 dictionary = list(
-  c("Q6U6J0","4QLA"), 
+  c("Q6U6J0","4QLA"),
   c("Q9UR30","3G0I","3G02","1QO7"),
   c("Q84HB8","4I19","4QA9"),
   c("P34913","4JNC"),
@@ -52,7 +37,7 @@ dictionary = list(
   c("G9BEX6","4O08","4IO0","2E3J","4INZ"),
   c("Q41413","3CXU","2CJP")
 )
-# Calculating consensus sequence 
+# Calculating consensus sequence
 consensus_seq=consensus(file, threshold_consensus);
 # Convert aligned sequences to matrix
 aligned_sequences_matrix=alignment2matrix(file);
