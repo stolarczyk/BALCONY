@@ -10,7 +10,7 @@ read_structure <- function(file_names) {
   structure_names = c()
 
   for (i in seq(1, length(file_names), by = 1)) {
-    structure_names = append(structure_names, strsplit(file_names, "[.]")[[i]][1])
+  structure_names = append(structure_names, strsplit(file_names, "[.]")[[i]][1])
 
   }
   structure_names_list = as.list(structure_names)
@@ -594,8 +594,7 @@ create_structure_seq <-
         structures_probability = as.vector(structure_list[[i]][[3]])
         structures_probability = structures_probability[-1]
         structures_probability = structures_probability / max(structures_probability)# normalization
-        probs[[i]] = rep(NA, each = base_seq$len)
-        probs[[i]][structure_idx] = structures_probability
+
       } else{
         prob_data = F
         structures_probability = NULL
@@ -624,6 +623,10 @@ create_structure_seq <-
       length_alignment = alignment_parameters(alignment)$col_no
       structure[[i]] = rep("-", each = length_alignment)
       probability[[i]] = rep(NA, each = length_alignment)
+      if (prob_data == T) {
+        probs[[i]] = rep(NA, each = base_seq$len)
+        probs[[i]][structure_idx] = structures_probability
+      }
       j = 1
       for (a in aa_positions) {
         #aligning the structures information with the alignment sequence
