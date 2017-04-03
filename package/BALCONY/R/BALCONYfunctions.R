@@ -18,7 +18,7 @@ read_structure <- function(file_names){
     structure_list[[i]]= temp;
     i = i + 1;
   }
-  names(structure_list)=structure_names
+names(structure_list)=structure_names
   return(structure_list)
 }
 
@@ -577,9 +577,13 @@ create_structure_seq <-
     for(i in seq(1, length(structure_list), by = 1)) {
       structures_indices = as.vector(structure_list[[i]][[1]])
       structures_names = as.vector(structure_list[[i]][[2]])
+      structures_probability = as.vector(structure_list[[i]][[3]])
+      structures_probability = structures_probability[-1]
+      structures_probability = structures_probability/max(structures_probability)# normalization
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
+
       if(!is.null(shift)){
         structure_idx=structure_idx + rep(shift, length(structure_idx))
       }
@@ -604,7 +608,6 @@ create_structure_seq <-
         #aligning the structures information with the alignment sequence
         structure[[i]][a] = seqs[[i]][j]
         j = j + 1
-
       }
     }
     struc_length = length(structure[[1]])
@@ -623,7 +626,8 @@ create_structure_seq <-
       }
     }
     rownames(output) = names(structure_list)
-    return(list(structure_matrix = output, structure_numbers = nr_stru))
+    structure_probabilities = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
+    return(list(structure_matrix = output, structure_numbers = nr_stru, stucture_probabilities = structure_probabilities))
   }
 
 barplotshow <- function(position, AA_variation) {

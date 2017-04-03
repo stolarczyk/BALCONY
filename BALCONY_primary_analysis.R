@@ -8,7 +8,7 @@ setwd("~/Uczelnia/PROJEKT/BALCONY/analiza_manual/")
 getwd()
 ####################### Read data and analysis parameters
 # Alignment data (fasta format)
-file=read.alignment(file="aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
+file=read.alignment(file="~/Uczelnia/PROJEKT/BALCONY/analiza_manual/aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
 #file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
 file = delete_isoforms(file);
 
@@ -35,7 +35,8 @@ dictionary = list(
   c("P34913","4JNC"),
   c("P34914","1EK2","1CR6","1EK1","1CQZ"),
   c("G9BEX6","4O08","4IO0","2E3J","4INZ"),
-  c("Q41413","3CXU","2CJP")
+  c("Q41413","3CXU","2CJP"),
+  c("Q9ZAG3","1NWW")
 )
 # Calculating consensus sequence
 consensus_seq=consensus(file, threshold_consensus);
