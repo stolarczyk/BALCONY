@@ -4,21 +4,28 @@
 
 
 
+
 # Conservation analysis ---------------------------------------------------
-read_structure <- function(file_names){
-  structure_names = c();
-  for (i in seq(1,length(file_names),by = 1)){
-    structure_names= append(structure_names,strsplit(file_names,"[.]")[[i]][1]);
+read_structure <- function(file_names) {
+  structure_names = c()
+
+  for (i in seq(1, length(file_names), by = 1)) {
+    structure_names = append(structure_names, strsplit(file_names, "[.]")[[i]][1])
+
   }
   structure_names_list = as.list(structure_names)
-  structure_list = list();
-  i=1;
-  for (structure in file_names){
+  structure_list = list()
+
+  i = 1
+
+  for (structure in file_names) {
     temp = read.table(structure)
-    structure_list[[i]]= temp;
-    i = i + 1;
+    structure_list[[i]] = temp
+
+    i = i + 1
+
   }
-names(structure_list)=structure_names
+  names(structure_list) = structure_names
   return(structure_list)
 }
 
@@ -63,7 +70,7 @@ consensus <-  function(alignment, threshold) {
   alignment_matrix = as.matrix(as.character(alignment[[3]]))
 
   count_cols = length(alignment_matrix)
-  vec = seq(1, length(seqinr::s2c(alignment_matrix[1, ])))
+  vec = seq(1, length(seqinr::s2c(alignment_matrix[1,])))
   len_of_vers = length(vec)
   mat = matrix("-", count_cols, len_of_vers)
 
@@ -93,7 +100,9 @@ cons2seqs_ident <-  function(alignment, consensus_seq) {
   true_percentage = c()
 
   for (i in seq(1, alignment_parameters(alignment)$row_no)) {
-    true_percentage[i] = length(which((consensus_seq == seqinr::s2c(alignment$seq[i])) == TRUE)) / length(consensus_seq)
+    true_percentage[i] = length(which((
+      consensus_seq == seqinr::s2c(alignment$seq[i])
+    ) == TRUE)) / length(consensus_seq)
     # true percentage calculation (number of the same AAs in consensusus and in each sequence/number of all AAs)
   }
   return(true_percentage)
@@ -259,7 +268,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i, ])
+          consensusG == (aligned_sequences_matrixG[i,])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -289,7 +298,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i, ])
+          consensusG == (aligned_sequences_matrixG[i,])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -315,7 +324,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i, ])
+          consensusG == (aligned_sequences_matrixG[i,])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -332,7 +341,7 @@ cons2seqs_sim <-
       }
       for (i in seq(1, prmt$row_no)) {
         true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i, ])
+          consensusG == (aligned_sequences_matrixG[i,])
         ) == TRUE)) / prmt$col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
@@ -409,9 +418,9 @@ calculate_AA_variation <-
     j = 1
 
     for (i in seq(1, size[1] * 2, 2)) {
-      output[i, ] = keyaas[j, ]
+      output[i,] = keyaas[j,]
 
-      output[i + 1, ] = keyaas_per[j, ]
+      output[i + 1,] = keyaas_per[j,]
 
       j = j + 1
 
@@ -502,7 +511,7 @@ convert_AA_symbol <- function(amino_acids) {
 }
 find_seqid <- function(sequence_id, library) {
   ktory = c()
-  sequence_id=toupper(sequence_id)
+  sequence_id = toupper(sequence_id)
   for (i in seq(1, length(library))) {
     ktory[i] = length(which((library[[i]] == sequence_id) == TRUE))
 
@@ -559,9 +568,11 @@ create_structure_seq <-
     #alignment-> file with alignment (alignment.fasta)
     #shift-> if there is missing domain in structure
     seqs = list()
+    probs = list()
     structure = list()
-    if(!is.null(pdb_path)){
-      if(is.null(chain_identifier)){
+    probability = list()
+    if (!is.null(pdb_path)) {
+      if (is.null(chain_identifier)) {
         print("Chain identifier required!")
         stop()
       }
@@ -569,34 +580,38 @@ create_structure_seq <-
         get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
       )
     } else{
-      missing=NULL
+      missing = NULL
     }
 
     #finds an uniprot name from alignent- extract uniprot seq from alignment
     base_seq = find_seq(sequence_id, alignment)
     structure_probabilities = list()
-    for(i in seq(1, length(structure_list), by = 1)) {
+    for (i in seq(1, length(structure_list), by = 1)) {
       structures_indices = as.vector(structure_list[[i]][[1]])
       structures_names = as.vector(structure_list[[i]][[2]])
-      if(length(structure_list[[i]]) == 3){
+      if (length(structure_list[[i]]) == 3) {
+        prob_data = T
         structures_probability = as.vector(structure_list[[i]][[3]])
         structures_probability = structures_probability[-1]
-        structures_probability = structures_probability/max(structures_probability)# normalization
+        structures_probability = structures_probability / max(structures_probability)# normalization
+        probs[[i]] = rep(NA, each = base_seq$len)
+        probs[[i]][structure_idx] = structures_probability
       } else{
+        prob_data = F
         structures_probability = NULL
       }
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
 
-      if(!is.null(shift)){
-        structure_idx=structure_idx + rep(shift, length(structure_idx))
+      if (!is.null(shift)) {
+        structure_idx = structure_idx + rep(shift, length(structure_idx))
       }
 
-      if(length(missing) != 0) {
-        for(z in seq(1, length(missing$values))) {
-          for(l in seq(1, length(structure_idx))) {
-            if(structure_idx[l] >= missing$values[z]) {
+      if (length(missing) != 0) {
+        for (z in seq(1, length(missing$values))) {
+          for (l in seq(1, length(structure_idx))) {
+            if (structure_idx[l] >= missing$values[z]) {
               structure_idx[l] = structure_idx[l] + missing$lengths[z]
             }
           }
@@ -608,37 +623,68 @@ create_structure_seq <-
       just_align = alignment[[3]]
       length_alignment = alignment_parameters(alignment)$col_no
       structure[[i]] = rep("-", each = length_alignment)
+      probability[[i]] = rep(NA, each = length_alignment)
       j = 1
-      for(a in aa_positions) {
+      for (a in aa_positions) {
         #aligning the structures information with the alignment sequence
         structure[[i]][a] = seqs[[i]][j]
+        if (prob_data == T) {
+          probability[[i]][a] = probs[[i]][[j]]
+        }
         j = j + 1
-      }
-      if(length(structure_list[[i]]) == 3){
-        structure_probabilities[[i]] = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
-      } else {
-        structure_probabilities[[i]] = NULL
       }
     }
     struc_length = length(structure[[1]])
     count = length(structure_list)
-    output = matrix("-", count, struc_length)
+    struct_output = matrix("-", count, struc_length)
+    probability_output = matrix(NA, count, struc_length)
     v = seq(1, count, by = 1)
-    for(i in v) {
-      output[i,] = structure[[i]]
+    for (i in v) {
+      struct_output[i, ] = structure[[i]]
+      if (prob_data == T) {
+        probability_output[i, ] = probability[[i]]
+      }
     }
     nr_stru = rep("-", length(structure[[1]]))
     j = 1
-    for(i in seq(1, length(structure[[1]]), 1)) {
-      if(structure[[1]][i] != "-") {
+    for (i in seq(1, length(structure[[1]]), 1)) {
+      if (structure[[1]][i] != "-") {
         nr_stru[i] = j
         j = j + 1
       }
     }
-    rownames(output) = names(structure_list)
-    return(list(structure_matrix = output, structure_numbers = nr_stru, stucture_probabilities = structure_probabilities))
-}
+    rownames(struct_output) = names(structure_list)
+    if (prob_data == T) {
+      rownames(probability_output) = names(structure_list)
+    }
+    if (prob_data == T) {
+      return(
+        list(
+          structure_matrix = struct_output,
+          structure_numbers = nr_stru,
+          structure_probabilities = probability_output
+        )
+      )
+    } else{
+      return(list(
+        structure_matrix = struct_output,
+        structure_numbers = nr_stru
+      ))
+    }
+  }
 
+exclude_low_probability_structures <-
+  function(structure, threshold) {
+    if (length(structure) == 3) {
+      for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
+        to_exclude = which(structure[[3]][i, ] < threshold)
+        structure[[1]][i, which(structure[[3]][i, ] < threshold)] = "N"
+      }
+    } else{
+      print("No probability information provided for the structure.")
+    }
+    return(structure)
+  }
 
 barplotshow <- function(position, AA_variation) {
   #position=position-1;
@@ -700,7 +746,7 @@ create_final_CSV <-
       scores_mtx_names = c()
 
       for (i in seq(1, length(list_of_scores))) {
-        scores_mtx[i, ] = list_of_scores[[i]]
+        scores_mtx[i,] = list_of_scores[[i]]
         scores_mtx_names[i] = names(list_of_scores)[i]
 
       }
@@ -741,7 +787,7 @@ TG_conservativity <- function(alignment) {
   var_aa = calculate_AA_variation(alignment, threshold = 0.01)
   max_cons = c()
 
-  for (i in seq(1, length(var_aa$matrix[1, ]), 1)) {
+  for (i in seq(1, length(var_aa$matrix[1,]), 1)) {
     if (is.na(as.numeric(var_aa$matrix[2, i])) == FALSE) {
       max_cons[i] = as.numeric(var_aa$matrix[2, i])
     }
@@ -859,7 +905,7 @@ substitution_mtx <- function (matrix_name) {
   matrix = read.table(matrix_name)
   mtx = matrix[-1, -1]
   alphabet = as.character(unlist(matrix[1, -1]))
-  sub_mtx = list(names = alphabet,matrix = mtx)
+  sub_mtx = list(names = alphabet, matrix = mtx)
   return(sub_mtx)
 }
 D_matrix <- function(substitution_matrix) {
@@ -1024,32 +1070,34 @@ find_consecutive_seq <- function(vector) {
   return(list(values = ind, lengths = lengths))
 }
 
-get_structures_idx<- function(structure){
+get_structures_idx <- function(structure) {
   #documentation get_structure_idx.Rd
   #get idx of structure in alignemnt
   #return sorted list of indices in MSA, one list element is one structure
   #the first element is indices of whole protein in alignment
-  structure=structure$structure_matrix
-  stru_index=list()
-  for (i in seq(1:length(structure[,1]))){
-    stru_index[[i]]=which(structure[i,]=="S");
+  structure = structure$structure_matrix
+  stru_index = list()
+  for (i in seq(1:length(structure[, 1]))) {
+    stru_index[[i]] = which(structure[i, ] == "S")
+
   }
-  whole_prot=which(structure[1,]!="-");
-  out=list(proteinIndices=whole_prot,structureIndices=stru_index)
-  names(out[[2]])= rownames(structure)
+  whole_prot = which(structure[1, ] != "-")
+
+  out = list(proteinIndices = whole_prot, structureIndices = stru_index)
+  names(out[[2]]) = rownames(structure)
   return(out)
 }
-get_prot_entropy<- function(whole_prot,entropy_scores_list){
+get_prot_entropy <- function(whole_prot, entropy_scores_list) {
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
-  if(is.list(entropy_scores_list))
+  if (is.list(entropy_scores_list))
   {
-    prot_cons=list()
-    for(i in seq(1, length(entropy_scores_list))){
-      prot_cons[[i]]=entropy_scores_list[[i]][whole_prot]
+    prot_cons = list()
+    for (i in seq(1, length(entropy_scores_list))) {
+      prot_cons[[i]] = entropy_scores_list[[i]][whole_prot]
     }
-    names(prot_cons)<-names(entropy_scores_list)
+    names(prot_cons) <- names(entropy_scores_list)
   }
   else{
     print("entropy_scores_list is not a list!")
@@ -1061,133 +1109,224 @@ get_prot_entropy<- function(whole_prot,entropy_scores_list){
 # Corrected struct functions ----------------------------------------------
 
 
-plot_entropy<- function(protein_conservation, colors,impose=NULL, prot_name=NULL, legend_pos=NULL){
-  #plots scores on one plot, if colors are not specified plot as rainbow
-  #automagically uses name of pdb FIXME
-  # recive list of entropy scores and list of Names in this list
-  if(missing(colors)){
-    colors<- rainbow(length(protein_conservation))
+plot_entropy <-
+  function(protein_conservation,
+           colors,
+           impose = NULL,
+           prot_name = NULL,
+           legend_pos = NULL) {
+    #plots scores on one plot, if colors are not specified plot as rainbow
+    #automagically uses name of pdb FIXME
+    # recive list of entropy scores and list of Names in this list
+    if (missing(colors)) {
+      colors <- rainbow(length(protein_conservation))
+    }
+    if (is.null(impose)) {
+      impose <- T
+    }
+    if (!is.null(prot_name)) {
+      title_str = paste("for ", prot_name)
+    }
+    else
+    {
+      title_str = ""
+    }
+    if (is.null(legend_pos)) {
+      legend_pos = "bottomleft"
+    }
+    plot(
+      protein_conservation[[1]],
+      ylim = c(0, 1),
+      col = colors[1],
+      xlab = "amino acid",
+      ylab = "entropy score",
+      main = paste("entropy score", title_str) ,
+      type = "l"
+    )
+    for (i in seq(2, length(protein_conservation))) {
+      par(new = impose)
+      plot(
+        protein_conservation[[i]],
+        ylim = c(0, 1),
+        col = colors[i],
+        xlab = "",
+        ylab = "",
+        main = "",
+        type = "l"
+      )
+    }
+    legend(legend_pos,
+           names(protein_conservation),
+           col = colors,
+           lty = c(1))
   }
-  if(is.null(impose)){
-    impose<-T
-  }
-  if(!is.null(prot_name)){
-    title_str=paste("for ",prot_name)
-  }
-  else
-  {title_str=""}
-  if(is.null(legend_pos)){
-    legend_pos="bottomleft"
-  }
-  plot(protein_conservation[[1]],ylim=c(0,1), col=colors[1],xlab="amino acid",ylab="entropy score", main=paste("entropy score",title_str) , type="l")
-  for(i in seq(2, length(protein_conservation))){
-    par(new=impose)
-    plot(protein_conservation[[i]],ylim=c(0,1), col=colors[i],xlab="",ylab="", main="", type="l")
-  }
-  legend(legend_pos,names(protein_conservation), col=colors, lty =c(1))
-}
 
 ### entropy for stuff
-get_structures_entropy<- function(structure_index, score_list){
+get_structures_entropy <- function(structure_index, score_list) {
   #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures
   #SCORE_LIST list of entropies for whole alignment
   #output is a list of matrixes where each row contains values of entropy for AA in structure
-  t_index=structure_index$structureIndices
-  Entropy=list()
-  lengths=list()
-  for (i in seq(1:length(t_index))){
-    lengths[[i]]=length(t_index[[i]])
-    output=matrix(NA,nrow=length(score_list),ncol=lengths[[i]])
-    for (j in seq(1:length(score_list))){
-      output[j,]=score_list[[j]][t_index[[i]]]
+  t_index = structure_index$structureIndices
+  Entropy = list()
+  lengths = list()
+  for (i in seq(1:length(t_index))) {
+    lengths[[i]] = length(t_index[[i]])
+    output = matrix(NA, nrow = length(score_list), ncol = lengths[[i]])
+    for (j in seq(1:length(score_list))) {
+      output[j, ] = score_list[[j]][t_index[[i]]]
     }
-    rownames(output)<-names(score_list)
-    Entropy[[i]]=output
+    rownames(output) <- names(score_list)
+    Entropy[[i]] = output
 
   }
   return(Entropy)
 }
 
-prepare_structure_profile<- function(structure, structure_entropy){
+prepare_structure_profile <- function(structure, structure_entropy) {
   #structure-> output of create_structure_seq
   #structure_entropy -> list of entropy scores for alignment
-  megalist=list()
-  score_count=dim(structure_entropy[[1]])[1] # ????
-  names<- rownames(structure[[1]])
-  for(i in seq(1, length(structure[[1]][,1]))){
-    StruEnt=list(entropy=c(), idx=c())
-    StruEnt$idx=as.numeric(structure[[2]][which(structure[[1]][i,]=="S")])
-    entropy_mtx=matrix(NaN, nrow = score_count, ncol=length(StruEnt$idx))
-    for(j in seq(1, score_count)){
-      entropy_mtx[j,]=structure_entropy[[i]][j, ]
+  megalist = list()
+  score_count = dim(structure_entropy[[1]])[1] # ????
+  names <- rownames(structure[[1]])
+  for (i in seq(1, length(structure[[1]][, 1]))) {
+    StruEnt = list(entropy = c(), idx = c())
+    StruEnt$idx = as.numeric(structure[[2]][which(structure[[1]][i, ] ==
+                                                    "S")])
+    entropy_mtx = matrix(NaN, nrow = score_count, ncol = length(StruEnt$idx))
+    for (j in seq(1, score_count)) {
+      entropy_mtx[j, ] = structure_entropy[[i]][j,]
     }
-    rownames(entropy_mtx)<- rownames(structure_entropy[[1]])
-    StruEnt$entropy=entropy_mtx
-    megalist[[i]]=StruEnt
+    rownames(entropy_mtx) <- rownames(structure_entropy[[1]])
+    StruEnt$entropy = entropy_mtx
+    megalist[[i]] = StruEnt
   }
-  names(megalist)<- names
+  names(megalist) <- names
   return(megalist)
 }
-plot_structure_on_protein<- function(protein_entropy, structure_profiles, pdb_name=NULL, colors=NULL, structure_names=NULL, legend_pos=NULL){
-  #protein entropy- list of an entropy values (with different scores)
-  #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
-  # and [[2]] index in protein
+plot_structure_on_protein <-
+  function(protein_entropy,
+           structure_profiles,
+           pdb_name = NULL,
+           colors = NULL,
+           structure_names = NULL,
+           legend_pos = NULL) {
+    #protein entropy- list of an entropy values (with different scores)
+    #structure_profils - list of entropy scores for structures (as list) where [[1]] entropy value
+    # and [[2]] index in protein
 
 
-  if(length(protein_entropy) == length(structure_profiles[[1]][[1]][,1])){
-    score_names=names(protein_entropy)
-    prot_lenght=length(protein_entropy[[1]])
-    StruLen=length(structure_profiles)
-    if(is.null(pdb_name)) {
-      pdb_name = " "
-    }
-    if(is.null(colors)) {
-      colors=rainbow(StruLen)
-    }
-    if(is.null(structure_names)){
-      structure_names=c()
-      for(i in seq(1,StruLen)){
-        structure_names[i]=paste("stru", i)
+    if (length(protein_entropy) == length(structure_profiles[[1]][[1]][, 1])) {
+      score_names = names(protein_entropy)
+      prot_lenght = length(protein_entropy[[1]])
+      StruLen = length(structure_profiles)
+      if (is.null(pdb_name)) {
+        pdb_name = " "
       }
-    }
-    if(is.null(legend_pos)){
-      legend_pos="bottomleft"
-    }
-    for(i in seq(1,length(score_names))){
-
-      plot(protein_entropy[[i]], col ="black",type="l", main=paste(score_names[i]," score for ", pdb_name), xlim=c(0,prot_lenght),
-           ylim=c(0.0,1.0), xlab='Amino Acid', ylab='Entropy')
-      for(j in seq(1,StruLen)){
-        par(new=T)
-        plot(structure_profiles[[j]][[2]],structure_profiles[[j]][[1]][i,], col=colors[[j]], main="",pch = j, xlim=c(0,prot_lenght),
-             ylim=c(0.0,1.0), xlab='', ylab='')
+      if (is.null(colors)) {
+        colors = rainbow(StruLen)
       }
-      legend(legend_pos,c(pdb_name,structure_names),lty=c(1,rep(0,j)),pch=c(-1,seq(1,j)),lwd=c(2.5,2.5),col=c("black",colors))
-
-
-    }
-  }
-  else print("The lists contain different number of conservation/entropy scores!")
-}
-
-compare_cons_metrics<- function(protein_entropy, structure_profile, pdb_name){
-  metrics_count=length(protein_entropy)
-  structures_count=length(structure_profile)
-  colors=rainbow(structures_count)
-  structure_names=c()
-  for(i in seq(1,structures_count)){
-    structure_names[i]=paste("stru", i)}
-  for(i in seq(1, metrics_count)){
-    for(j in seq(1, metrics_count)){
-      if(i!=j){
-        plot(protein_entropy[[i]], protein_entropy[[j]],main=paste('Scatterplot of', names(protein_entropy)[i],"vs. ", names(protein_entropy)[j]), xlim=c(0,1), ylim=c(0,1), xlab=names(protein_entropy)[i],ylab=names(protein_entropy)[j],pch=20, col=alpha("slategray", 0.5))
-        for(k in seq(1,structures_count)){
-          par(new=T)
-          plot(structure_profile[[k]][[1]][i,], structure_profile[[k]][[1]][j,], col=alpha(colors[k],0.7), pch = k, main="", xlim=c(0,1), ylim=c(0,1), xlab="",ylab="")
+      if (is.null(structure_names)) {
+        structure_names = c()
+        for (i in seq(1, StruLen)) {
+          structure_names[i] = paste("stru", i)
         }
-        legend('bottomright',c(pdb_name,structure_names),pch=c(20,seq(1,k)),col=scales::alpha(c("slategray",colors), 0.5))
+      }
+      if (is.null(legend_pos)) {
+        legend_pos = "bottomleft"
+      }
+      for (i in seq(1, length(score_names))) {
+        plot(
+          protein_entropy[[i]],
+          col = "black",
+          type = "l",
+          main = paste(score_names[i], " score for ", pdb_name),
+          xlim = c(0, prot_lenght),
+          ylim = c(0.0, 1.0),
+          xlab = 'Amino Acid',
+          ylab = 'Entropy'
+        )
+        for (j in seq(1, StruLen)) {
+          par(new = T)
+          plot(
+            structure_profiles[[j]][[2]],
+            structure_profiles[[j]][[1]][i, ],
+            col = colors[[j]],
+            main = "",
+            pch = j,
+            xlim = c(0, prot_lenght),
+            ylim = c(0.0, 1.0),
+            xlab = '',
+            ylab = ''
+          )
+        }
+        legend(
+          legend_pos,
+          c(pdb_name, structure_names),
+          lty = c(1, rep(0, j)),
+          pch = c(-1, seq(1, j)),
+          lwd = c(2.5, 2.5),
+          col = c("black", colors)
+        )
+
+
       }
     }
+    else
+      print("The lists contain different number of conservation/entropy scores!")
   }
 
-}
+compare_cons_metrics <-
+  function(protein_entropy,
+           structure_profile,
+           pdb_name) {
+    metrics_count = length(protein_entropy)
+    structures_count = length(structure_profile)
+    colors = rainbow(structures_count)
+    structure_names = c()
+    for (i in seq(1, structures_count)) {
+      structure_names[i] = paste("stru", i)
+    }
+    for (i in seq(1, metrics_count)) {
+      for (j in seq(1, metrics_count)) {
+        if (i != j) {
+          plot(
+            protein_entropy[[i]],
+            protein_entropy[[j]],
+            main = paste(
+              'Scatterplot of',
+              names(protein_entropy)[i],
+              "vs. ",
+              names(protein_entropy)[j]
+            ),
+            xlim = c(0, 1),
+            ylim = c(0, 1),
+            xlab = names(protein_entropy)[i],
+            ylab = names(protein_entropy)[j],
+            pch = 20,
+            col = alpha("slategray", 0.5)
+          )
+          for (k in seq(1, structures_count)) {
+            par(new = T)
+            plot(
+              structure_profile[[k]][[1]][i, ],
+              structure_profile[[k]][[1]][j, ],
+              col = alpha(colors[k], 0.7),
+              pch = k,
+              main = "",
+              xlim = c(0, 1),
+              ylim = c(0, 1),
+              xlab = "",
+              ylab = ""
+            )
+          }
+          legend(
+            'bottomright',
+            c(pdb_name, structure_names),
+            pch = c(20, seq(1, k)),
+            col = scales::alpha(c("slategray", colors), 0.5)
+          )
+        }
+      }
+    }
+
+  }
