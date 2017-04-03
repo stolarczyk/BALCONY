@@ -27,6 +27,7 @@ This function is useful to create sequence covered with structural data provided
 %%  If it is a LIST, use
 \item{structure_matrix}{A matrix of characters "S" and "N" marking on sequence the structural element; "S" - amino acid forms the analyzed structure, "N" - amino acid which does not form the structure. Number of rows of the matrix corresponds to the number of structures analyzed}
 \item{structure_numbers}{A vector containing the numbers of the amino acids in the sequence of interest (no gaps)}
+\item{structure_probabilities}{A list of two: structure indices in the protein and corresponding probabilities which helps to reduce the effect of non-consistent stuctural amino acids on the conservativity analysis of the structure of interest}
 }
 
 \author{

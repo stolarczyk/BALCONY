@@ -578,9 +578,13 @@ create_structure_seq <-
     for(i in seq(1, length(structure_list), by = 1)) {
       structures_indices = as.vector(structure_list[[i]][[1]])
       structures_names = as.vector(structure_list[[i]][[2]])
-      structures_probability = as.vector(structure_list[[i]][[3]])
-      structures_probability = structures_probability[-1]
-      structures_probability = structures_probability/max(structures_probability)# normalization
+      if(length(structure_list[[i]]) == 3){
+        structures_probability = as.vector(structure_list[[i]][[3]])
+        structures_probability = structures_probability[-1]
+        structures_probability = structures_probability/max(structures_probability)# normalization
+      } else{
+        structures_probability = NULL
+      }
       structures_indices = structures_indices[-1]
       structure_idx = as.numeric(structures_indices)
       structures_names = structures_names[-1]
@@ -610,7 +614,11 @@ create_structure_seq <-
         structure[[i]][a] = seqs[[i]][j]
         j = j + 1
       }
-      structure_probabilities[[i]] = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
+      if(length(structure_list[[i]]) == 3){
+        structure_probabilities[[i]] = list(structure_indices = structure_idx, stucture_probabilities = structures_probability)
+      } else {
+        structure_probabilities[[i]] = NULL
+      }
     }
     struc_length = length(structure[[1]])
     count = length(structure_list)
@@ -629,7 +637,8 @@ create_structure_seq <-
     }
     rownames(output) = names(structure_list)
     return(list(structure_matrix = output, structure_numbers = nr_stru, stucture_probabilities = structure_probabilities))
-  }
+}
+
 
 barplotshow <- function(position, AA_variation) {
   #position=position-1;
