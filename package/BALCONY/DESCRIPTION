@@ -8,5 +8,5 @@ Description: BALCONY is an R package which facilitates the evolutionary analysis
 License: GPL
 Encoding: UTF-8
 LazyData: true
-Imports: seqinr, Rpdb, scales
+Depends: seqinr, Rpdb, scales
 RoxygenNote: 6.0.1
