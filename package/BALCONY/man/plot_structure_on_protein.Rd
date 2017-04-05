@@ -8,7 +8,8 @@ Plot structure entropy on protein background
 This function enables to visually asses the stucture(s) entropy in comparison with protein's entropy
 }
 \usage{
-plot_structure_on_protein(protein_entropy, structure_profiles, pdb_name, colors, structure_names, legend_pos)
+plot_structure_on_protein(protein_entropy, structure_profiles,
+                          pdb_name, colors, structure_names, legend_pos)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,7 +37,8 @@ Alicja Pluciennik & Michal Stolarczyk
 data("alignment")
 data("structure")
 structure_index=get_structures_idx(structure)
-entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),TG_entropy = TG_conservativity(alignment))
+entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+                        TG_entropy = TG_conservativity(alignment))
 structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
 structure_profile = prepare_structure_profile(structure, structure_entropy)
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)

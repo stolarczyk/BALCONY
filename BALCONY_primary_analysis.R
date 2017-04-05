@@ -80,19 +80,16 @@ plot_entropy(prot_cons, impose=T,legend_pos = "topleft")
 
 profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
 
-### PLOT STRUCTURE
+# PLOT STRUCTURE
 plot_structure_on_protein(prot_cons, structure_profiles = profiles_for_structure,pdb_name, legend_pos = "topleft")
-#######TUNNELS ENTROPY
+#TUNNELS ENTROPY
 plot(structure$structure_probabilities[4,][which(!is.nan(structure$structure_probabilities[4,]))],y = profiles_for_structure$T4_4JNC$entropy["TG.entropy",],ylim = c(0,1),xlim = c(0,1))
 compare_cons_metrics(prot_cons,profiles_for_structure, pdb_name)
-EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 1, pdb_name = pdb_name,range = c(1:233),make_plot = T)
-write(EQUAL, file = "SK_twosided.csv", sep = ",")
+# KS test
+EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 1,range = c(1:233),make_plot = T)
+write.csv(EQUAL, file = "SK_twosided.csv", sep = ",",row.names = T,col.names = T)
 LESS=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 2, pdb_name = pdb_name,range = c(1:233),make_plot = T)
-write(LESS, file = "less.csv", sep = ",")
-
+write.csv(LESS, file = "less.csv", sep = ",",row.names = T,col.names = T)
 GREATER=smirnof_kolmogorov_test(prot_cons, profiles_for_structure,3, pdb_name,F)
-write(GREATER, file = "GREATER.txt", sep = " ")
-
-
-
+write.csv(GREATER, file = "greater.csv", sep = ",",row.names = T,col.names = T)
 

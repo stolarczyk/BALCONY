@@ -5,4 +5,5 @@ importFrom("seqinr","s2c","c2s")
 importFrom("grDevices", "rainbow")
 importFrom("graphics", "barplot", "legend", "par", "plot", "text")
 importFrom("utils", "data", "read.table", "write.table")
+importFrom("stats", "ecdf", "ks.test")
 

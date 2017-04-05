@@ -34,7 +34,8 @@ data("alignment")
 uniprot="P34914"
 tunnel=create_structure_seq(structure,uniprot,alignment)
 structure_index=get_structures_idx(tunnel)
-entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),TG_entropy = TG_conservativity(alignment))
+entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+                        TG_entropy = TG_conservativity(alignment))
 structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

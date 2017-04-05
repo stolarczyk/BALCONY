@@ -30,7 +30,7 @@ data("alignment")
 alignment = delete_isoforms(alignment)
 grouping_method = "general"
 aligned_sequences_matrix = alignment2matrix(alignment)
-grouped_aligned_sequences_matrix = aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
+grouped = aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -41,7 +41,8 @@ uniprot="P34914"
 alignment = delete_isoforms(alignment)
 threshold = 1
 var_aa=calculate_AA_variation(alignment,threshold)
-entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),TG.entropy = TG_conservativity(alignment))
+entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+                  TG.entropy = TG_conservativity(alignment))
 create_final_CSV("my_filename",var_aa,structure,uniprot,alignment,entropy_data)
 }
 \keyword{ save }

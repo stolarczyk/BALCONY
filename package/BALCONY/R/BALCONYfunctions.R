@@ -989,42 +989,42 @@ landgraf_conservativity <-
     return(Landgraf_normalized_entropy)
   }
 
-entropy_profile <-
-  function(tunnel_file,
-           sequence_id,
-           alignment_file,
-           prot_entropy,
-           index) {
-    #tunnel_file-> list of tunnels in protein
-    #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
-    #alignment_file-> file wiht alignment (alignment.fst)
-    #Shift-> shift of AA from caver to reference UniProt sequence
-    #index of tunne;
-    seq = list()
-
-
-    index
-    #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment_file)
-    tunnels_indices = as.vector(tunnel_file[[index]][[1]])
-
-    tunnels_names = as.vector(tunnel_file[[index]][[2]])
-
-    tunnels_indices = tunnels_indices[-1]
-
-    tunnel_idx = as.numeric(tunnels_indices)
-    tunnels_names = tunnels_names[-1]
-
-
-    #profile=tunnel_idx
-    #for(i in seq(1:length(profile))){
-    # id=tunnel_idx[i]
-    # profile[i]=prot_entropy[id]
-    profile = prot_entropy[tunnel_idx]
-    output = list(profile, tunnel_idx)
-
-    return(output)
-  }
+# entropy_profile <-
+#   function(tunnel_file,
+#            sequence_id,
+#            alignment_file,
+#            prot_entropy,
+#            index) {
+#     #tunnel_file-> list of tunnels in protein
+#     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
+#     #alignment_file-> file wiht alignment (alignment.fst)
+#     #Shift-> shift of AA from caver to reference UniProt sequence
+#     #index of tunne;
+#     seq = list()
+#
+#
+#     index
+#     #finds an uniprot name from alignent- extract uniprot seq from alignment
+#     base_seq = find_seq(sequence_id, alignment_file)
+#     tunnels_indices = as.vector(tunnel_file[[index]][[1]])
+#
+#     tunnels_names = as.vector(tunnel_file[[index]][[2]])
+#
+#     tunnels_indices = tunnels_indices[-1]
+#
+#     tunnel_idx = as.numeric(tunnels_indices)
+#     tunnels_names = tunnels_names[-1]
+#
+#
+#     #profile=tunnel_idx
+#     #for(i in seq(1:length(profile))){
+#     # id=tunnel_idx[i]
+#     # profile[i]=prot_entropy[id]
+#     profile = prot_entropy[tunnel_idx]
+#     output = list(profile, tunnel_idx)
+#
+#     return(output)
+#   }
 
 
 # Structure analysis ------------------------------------------------------
@@ -1183,8 +1183,8 @@ get_structures_entropy <- function(structure_index, score_list) {
     }
     rownames(output) <- names(score_list)
     Entropy[[i]] = output
-
   }
+  names(Entropy) = names(structure_index[[2]])
   return(Entropy)
 }
 
@@ -1339,7 +1339,7 @@ compare_cons_metrics <-
 
   }
 
-smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name, range = NULL, make_plot = NULL){
+smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name = "Reference", range = NULL, make_plot = NULL){
   if(is.null(make_plot)){
     make_plot<-T
   }
@@ -1356,7 +1356,7 @@ smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_n
     for(j in seq(1, structures_count)){
       reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
       temp=structure_cons[[j]][[1]][i,]
-      pval_mtx[i,j]=ks.test(reference, temp,alternative = alt_hip)$p.value
+      pval_mtx[i,j]=stats::ks.test(reference, temp,alternative = alt_hip)$p.value
     }
   }
 
@@ -1366,12 +1366,12 @@ smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_n
       par(new=F)
       for(j in seq(1,structures_count)){
         reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
-        cumulative_distribution=ecdf(reference)
+        cumulative_distribution=stats::ecdf(reference)
         temp=ecdf(structure_cons[[j]][[1]][i,])
-        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
+        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=scales::alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
         par(new=T)
-        plot(temp, xlim=c(0,1),ylim=c(0,1),col=alpha(colors[j],0.7), ylab="",xlab="",main="")
-        legend('bottomright',c(pdb_name,structure_names[j]),pch = c(16,16),col=alpha(c("slategray",colors[j]),0.8))
+        plot(temp, xlim=c(0,1),ylim=c(0,1),col=scales::alpha(colors[j],0.7), ylab="",xlab="",main="")
+        legend('bottomright',c(pdb_name,structure_names[j]),pch = c(16,16),col=scales::alpha(c("slategray",colors[j]),0.8))
       }
     }
   }

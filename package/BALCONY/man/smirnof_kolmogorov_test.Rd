@@ -8,45 +8,24 @@ Perform Smirnof-Kolmogorov test for structural data
 This function facilitates the comparion of conservativity of structure of interest with the rest of the protein. For example comparison of tunnel conservativity with overall protein conservativity.
 }
 \usage{
-smirnof_kolmogorov_test(protein_cons, structure_cons, alternative, pdb_name, range = NULL, make_plot = NULL)
+smirnof_kolmogorov_test(protein_cons, structure_cons, alternative,
+                        pdb_name = "Reference", range = NULL, make_plot = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{protein_cons}{A list of calculated entropy scores (vectors of numeric values). The output of get_get_protein_entropy() function}
-  \item{structure_cons}{
-%%     ~~Describe \code{structure_cons} here~~
-}
-  \item{alternative}{
-%%     ~~Describe \code{alternative} here~~
-}
-  \item{pdb_name}{
-%%     ~~Describe \code{pdb_name} here~~
-}
-  \item{range}{
-%%     ~~Describe \code{range} here~~
-}
-  \item{make_plot}{
-%%     ~~Describe \code{make_plot} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
+  \item{protein_cons}{A list of calculated entropy scores (vectors of numeric values). The output of get_protein_entropy() function}
+  \item{structure_cons}{A list where each element is a list of structure indices in the protein and matrix with corresponding entropy values (each row is a separate score metric)}
+  \item{alternative}{A numeric value indicating the character of alternative hypothesis of the test to be performed: 1 - two sided test, 2 - less, 3 - greater, following the generic ks.test() function.}
+  \item{pdb_name}{(optional) A string with name of the reference protein, default: "Reference"}
+  \item{range}{(optional) A numeric vector with region of reference protein to be excluded from the dataset. Useful when protein consists of additional chains with outstandingly low/high entropy values which may distort result of the test, default: NULL}
+  \item{make_plot}{(optional) A logical indicating if cumulative distribution functions should be displayed, default: TRUE}
+  }
+\value{A matrix of p-values for each entropy metric (rows) and structure (columns)}
 \author{
-%%  ~~who you are~~
+Michal Stolarczyk & Alicja Pluciennik
 }
 \note{
-%%  ~~further notes~~
+\code{\link[stats]{ecdf}}, \code{\link[stats]{ks.test}}
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -55,60 +34,19 @@ smirnof_kolmogorov_test(protein_cons, structure_cons, alternative, pdb_name, ran
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (protein_cons, structure_cons, alternative, pdb_name,
-    range = NULL, make_plot = NULL)
-{
-    if (is.null(make_plot)) {
-        make_plot <- T
-    }
-    metrics_count = length(protein_cons)
-    structures_count = length(structure_cons)
-    structure_names = c()
-    for (i in seq(1, structures_count)) {
-        structure_names[i] = paste("stru", i)
-    }
-    alt_hip = c("two.sided", "less", "greater")[alternative]
-    pval_mtx = matrix(NA, nrow = metrics_count, ncol = structures_count)
-    rownames(pval_mtx) <- names(protein_cons)
-    colnames(pval_mtx) <- structure_names
-    for (i in seq(1, metrics_count)) {
-        for (j in seq(1, structures_count)) {
-            reference = protein_cons[[i]][-c(range, structure_cons[[j]][[2]])]
-            temp = structure_cons[[j]][[1]][i, ]
-            pval_mtx[i, j] = ks.test(reference, temp, alternative = alt_hip)$p.value
-        }
-    }
-    if (make_plot == T) {
-        colors = rainbow(structures_count)
-        for (i in seq(1, metrics_count)) {
-            par(new = F)
-            for (j in seq(1, structures_count)) {
-                reference = protein_cons[[i]][-c(range, structure_cons[[j]][[2]])]
-                cumulative_distribution = ecdf(reference)
-                temp = ecdf(structure_cons[[j]][[1]][i, ])
-                plot(cumulative_distribution, xlim = c(0, 1),
-                  ylim = c(0, 1), xlab = "entropy", ylab = "cumulative probability",
-                  col = alpha("slategray", 0.7), main = paste("CDF of",
-                    names(protein_cons)[i], " for", pdb_name,
-                    "structures"))
-                par(new = T)
-                plot(temp, xlim = c(0, 1), ylim = c(0, 1), col = alpha(colors[j],
-                  0.7), ylab = "", xlab = "", main = "")
-                legend("bottomright", c(pdb_name, structure_names),
-                  lty = c(1, 1, 1, 1), lwd = c(2.5, 2.5), col = alpha(c("slategray",
-                    colors), 0.8))
-            }
-        }
-    }
-    return(pval_mtx)
-  }
+data("alignment")
+data("structure")
+entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+              TG.entropy = TG_conservativity(alignment),
+              Kabat.entropy =  kabat_conservativity(alignment))
+tunnel_index=get_structures_idx(structure)
+prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
+stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
+profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
+EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons,
+                              structure_cons = profiles_for_structure,
+                              alternative = 1,range = c(1:233),make_plot = TRUE)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ test }% use one of  RShowDoc("KEYWORDS")
+\keyword{ structure }% __ONLY ONE__ keyword per line

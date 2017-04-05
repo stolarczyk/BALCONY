@@ -8,7 +8,8 @@ Superimpose structural data of interest on sequence after the alignmment
 Create sequence of a protein structure model based on numbers of amino acids given in a text file (list of IDs and numbers in protein)
 }
 \usage{
-create_structure_seq(structure_list, sequence_id, alignment, pdb_path = NULL, chain_identifier = NULL, shift = NULL)
+create_structure_seq(structure_list, sequence_id, alignment,
+                     pdb_path = NULL, chain_identifier = NULL, shift = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
