@@ -577,9 +577,12 @@ create_structure_seq <-
         stop()
       }
       missing = find_consecutive_seq(
-        get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
+        get_remarks465_pdb(pdb_file_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
       )
     } else{
+      missing = NULL
+    }
+    if(length(missing$values) == 0){
       missing = NULL
     }
 
@@ -622,9 +625,9 @@ create_structure_seq <-
       just_align = alignment[[3]]
       length_alignment = alignment_parameters(alignment)$col_no
       structure[[i]] = rep("-", each = length_alignment)
-      probability[[i]] = rep(NA, each = length_alignment)
+      probability[[i]] = rep(NaN, each = length_alignment)
       if (prob_data == T) {
-        probs[[i]] = rep(NA, each = base_seq$len)
+        probs[[i]] = rep(NaN, each = base_seq$len)
         probs[[i]][structure_idx] = structures_probability
       }
       j = 1
@@ -640,7 +643,7 @@ create_structure_seq <-
     struc_length = length(structure[[1]])
     count = length(structure_list)
     struct_output = matrix("-", count, struc_length)
-    probability_output = matrix(NA, count, struc_length)
+    probability_output = matrix(NaN, count, struc_length)
     v = seq(1, count, by = 1)
     for (i in v) {
       struct_output[i, ] = structure[[i]]
@@ -681,6 +684,7 @@ exclude_low_probability_structures <-
     if (length(structure) == 3) {
       for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
         to_exclude = which(structure[[3]][i, ] < threshold)
+        structure[[3]][i,to_exclude] = NaN
         structure[[1]][i, which(structure[[3]][i, ] < threshold)] = "N"
       }
     } else{
@@ -1065,7 +1069,7 @@ find_consecutive_seq <- function(vector) {
   ind = append(vector[1], vector[which(diffs != 1) + 1])
   cnt = 1
   lengths = c()
-  for (i in seq(2, length(ind), by = 1)) {
+  for (i in seq(2, length(ind))) {
     lengths[cnt] = which(vector == ind[i]) - which(vector == ind[i - 1])
     cnt = cnt + 1
   }
@@ -1164,7 +1168,6 @@ plot_entropy <-
            lty = c(1))
   }
 
-### entropy for stuff
 get_structures_entropy <- function(structure_index, score_list) {
   #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures
   #SCORE_LIST list of entropies for whole alignment
@@ -1231,7 +1234,9 @@ plot_structure_on_protein <-
       if (is.null(structure_names)) {
         structure_names = c()
         for (i in seq(1, StruLen)) {
-          structure_names[i] = paste("stru", i)
+          #structure_names[i] = paste("stru", i)
+          structure_names[i] = names(structure_profiles)[i]
+
         }
       }
       if (is.null(legend_pos)) {
@@ -1333,3 +1338,46 @@ compare_cons_metrics <-
     }
 
   }
+
+smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name, range = NULL, make_plot = NULL){
+  ###FIXME! CZY WSZYSTKIE STRUKTURY DLA DANEGO WSPÓŁCZYNNIKA POWINNY BYC NA JEDNYM WYKRESIE?
+  #protein_cons=prot_cons
+  #structure_cons=profiles_for_structure
+  if(is.null(make_plot)){
+    make_plot<-T
+  }
+  metrics_count=length(protein_cons)
+  structures_count=length(structure_cons)
+  structure_names=c()
+  for(i in seq(1,structures_count)){
+    structure_names[i]=paste("stru", i)}
+  alt_hip=c("two.sided","less", "greater")[alternative]
+
+  pval_mtx=matrix(NA, nrow=metrics_count,ncol = structures_count)
+  rownames(pval_mtx)<- names(protein_cons)
+  colnames(pval_mtx)<- structure_names
+  for(i in seq(1,metrics_count)){
+    for(j in seq(1, structures_count)){
+      reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
+      temp=structure_cons[[j]][[1]][i,]
+      pval_mtx[i,j]=ks.test(reference, temp,alternative = alt_hip)$p.value
+    }
+  }
+
+  if(make_plot==T){
+    colors=rainbow(structures_count)
+    for(i in seq(1,metrics_count)){
+      par(new=F)
+      for(j in seq(1,structures_count)){
+        reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
+        cumulative_distribution=ecdf(reference)
+        temp=ecdf(structure_cons[[j]][[1]][i,])
+        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
+        par(new=T)
+        plot(temp, xlim=c(0,1),ylim=c(0,1),col=alpha(colors[j],0.7), ylab="",xlab="",main="")
+        legend('bottomright',c(pdb_name,structure_names),lty=c(1,1,1,1),lwd=c(2.5,2.5),col=alpha(c("slategray",colors),0.8))
+      }
+    }
+  }
+  return(pval_mtx)
+}
