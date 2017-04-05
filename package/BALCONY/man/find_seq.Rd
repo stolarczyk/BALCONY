@@ -13,11 +13,11 @@ find_seq(sequence_id, alignment_file)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sequence_id}{identifier of desired sequence from alignment}
-  \item{alignment_file}{alignment file loaded with read.alignment() }
+  \item{alignment_file}{alignment file loaded with \code{\link[seqinr]{read.alignment}} }
 }
 
 \value{
- \item{sequence}{desired aligned sequence form alignment}
+ \item{sequence}{A string, the desired aligned sequence form alignment}
 
 }
 \author{

@@ -12,7 +12,7 @@ consensus(alignment, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{output of of read.alignment() function}
+  \item{alignment}{output of of \code{\link[seqinr]{read.alignment}} function}
   \item{threshold}{minimal fraction of amino acids on the certain position in all sequences of the alignment to be taken for consensus letter on this position; number in range 0-100.  }
   }
 %%     ~~Describe \code{x} here~~
@@ -27,7 +27,7 @@ If maximum fraction of any amino acid on the certain position is lower than a th
 Alicja Pluciennik & Michal Stolarczyk
 }
 \note{
-Please note that this function masks the seqinr package function "consensus"
+Please note that this function masks the seqinr package function  \code{\link[seqinr]{consensus}}
 }
 
 \seealso{

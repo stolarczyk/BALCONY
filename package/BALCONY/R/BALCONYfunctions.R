@@ -556,128 +556,7 @@ find_seq <- function(sequence_id, alignment_file) {
   seq = list(sequence = seqs, len = seqs_character)
   return(seq)
 }
-create_structure_seq <-
-  function(structure_list,
-           sequence_id,
-           alignment,
-           pdb_path = NULL,
-           chain_identifier = NULL,
-           shift = NULL) {
-    #structure_list-> list of structures in protein
-    #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
-    #alignment-> file with alignment (alignment.fasta)
-    #shift-> if there is missing domain in structure
-    seqs = list()
-    probs = list()
-    structure = list()
-    probability = list()
-    if (!is.null(pdb_path)) {
-      if (is.null(chain_identifier)) {
-        print("Chain identifier required!")
-        stop()
-      }
-      missing = find_consecutive_seq(
-        get_remarks465_pdb(pdb_file_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
-      )
-    } else{
-      missing = NULL
-    }
-    if(length(missing$values) == 0){
-      missing = NULL
-    }
 
-    #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = find_seq(sequence_id, alignment)
-    structure_probabilities = list()
-    for (i in seq(1, length(structure_list), by = 1)) {
-      structures_indices = as.vector(structure_list[[i]][[1]])
-      structures_names = as.vector(structure_list[[i]][[2]])
-      if (length(structure_list[[i]]) == 3) {
-        prob_data = T
-        structures_probability = as.vector(structure_list[[i]][[3]])
-        structures_probability = structures_probability[-1]
-        structures_probability = structures_probability / max(structures_probability)# normalization
-
-      } else{
-        prob_data = F
-        structures_probability = NULL
-      }
-      structures_indices = structures_indices[-1]
-      structure_idx = as.numeric(structures_indices)
-      structures_names = structures_names[-1]
-
-      if (!is.null(shift)) {
-        structure_idx = structure_idx + rep(shift, length(structure_idx))
-      }
-
-      if (length(missing) != 0) {
-        for (z in seq(1, length(missing$values))) {
-          for (l in seq(1, length(structure_idx))) {
-            if (structure_idx[l] >= missing$values[z]) {
-              structure_idx[l] = structure_idx[l] + missing$lengths[z]
-            }
-          }
-        }
-      }
-      seqs[[i]] = rep("N", each = base_seq$len)
-      seqs[[i]][structure_idx] = "S"
-      aa_positions = which(seqinr::s2c(base_seq$sequence) != "-")
-      just_align = alignment[[3]]
-      length_alignment = alignment_parameters(alignment)$col_no
-      structure[[i]] = rep("-", each = length_alignment)
-      probability[[i]] = rep(NaN, each = length_alignment)
-      if (prob_data == T) {
-        probs[[i]] = rep(NaN, each = base_seq$len)
-        probs[[i]][structure_idx] = structures_probability
-      }
-      j = 1
-      for (a in aa_positions) {
-        #aligning the structures information with the alignment sequence
-        structure[[i]][a] = seqs[[i]][j]
-        if (prob_data == T) {
-          probability[[i]][a] = probs[[i]][[j]]
-        }
-        j = j + 1
-      }
-    }
-    struc_length = length(structure[[1]])
-    count = length(structure_list)
-    struct_output = matrix("-", count, struc_length)
-    probability_output = matrix(NaN, count, struc_length)
-    v = seq(1, count, by = 1)
-    for (i in v) {
-      struct_output[i, ] = structure[[i]]
-      if (prob_data == T) {
-        probability_output[i, ] = probability[[i]]
-      }
-    }
-    nr_stru = rep("-", length(structure[[1]]))
-    j = 1
-    for (i in seq(1, length(structure[[1]]), 1)) {
-      if (structure[[1]][i] != "-") {
-        nr_stru[i] = j
-        j = j + 1
-      }
-    }
-    rownames(struct_output) = names(structure_list)
-    if (prob_data == T) {
-      rownames(probability_output) = names(structure_list)
-    }
-    if (prob_data == T) {
-      return(
-        list(
-          structure_matrix = struct_output,
-          structure_numbers = nr_stru,
-          structure_probabilities = probability_output
-        )
-      )
-    } else{
-      return(list(
-        structure_matrix = struct_output,
-        structure_numbers = nr_stru
-      ))
-    }
-  }
 
 exclude_low_probability_structures <-
   function(structure, threshold) {
@@ -989,45 +868,133 @@ landgraf_conservativity <-
     return(Landgraf_normalized_entropy)
   }
 
-# entropy_profile <-
-#   function(tunnel_file,
-#            sequence_id,
-#            alignment_file,
-#            prot_entropy,
-#            index) {
-#     #tunnel_file-> list of tunnels in protein
-#     #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
-#     #alignment_file-> file wiht alignment (alignment.fst)
-#     #Shift-> shift of AA from caver to reference UniProt sequence
-#     #index of tunne;
-#     seq = list()
-#
-#
-#     index
-#     #finds an uniprot name from alignent- extract uniprot seq from alignment
-#     base_seq = find_seq(sequence_id, alignment_file)
-#     tunnels_indices = as.vector(tunnel_file[[index]][[1]])
-#
-#     tunnels_names = as.vector(tunnel_file[[index]][[2]])
-#
-#     tunnels_indices = tunnels_indices[-1]
-#
-#     tunnel_idx = as.numeric(tunnels_indices)
-#     tunnels_names = tunnels_names[-1]
-#
-#
-#     #profile=tunnel_idx
-#     #for(i in seq(1:length(profile))){
-#     # id=tunnel_idx[i]
-#     # profile[i]=prot_entropy[id]
-#     profile = prot_entropy[tunnel_idx]
-#     output = list(profile, tunnel_idx)
-#
-#     return(output)
-#   }
-
 
 # Structure analysis ------------------------------------------------------
+
+
+create_structure_seq <-
+  function(structure_list,
+           sequence_id,
+           alignment,
+           pdb_path = NULL,
+           chain_identifier = NULL,
+           shift = NULL) {
+    #structure_list-> list of structures in protein
+    #sequence_id -> uniprot id  which has been found by read_file(filename="PDBid") with PDB indentifier ;
+    #alignment-> file with alignment (alignment.fasta)
+    #shift-> if there is missing domain in structure
+    seqs = list()
+    probs = list()
+    structure = list()
+    probability = list()
+    if (!is.null(pdb_path)) {
+      if (is.null(chain_identifier)) {
+        print("Chain identifier required!")
+        stop()
+      }
+      missing = find_consecutive_seq(
+        get_remarks465_pdb(pdb_file_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
+      )
+    } else{
+      missing = NULL
+    }
+    if(length(missing$values) == 0){
+      missing = NULL
+    }
+
+    #finds an uniprot name from alignent- extract uniprot seq from alignment
+    base_seq = find_seq(sequence_id, alignment)
+    structure_probabilities = list()
+    for (i in seq(1, length(structure_list), by = 1)) {
+      structures_indices = as.vector(structure_list[[i]][[1]])
+      structures_names = as.vector(structure_list[[i]][[2]])
+      if (length(structure_list[[i]]) == 3) {
+        prob_data = T
+        structures_probability = as.vector(structure_list[[i]][[3]])
+        structures_probability = structures_probability[-1]
+        structures_probability = structures_probability / max(structures_probability)# normalization
+
+      } else{
+        prob_data = F
+        structures_probability = NULL
+      }
+      structures_indices = structures_indices[-1]
+      structure_idx = as.numeric(structures_indices)
+      structures_names = structures_names[-1]
+
+      if (!is.null(shift)) {
+        structure_idx = structure_idx + rep(shift, length(structure_idx))
+      }
+
+      if (length(missing) != 0) {
+        for (z in seq(1, length(missing$values))) {
+          for (l in seq(1, length(structure_idx))) {
+            if (structure_idx[l] >= missing$values[z]) {
+              structure_idx[l] = structure_idx[l] + missing$lengths[z]
+            }
+          }
+        }
+      }
+      seqs[[i]] = rep("N", each = base_seq$len)
+      seqs[[i]][structure_idx] = "S"
+      aa_positions = which(seqinr::s2c(base_seq$sequence) != "-")
+      just_align = alignment[[3]]
+      length_alignment = alignment_parameters(alignment)$col_no
+      structure[[i]] = rep("-", each = length_alignment)
+      probability[[i]] = rep(NaN, each = length_alignment)
+      if (prob_data == T) {
+        probs[[i]] = rep(NaN, each = base_seq$len)
+        probs[[i]][structure_idx] = structures_probability
+      }
+      j = 1
+      for (a in aa_positions) {
+        #aligning the structures information with the alignment sequence
+        structure[[i]][a] = seqs[[i]][j]
+        if (prob_data == T) {
+          probability[[i]][a] = probs[[i]][[j]]
+        }
+        j = j + 1
+      }
+    }
+    struc_length = length(structure[[1]])
+    count = length(structure_list)
+    struct_output = matrix("-", count, struc_length)
+    probability_output = matrix(NaN, count, struc_length)
+    v = seq(1, count, by = 1)
+    for (i in v) {
+      struct_output[i, ] = structure[[i]]
+      if (prob_data == T) {
+        probability_output[i, ] = probability[[i]]
+      }
+    }
+    nr_stru = rep("-", length(structure[[1]]))
+    j = 1
+    for (i in seq(1, length(structure[[1]]), 1)) {
+      if (structure[[1]][i] != "-") {
+        nr_stru[i] = j
+        j = j + 1
+      }
+    }
+    rownames(struct_output) = names(structure_list)
+    if (prob_data == T) {
+      rownames(probability_output) = names(structure_list)
+    }
+    if (prob_data == T) {
+      return(
+        list(
+          structure_matrix = struct_output,
+          structure_numbers = nr_stru,
+          structure_probabilities = probability_output
+        )
+      )
+    } else{
+      return(list(
+        structure_matrix = struct_output,
+        structure_numbers = nr_stru
+      ))
+    }
+  }
+
 get_remarks465_pdb <- function(pdb_file_path, chain_identifier) {
   #pdb_file_path: a path to the pdb file
   #chain_identifier: a character spcifying the chain to analyze
@@ -1112,9 +1079,6 @@ get_prot_entropy <- function(whole_prot, entropy_scores_list) {
   }
   return(prot_cons)
 }
-
-# Corrected struct functions ----------------------------------------------
-
 
 plot_entropy <-
   function(protein_conservation,

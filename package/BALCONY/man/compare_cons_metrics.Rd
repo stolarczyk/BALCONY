@@ -12,8 +12,8 @@ compare_cons_metrics(protein_entropy, structure_profile, pdb_name)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{protein_entropy}{List of entropy scores values for a whole protein (output of get_prot_entropy()).}
-  \item{structure_profile}{Each element is a list of entropy values (matrix of entropy scores) and indices of residues building structure in protein of interest  (output of prepare_structure_profile()).}
+  \item{protein_entropy}{List of entropy scores values for a whole protein (output of \code{\link{get_prot_entropy}}).}
+  \item{structure_profile}{Each element is a list of entropy values (matrix of entropy scores) and indices of residues building structure in protein of interest  (output of \code{\link{prepare_structure_profile}}).}
   \item{pdb_name}{The name of the analyzed protein.}
 %%     ~~Describe \code{x} here~~
 }

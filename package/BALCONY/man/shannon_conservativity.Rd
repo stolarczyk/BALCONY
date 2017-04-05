@@ -12,7 +12,7 @@ shannon_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{Alignment data read with read.alignment() function}
+  \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
 }
 
 \value{

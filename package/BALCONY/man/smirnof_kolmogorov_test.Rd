@@ -13,9 +13,9 @@ smirnof_kolmogorov_test(protein_cons, structure_cons, alternative,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{protein_cons}{A list of calculated entropy scores (vectors of numeric values). The output of get_protein_entropy() function}
+  \item{protein_cons}{A list of calculated entropy scores (vectors of numeric values). The output of \code{\link{get_prot_entropy}} function}
   \item{structure_cons}{A list where each element is a list of structure indices in the protein and matrix with corresponding entropy values (each row is a separate score metric)}
-  \item{alternative}{A numeric value indicating the character of alternative hypothesis of the test to be performed: 1 - two sided test, 2 - less, 3 - greater, following the generic ks.test() function.}
+  \item{alternative}{A numeric value indicating the character of alternative hypothesis of the test to be performed: 1 - two sided test, 2 - less, 3 - greater, following the generic \code{\link[stats]{ks.test}} function.}
   \item{pdb_name}{(optional) A string with name of the reference protein, default: "Reference"}
   \item{range}{(optional) A numeric vector with region of reference protein to be excluded from the dataset. Useful when protein consists of additional chains with outstandingly low/high entropy values which may distort result of the test, default: NULL}
   \item{make_plot}{(optional) A logical indicating if cumulative distribution functions should be displayed, default: TRUE}

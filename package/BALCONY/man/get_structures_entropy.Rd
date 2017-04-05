@@ -12,7 +12,7 @@ get_structures_entropy(structure_index,score_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{structure_index}{A is a list of indices in alignment of protein and structures. Output output of get_structure_idx() function}
+  \item{structure_index}{A is a list of indices in alignment of protein and structures. Output output of \code{\link{get_structures_idx}} function}
   \item{score_list}{A list of entropies for whole alignment}
 }
 \details{

@@ -13,15 +13,15 @@ plot_structure_on_protein(protein_entropy, structure_profiles,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{protein_entropy}{A list of entropy values for protein of interest. Output of get_prot_entropy() function}
-  \item{structure_profiles}{Output of prepare_structure_profile() function}
+  \item{protein_entropy}{A list of entropy values for protein of interest. Output of \code{\link{get_prot_entropy}} function}
+  \item{structure_profiles}{Output of \code{\link{prepare_structure_profile}} function}
   \item{pdb_name}{(optional) A string with protein's name e.g. PDB ID, default: none}
   \item{colors}{(optional) A vector of strings with colors to be used to plot the stucture markers of length equal to number of structures in structure profiles, default: rainbow()}
   \item{structure_names}{(optional) A vector of strings to be displayed as names in the legend, default: "stru <no>"}
   \item{legend_pos}{(optional) A string witch legend position - one of following: "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right" and "center". Default: "bottomleft" }
 }
 \details{
-For each entropy score from structure_profiles (these must correspond to prot_entropy) this function plots separate plots. Each plot presents entropy score for whole protein each structure is marked as one of 21 symbols available in generic plot() function.
+For each entropy score from structure_profiles (these must correspond to prot_entropy) this function plots separate plots. Each plot presents entropy score for whole protein each structure is marked as one of 21 symbols available in generic \code{\link[graphics]{plot}} function.
 }
 \value{
 This function produces plot

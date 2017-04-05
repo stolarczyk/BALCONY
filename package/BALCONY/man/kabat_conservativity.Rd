@@ -12,7 +12,7 @@ kabat_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{Alignment data read with read.alignment() function}
+  \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
 }
 \value{
 \item{conservation_score}{A vector of length equal to the length of aligned sequences}

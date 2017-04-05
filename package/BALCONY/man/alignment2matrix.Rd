@@ -9,7 +9,7 @@ alignment2matrix(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{alignment}{data loaded with read.alignment() function }
+ \item{alignment}{data loaded with \code{\link[seqinr]{read.alignment}} function }
  }
 \value{
 \item{matrix}{Aligned sequences matrix where number of rows equals to number of aligned sequences and number of columns equals to the length length of aligned sequences}

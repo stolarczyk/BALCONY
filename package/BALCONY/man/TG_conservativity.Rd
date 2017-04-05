@@ -12,7 +12,7 @@ TG_conservativity(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{Alignment data read with read.alignment() function}
+  \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
 }
 \details{
 The conservativity score is calculated according to the following formula:
@@ -36,9 +36,6 @@ Also, this function originally calculates the entropy values which can be used t
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{
-\url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
-}
 \examples{
 data("alignment")
 conservation_score = TG_conservativity(alignment)

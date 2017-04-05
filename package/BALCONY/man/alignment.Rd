@@ -9,7 +9,7 @@ This alignment consists of 311 proteins which belong to the soluable epoxide hyd
 }
 
 \format{
-  An alignment object read with read.alignment() function from seqinr package.
+  An alignment object read with \code{\link[seqinr]{read.alignment}} function from seqinr package.
   \describe{
     \item{alignment$nb}{A numeric: number of sequences}
     \item{alignment$nam}{A vector of characters: names of the sequences}

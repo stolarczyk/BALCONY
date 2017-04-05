@@ -13,7 +13,7 @@ delete_isoforms(alignment)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{
-An alignment object read with read.alignment() function
+An alignment object read with \code{\link[seqinr]{read.alignment}} function
 }
 }
 \details{

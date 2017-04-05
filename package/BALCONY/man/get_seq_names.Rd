@@ -12,7 +12,7 @@ get_seq_names(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{The alignment object read with read.alignment() function}
+  \item{alignment}{The alignment object read with \code{\link[seqinr]{read.alignment}} function}
 }
 
 \value{

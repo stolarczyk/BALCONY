@@ -12,8 +12,8 @@ cons2seqs_ident(alignment, consensus_seq)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{Data loaded with read.alignment() function }
-  \item{consensus_seq}{Consensus sequence (output of consensus() function)}
+  \item{alignment}{Data loaded with \code{\link[seqinr]{read.alignment}} function }
+  \item{consensus_seq}{Consensus sequence (output of  \code{\link{consensus}} function)}
 %%     ~~Describe \code{x} here~~
 }
 \details{

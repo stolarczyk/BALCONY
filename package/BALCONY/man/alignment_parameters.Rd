@@ -12,7 +12,7 @@ alignment_parameters(alignment)
 }
 
 \arguments{
-  \item{alignment}{ alignment loaded with read.alignment()}
+  \item{alignment}{ alignment loaded with \code{\link[seqinr]{read.alignment}}}
 
 }
 \details{

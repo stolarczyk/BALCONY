@@ -13,8 +13,8 @@ landgraf_conservativity(matrix_name = NULL, alignment_file, weights)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{matrix_name}{A string with path to the file woith substitution matrix to be used to calculate the Landgraf conservation score. Optional parameter, if not provided the Gonnet substitution matrix is used (according to author's suggestion)}
-  \item{alignment_file}{An alignment object read with read.alignment() function}
-  \item{weights}{A vector with weight for each sequence in the alignment  to be used to calculate the Landgraf conservation score e.g. each sequence similarity to the consensus sequence from the alignment - output from cons2seqs_ident() fuction}
+  \item{alignment_file}{An alignment object read with \code{\link[seqinr]{read.alignment}} function}
+  \item{weights}{A vector with weight for each sequence in the alignment  to be used to calculate the Landgraf conservation score e.g. each sequence similarity to the consensus sequence from the alignment - output from \code{\link{cons2seqs_ident}} fuction}
 }
 
 \value{

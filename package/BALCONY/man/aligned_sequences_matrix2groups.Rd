@@ -12,7 +12,7 @@ aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{aligned_sequences_matrix}{A matrix that contains aligned sequences. It is an output of alignment2matrix() function}
+  \item{aligned_sequences_matrix}{A matrix that contains aligned sequences. It is an output of \code{\link{alignment2matrix}} function}
   \item{grouping_method}{A string which specifies the grouping method to be used. One of following: 'general', 'hydrophobicity', 'size', 'aromaticity' }
 }
 \value{

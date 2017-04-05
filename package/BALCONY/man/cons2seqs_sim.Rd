@@ -12,8 +12,8 @@ cons2seqs_sim(alignment, consensus_seq, grouping_method)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{The output of read.alignment() function}
-  \item{consensus_seq}{The output of consensus() function}
+  \item{alignment}{The output of \code{\link[seqinr]{read.alignment}} function}
+  \item{consensus_seq}{A string of amino acids, the output of  \code{\link{consensus}} function}
   \item{grouping_method}{One of following: 'hydrophobicity','size','aromaticity','general'}
 }
 \details{
@@ -30,7 +30,7 @@ Alicja Pluciennik & Michal Stolarczyk
 
 
 \seealso{
-read.alignment(), consensus(), alignment_parameters()
+\code{\link[seqinr]{read.alignment}}, \code{\link{consensus}}, \code{\link{alignment_parameters}}
 }
 \examples{
 data("alignment")

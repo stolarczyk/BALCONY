@@ -13,7 +13,7 @@ barplotshow(position, AA_variation)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{position}{A number of column of alignment to be visualized}
-  \item{AA_variation}{A percentage frequency of amino acids in the alignment, calculated with display_AA_variation() function}
+  \item{AA_variation}{A percentage frequency of amino acids in the alignment, calculated with \code{\link{calculate_AA_variation}} function}
 }
 \value{
 This function produces a barchart
@@ -22,7 +22,7 @@ This function produces a barchart
 Alicja Pluciennik & Michal Stolarczyk
 }
 \seealso{
-display_AA_variation(), calculate_AA_variation()
+\code{\link{calculate_AA_variation}}
 }
 \examples{
 data("alignment")
