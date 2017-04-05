@@ -685,7 +685,7 @@ exclude_low_probability_structures <-
       for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
         to_exclude = which(structure[[3]][i, ] < threshold)
         structure[[3]][i,to_exclude] = NaN
-        structure[[1]][i, which(structure[[3]][i, ] < threshold)] = "N"
+        structure[[1]][i, to_exclude] = "N"
       }
     } else{
       print("No probability information provided for the structure.")
@@ -1340,17 +1340,13 @@ compare_cons_metrics <-
   }
 
 smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name, range = NULL, make_plot = NULL){
-  ###FIXME! CZY WSZYSTKIE STRUKTURY DLA DANEGO WSPÓŁCZYNNIKA POWINNY BYC NA JEDNYM WYKRESIE?
-  #protein_cons=prot_cons
-  #structure_cons=profiles_for_structure
   if(is.null(make_plot)){
     make_plot<-T
   }
   metrics_count=length(protein_cons)
   structures_count=length(structure_cons)
-  structure_names=c()
-  for(i in seq(1,structures_count)){
-    structure_names[i]=paste("stru", i)}
+  structure_names=names(structure_cons)
+
   alt_hip=c("two.sided","less", "greater")[alternative]
 
   pval_mtx=matrix(NA, nrow=metrics_count,ncol = structures_count)
@@ -1375,7 +1371,7 @@ smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_n
         plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
         par(new=T)
         plot(temp, xlim=c(0,1),ylim=c(0,1),col=alpha(colors[j],0.7), ylab="",xlab="",main="")
-        legend('bottomright',c(pdb_name,structure_names),lty=c(1,1,1,1),lwd=c(2.5,2.5),col=alpha(c("slategray",colors),0.8))
+        legend('bottomright',c(pdb_name,structure_names[j]),pch = c(16,16),col=alpha(c("slategray",colors[j]),0.8))
       }
     }
   }

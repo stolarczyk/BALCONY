@@ -60,10 +60,6 @@ my_seq=find_seq(uniprot, file);
 # add structure and name the rows
 structure=create_structure_seq(structure_list = structure_list,sequence_id = uniprot,alignment = file,pdb_path ="../package/BALCONY/inst/extdata/4jnc.pdb",chain_identifier = "B",shift = 236);
 # Calculate TG entropy score for all alignment positions
-TG_entropy=TG_conservativity(file);
-# Calculate Schneider, Kabat & Landgraf entropy scores for chosen alignmnet position
-conservativity = kabat_conservativity(file)
-Landgraf = landgraf_conservativity(alignment_file = file,weights = consensus_sequences_identity)
 # Write final output - amino acid variations, structure data, sequence numbers and conservation scores combined
 # Need to calculate scores for all the positions to combine them with the output table!
 entropy_data=list(Schneider.entropy=schneider_conservativity(file),TG.entropy = TG_conservativity(file),Kabat.entropy =  kabat_conservativity(file))
@@ -71,34 +67,28 @@ final_CSV=create_final_CSV("BALCONY_OUTPUT",var_aa, structure,uniprot,file,entro
 
 # structure_analysis ------------------------------------------------------
 
-
-# Analysis of protein's structure part ------------------------------------
-
-
 # get indices of tunnels in alignment
-structure = exclude_low_probability_structures(structure = structure,threshold = 0.5)
+structure=create_structure_seq(structure_list = structure_list,sequence_id = uniprot,alignment = file,pdb_path ="../package/BALCONY/inst/extdata/4jnc.pdb",chain_identifier = "B",shift = 236);
+structure = exclude_low_probability_structures(structure = structure,threshold = 0.4)
 tunnel_index=get_structures_idx(structure)
-
+stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
 #find indices of protein in MSA
 prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
 #plot entropy
 plot_entropy(prot_cons, impose=T,legend_pos = "topleft")
 #get entropy for your structure
-stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
+
 profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
 
 ### PLOT STRUCTURE
 plot_structure_on_protein(prot_cons, structure_profiles = profiles_for_structure,pdb_name, legend_pos = "topleft")
 #######TUNNELS ENTROPY
 plot(structure$structure_probabilities[4,][which(!is.nan(structure$structure_probabilities[4,]))],y = profiles_for_structure$T4_4JNC$entropy["TG.entropy",],ylim = c(0,1),xlim = c(0,1))
-## SCATTERPLOTS FOR PROTEINS AND TUNNELS
-library(scales)
 compare_cons_metrics(prot_cons,profiles_for_structure, pdb_name)
-#KOLMOGOROV-SMIRNOF TEST FOR QUALITY OF DISTRIBURIONS
-EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 1, pdb_name = pdb_name,range = c(1:233),T)
-write(EQUAL, file = "SK_twosided.txt", sep = " ")
-LESS=smirnof_kolmogorov_test(prot_cons, profiles_for_structure,2, pdb_name,F)
-write(LESS, file = "LESS.txt", sep = " ")
+EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 1, pdb_name = pdb_name,range = c(1:233),make_plot = T)
+write(EQUAL, file = "SK_twosided.csv", sep = ",")
+LESS=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 2, pdb_name = pdb_name,range = c(1:233),make_plot = T)
+write(LESS, file = "less.csv", sep = ",")
 
 GREATER=smirnof_kolmogorov_test(prot_cons, profiles_for_structure,3, pdb_name,F)
 write(GREATER, file = "GREATER.txt", sep = " ")
