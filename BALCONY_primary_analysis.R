@@ -70,10 +70,12 @@ final_CSV=create_final_CSV("BALCONY_OUTPUT",var_aa, structure,uniprot,file,entro
 # get indices of tunnels in alignment
 structure=create_structure_seq(structure_list = structure_list,sequence_id = uniprot,alignment = file,pdb_path ="../package/BALCONY/inst/extdata/4jnc.pdb",chain_identifier = "B",shift = 236);
 structure = exclude_low_probability_structures(structure = structure,threshold = 0.4)
-tunnel_index=get_structures_idx(structure)
+indices=get_structures_idx(structure)
+protein_index = indices$proteinIndices
+tunnel_index = indices$structureIndices
 stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
 #find indices of protein in MSA
-prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
+prot_cons=get_prot_entropy(protein_index,entropy_data)
 #plot entropy
 plot_entropy(prot_cons, impose=T,legend_pos = "topleft")
 #get entropy for your structure

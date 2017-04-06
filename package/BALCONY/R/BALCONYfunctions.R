@@ -1136,7 +1136,7 @@ get_structures_entropy <- function(structure_index, score_list) {
   #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures
   #SCORE_LIST list of entropies for whole alignment
   #output is a list of matrixes where each row contains values of entropy for AA in structure
-  t_index = structure_index$structureIndices
+  t_index = structure_index
   Entropy = list()
   lengths = list()
   for (i in seq(1:length(t_index))) {
