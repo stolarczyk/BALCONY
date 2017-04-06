@@ -1,5 +1,5 @@
-\name{smirnof_kolmogorov_test}
-\alias{smirnof_kolmogorov_test}
+\name{kolmogorov_smirnov_test}
+\alias{kolmogorov_smirnov_test}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Perform Smirnof-Kolmogorov test for structural data
@@ -8,7 +8,7 @@ Perform Smirnof-Kolmogorov test for structural data
 This function facilitates the comparion of conservativity of structure of interest with the rest of the protein. For example comparison of tunnel conservativity with overall protein conservativity.
 }
 \usage{
-smirnof_kolmogorov_test(protein_cons, structure_cons, alternative,
+kolmogorov_smirnov_test(protein_cons, structure_cons, alternative,
                         pdb_name = "Reference", range = NULL, make_plot = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -43,7 +43,7 @@ tunnel_index=get_structures_idx(structure)
 prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
 stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
 profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
-EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons,
+EQUAL=kolmogorov_smirnov_test(protein_cons = prot_cons,
                               structure_cons = profiles_for_structure,
                               alternative = 1,range = c(1:233),make_plot = TRUE)
 }

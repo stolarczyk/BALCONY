@@ -19,7 +19,8 @@ This sample structure data consists of the amino acids names forming tunnels and
 The tunnel analysis with CAVER was performed on human epoxide hydrolase structure (PDB ID: 4JNC) 50ns MD simulation.
 }
 \seealso{
-\url{http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002708}
+CAVER: \url{http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002708}\cr
+4JNC: \url{http://www.sciencedirect.com/science/article/pii/S0960894X13004885}
 }
 \examples{
 data("structure")

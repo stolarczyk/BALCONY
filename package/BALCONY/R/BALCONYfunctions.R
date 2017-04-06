@@ -1111,7 +1111,7 @@ plot_entropy <-
       col = colors[1],
       xlab = "amino acid",
       ylab = "entropy score",
-      main = paste("entropy score", title_str) ,
+      main = paste("Entropy score for entire protein", title_str) ,
       type = "l"
     )
     for (i in seq(2, length(protein_conservation))) {
@@ -1136,7 +1136,7 @@ get_structures_entropy <- function(structure_index, score_list) {
   #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures
   #SCORE_LIST list of entropies for whole alignment
   #output is a list of matrixes where each row contains values of entropy for AA in structure
-  t_index = structure_index$structureIndices
+  t_index = structure_index
   Entropy = list()
   lengths = list()
   for (i in seq(1:length(t_index))) {
@@ -1303,7 +1303,7 @@ compare_cons_metrics <-
 
   }
 
-smirnof_kolmogorov_test<-function(protein_cons, structure_cons,alternative,pdb_name = "Reference", range = NULL, make_plot = NULL){
+kolmogorov_smirnov_test<-function(protein_cons, structure_cons,alternative,pdb_name = "Reference", range = NULL, make_plot = NULL){
   if(is.null(make_plot)){
     make_plot<-T
   }
