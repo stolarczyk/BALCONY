@@ -16,12 +16,10 @@ read_structure(file_names)
 \details{
 The files should be formatted as follows:\cr
 
-\code{
-res AA 100\cr
 2  ASP 100\cr
 6   TYR 80\cr
 11  PHE 30\cr
-6   TYR 30}
+6   TYR 30
 }
 \value{
   \item{strucure_list}{A list with read structure data. Number of elements of this list equals to the number of files specified.}

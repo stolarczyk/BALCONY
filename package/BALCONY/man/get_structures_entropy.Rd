@@ -33,7 +33,9 @@ data("alignment")
 #creating library uniprot - PDB
 uniprot="P34914"
 tunnel=create_structure_seq(structure,uniprot,alignment)
-structure_index=get_structures_idx(tunnel)
+indices=get_structures_idx(structure)
+protein_index = indices$proteinIndices
+structure_index = indices$structureIndices
 entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
                         TG_entropy = TG_conservativity(alignment))
 structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)

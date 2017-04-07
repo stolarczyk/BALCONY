@@ -39,9 +39,11 @@ data("structure")
 entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
               TG.entropy = TG_conservativity(alignment),
               Kabat.entropy =  kabat_conservativity(alignment))
-tunnel_index=get_structures_idx(structure)
-prot_cons=get_prot_entropy(tunnel_index[[1]],entropy_data)
-stru_entropy=get_structures_entropy(tunnel_index,entropy_data)
+indices=get_structures_idx(structure)
+protein_index = indices$proteinIndices
+structure_index = indices$structureIndices
+prot_cons=get_prot_entropy(protein_index,entropy_data)
+stru_entropy=get_structures_entropy(structure_index,entropy_data)
 profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
 EQUAL=kolmogorov_smirnov_test(protein_cons = prot_cons,
                               structure_cons = profiles_for_structure,
