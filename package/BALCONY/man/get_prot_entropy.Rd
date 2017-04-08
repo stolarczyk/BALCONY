@@ -8,12 +8,12 @@ Get MSA-based calculated entropy for chosen protein.
 This function allows to obtain vector of entropies for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
 }
 \usage{
-get_prot_entropy(whole_prot, entropy_scores_list)
+get_prot_entropy(protein_index, score_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{whole_prot}{Indices of given protein aminoacids in aligned sequence}
-  \item{entropy_scores_list}{A list of entropy scores calculated for MSA }
+  \item{protein_index}{Indices of given protein aminoacids in aligned sequence}
+  \item{score_list}{A list of entropy scores calculated for MSA }
 }
 \details{
 This function can be used on list of entropies or list with one element for one entropy score.

@@ -9,16 +9,16 @@ Create_final_CSV() saves results as table into csv file. Combination of given va
 
 }
 \usage{
-create_final_CSV(filename,variations_matrix,structure,uniprot,alignment,list_of_scores)
+create_final_CSV(filename,variations_matrix,structure,sequence_id,alignment,score_list)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filename}{name of the output file produced by the function}
   \item{variations_matrix}{An object which contains alignment and frequencies of occurences each amino acids on each position of alignment. Output of \code{\link{calculate_AA_variation}}}
   \item{structure}{An strcture object - matrix of aligned, examined protein sequence covered by structure markers (S/N). Output of \code{\link{create_structure_seq}}.}
-  \item{uniprot}{the Uniprot code of the sequence of interest}
+  \item{sequence_id}{the Uniprot code of the sequence of interest}
   \item{alignment}{the output of \code{\link[seqinr]{read.alignment}} function. A variable containing alignment data. One of the sequences must be the sequence of interest}
-  \item{list_of_scores}{list of calculated entropy/conservation scores. Optional parameter. If not provided, this rows are not present in the output file}
+  \item{score_list}{list of calculated entropy/conservation scores. Optional parameter. If not provided, this rows are not present in the output file}
 }
 \value{
 

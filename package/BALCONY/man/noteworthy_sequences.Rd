@@ -12,7 +12,7 @@ noteworthy_sequences(percentage, alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{percentage}{The identity of each sequence in the alignment to the consensus sequence}
+  \item{percentage}{The identity of each sequence in the alignment to the consensus sequence. Output of the \code{\link{cons2seqs_ident}} function}
   \item{alignment}{Alignment loaded with \code{\link[seqinr]{read.alignment}} function}
 
 }

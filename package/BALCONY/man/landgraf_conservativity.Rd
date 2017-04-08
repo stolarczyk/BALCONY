@@ -8,12 +8,12 @@ Calculate Landgraf conservation score
 This function calculates Landgraf conservarion score
 }
 \usage{
-landgraf_conservativity(matrix_name = NULL, alignment_file, weights)
+landgraf_conservativity(matrix_name = NULL, alignment, weights)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{matrix_name}{A string with path to the file woith substitution matrix to be used to calculate the Landgraf conservation score. Optional parameter, if not provided the Gonnet substitution matrix is used (according to author's suggestion)}
-  \item{alignment_file}{An alignment object read with \code{\link[seqinr]{read.alignment}} function}
+  \item{alignment}{An alignment object read with \code{\link[seqinr]{read.alignment}} function}
   \item{weights}{A vector with weight for each sequence in the alignment  to be used to calculate the Landgraf conservation score e.g. each sequence similarity to the consensus sequence from the alignment - output from \code{\link{cons2seqs_ident}} fuction}
 }
 
@@ -43,7 +43,7 @@ alignment = small_alignment
 threshold_consensus = 30
 consensus_seq=consensus(alignment, threshold_consensus);
 consensus_sequences_identity=cons2seqs_ident(alignment, consensus_seq)
-score = landgraf_conservativity(alignment_file = alignment, weights = consensus_sequences_identity)
+score = landgraf_conservativity(alignment = alignment, weights = consensus_sequences_identity)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

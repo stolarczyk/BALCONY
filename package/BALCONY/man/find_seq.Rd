@@ -8,12 +8,12 @@ Find sequence by id in alignment.
 This function allows to search for a sequence with its id. Useful for browsing a larg multiple sequence alignment data or for automatization purposes.
 }
 \usage{
-find_seq(sequence_id, alignment_file)
+find_seq(sequence_id, alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sequence_id}{identifier of desired sequence from alignment}
-  \item{alignment_file}{alignment file loaded with \code{\link[seqinr]{read.alignment}} }
+  \item{alignment}{alignment file loaded with \code{\link[seqinr]{read.alignment}} }
 }
 
 \value{

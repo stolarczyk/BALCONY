@@ -527,10 +527,10 @@ get_seq_names <- function(alignment) {
 
   return(names)
 }
-find_seq <- function(sequence_id, alignment_file) {
-  mat = as.matrix(as.character(alignment_file[[3]]))
+find_seq <- function(sequence_id, alignment) {
+  mat = as.matrix(as.character(alignment[[3]]))
 
-  nazwy_mat = get_seq_names(alignment_file)
+  nazwy_mat = get_seq_names(alignment)
 
   which_uniprot = c()
 
@@ -608,16 +608,16 @@ create_final_CSV <-
   function(filename,
            variations_matrix,
            structure,
-           uniprot,
+           sequence_id,
            alignment,
-           list_of_scores = NULL) {
-    sequence = seqinr::s2c(find_seq(uniprot, alignment)$sequence)
+           score_list = NULL) {
+    sequence = seqinr::s2c(find_seq(sequence_id, alignment)$sequence)
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
     structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
     rownames(variations_matrix$matrix) = rep(c("AA name", "Percentage"), (dim(variations_matrix$matrix)[1] /
                                                                             2))
-    if (is.null(list_of_scores)) {
+    if (is.null(score_list)) {
       alignment_position = seq(1, dim(variations_matrix$matrix)[2], by = 1)
       final_output = rbind(alignment_position,
                            variations_matrix$matrix,
@@ -627,13 +627,13 @@ create_final_CSV <-
     else{
       #Dodawanie wynikow konserwatywnosci tylko takich, jakie podal user
       scores_mtx = matrix(NA,
-                          nrow = length(list_of_scores),
-                          ncol = length(list_of_scores[[1]]))
+                          nrow = length(score_list),
+                          ncol = length(score_list[[1]]))
       scores_mtx_names = c()
 
-      for (i in seq(1, length(list_of_scores))) {
-        scores_mtx[i,] = list_of_scores[[i]]
-        scores_mtx_names[i] = names(list_of_scores)[i]
+      for (i in seq(1, length(score_list))) {
+        scores_mtx[i,] = score_list[[i]]
+        scores_mtx_names[i] = names(score_list)[i]
 
       }
       rownames(scores_mtx) = scores_mtx_names
@@ -817,7 +817,7 @@ D_matrix <- function(substitution_matrix) {
   return(output)
 }
 landgraf_conservativity <-
-  function(matrix_name = NULL, alignment_file, weights) {
+  function(matrix_name = NULL, alignment, weights) {
     if (is.null(matrix_name)) {
       data("gonnet")
       pre_dissim_mtx = gonnet
@@ -825,7 +825,7 @@ landgraf_conservativity <-
     else{
       pre_dissim_mtx = substitution_mtx(matrix_name)
     }
-    aligned_sequences_matrix = alignment2matrix(alignment = alignment_file)
+    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN, dim(aligned_sequences_matrix)[2])
     status = 0
@@ -1061,20 +1061,20 @@ get_structures_idx <- function(structure) {
   names(out[[2]]) = rownames(structure)
   return(out)
 }
-get_prot_entropy <- function(whole_prot, entropy_scores_list) {
+get_prot_entropy <- function(protein_index, score_list) {
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
   #returns list of entropy for protein
-  if (is.list(entropy_scores_list))
+  if (is.list(score_list))
   {
     prot_cons = list()
-    for (i in seq(1, length(entropy_scores_list))) {
-      prot_cons[[i]] = entropy_scores_list[[i]][whole_prot]
+    for (i in seq(1, length(score_list))) {
+      prot_cons[[i]] = score_list[[i]][protein_index]
     }
-    names(prot_cons) <- names(entropy_scores_list)
+    names(prot_cons) <- names(score_list)
   }
   else{
-    print("entropy_scores_list is not a list!")
+    print("score_list is not a list!")
     stop()
   }
   return(prot_cons)
@@ -1303,23 +1303,23 @@ compare_cons_metrics <-
 
   }
 
-kolmogorov_smirnov_test<-function(protein_cons, structure_cons,alternative,pdb_name = "Reference", range = NULL, make_plot = NULL){
+kolmogorov_smirnov_test<-function(protein_entropy, structure_entropy,alternative,pdb_name = "Reference", range = NULL, make_plot = NULL){
   if(is.null(make_plot)){
     make_plot<-T
   }
-  metrics_count=length(protein_cons)
-  structures_count=length(structure_cons)
-  structure_names=names(structure_cons)
+  metrics_count=length(protein_entropy)
+  structures_count=length(structure_entropy)
+  structure_names=names(structure_entropy)
 
   alt_hip=c("two.sided","less", "greater")[alternative]
 
   pval_mtx=matrix(NA, nrow=metrics_count,ncol = structures_count)
-  rownames(pval_mtx)<- names(protein_cons)
+  rownames(pval_mtx)<- names(protein_entropy)
   colnames(pval_mtx)<- structure_names
   for(i in seq(1,metrics_count)){
     for(j in seq(1, structures_count)){
-      reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
-      temp=structure_cons[[j]][[1]][i,]
+      reference=protein_entropy[[i]][-c(range,structure_entropy[[j]][[2]])]
+      temp=structure_entropy[[j]][[1]][i,]
       pval_mtx[i,j]=stats::ks.test(reference, temp,alternative = alt_hip)$p.value
     }
   }
@@ -1329,10 +1329,10 @@ kolmogorov_smirnov_test<-function(protein_cons, structure_cons,alternative,pdb_n
     for(i in seq(1,metrics_count)){
       par(new=F)
       for(j in seq(1,structures_count)){
-        reference=protein_cons[[i]][-c(range,structure_cons[[j]][[2]])]
+        reference=protein_entropy[[i]][-c(range,structure_entropy[[j]][[2]])]
         cumulative_distribution=stats::ecdf(reference)
-        temp=ecdf(structure_cons[[j]][[1]][i,])
-        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=scales::alpha("slategray",0.7), main=paste("CDF of",names(protein_cons)[i], " for",pdb_name,"structures"))
+        temp=ecdf(structure_entropy[[j]][[1]][i,])
+        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=scales::alpha("slategray",0.7), main=paste("CDF of",names(protein_entropy)[i], " for",pdb_name,"structures"))
         par(new=T)
         plot(temp, xlim=c(0,1),ylim=c(0,1),col=scales::alpha(colors[j],0.7), ylab="",xlab="",main="")
         legend('bottomright',c(pdb_name,structure_names[j]),pch = c(16,16),col=scales::alpha(c("slategray",colors[j]),0.8))

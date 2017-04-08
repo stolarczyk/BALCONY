@@ -30,9 +30,9 @@ Michal Stolarczyk & Alicja Pluciennik
 }
 \examples{
 data("alignment")
-structure_files = c(system.file("extdata", "T1_4JNC.txt", package = "BALCONY"),
-                    system.file("extdata", "T2_4JNC.txt", package = "BALCONY"),
-                    system.file("extdata", "T3_4JNC.txt", package = "BALCONY")
+structure_files = c(system.file("extdata", "T1_4JNC.structure", package = "BALCONY"),
+                    system.file("extdata", "T2_4JNC.structure", package = "BALCONY"),
+                    system.file("extdata", "T3_4JNC.structure", package = "BALCONY")
                     )
 structure_list = read_structure(structure_files)
 #creating library uniprot - PDB

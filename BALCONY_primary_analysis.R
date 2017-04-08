@@ -15,8 +15,7 @@ file = delete_isoforms(file);
 myFiles <- list.files(pattern = "*.txt");
 structure_list = read_structure(myFiles)
 # Set PDB name
-#pdb_name = "4JNC";
-pdb_name = "1CQZ";
+pdb_name = "4JNC";
 # Specify alignment position to examine
 alignmnent_position = 925;
 # Set the threshold for consensus calculation
