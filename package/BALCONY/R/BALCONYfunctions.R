@@ -365,6 +365,23 @@ alignment2matrix <- function(alignment) {
   }
   return(aligned_sequences_matrix)
 }
+
+matrix2alignment <- function(matrix) {
+
+  prmt = alignment_parameters(alignment = alignment)
+  aligned_sequences_matrix = matrix("-", prmt$row_no, prmt$col_no)
+
+  for (i in seq(1, prmt$row_no)) {
+    #Putting aligned seqs into matrix
+    temp = seqinr::s2c(alignment$seq[i])
+    for (j in seq(1, prmt$col_no)) {
+      aligned_sequences_matrix[i, j] = temp[j]
+
+    }
+  }
+  return(aligned_sequences_matrix)
+}
+}
 calculate_AA_variation <-
   function(alignment,
            threshold,
@@ -669,8 +686,13 @@ create_final_CSV <-
     return(final_output)
   }
 
-TG_conservativity <- function(alignment) {
-  var_aa = calculate_AA_variation(alignment, threshold = 0.01)
+TG_conservativity <- function(alignment, grouping_method = NULL) {
+  if(is.null(grouping_method)){
+    var_aa = calculate_AA_variation(alignment, threshold = 0.01)
+  }
+  else{
+    var_aa = calculate_AA_variation(alignment, threshold = 0.01, grouped = T, grouping_method = grouping_method)
+  }
   max_cons = c()
 
   for (i in seq(1, length(var_aa$matrix[1,]), 1)) {
@@ -702,7 +724,12 @@ TG_conservativity <- function(alignment) {
 }
 
 kabat_conservativity <- function(alignment) {
-  aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+  if (!is.matrix(alignment)){
+    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+  }
+  else{
+    aligned_sequences_matrix = alignment
+  }
   Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -726,7 +753,13 @@ kabat_conservativity <- function(alignment) {
 }
 
 schneider_conservativity <- function(alignment) {
-  aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+  if (!is.matrix(alignment)){
+    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+  }
+  else{
+    aligned_sequences_matrix = alignment
+  }
+  symbols = length(table(aligned_sequences_matrix))-1
   sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -745,7 +778,7 @@ schneider_conservativity <- function(alignment) {
 
       res = p[i] * log2(p[i])
 
-      res_schneider = p[i] * log(p[i]) * (1 / log(21))
+      res_schneider = p[i] * log(p[i]) * (1 / log(symbols))
 
       sum_internal_schneider = sum_internal_schneider + res_schneider
 
@@ -757,7 +790,12 @@ schneider_conservativity <- function(alignment) {
 }
 
 shannon_conservativity <- function(alignment) {
-  aligned_sequences_matrix = alignment2matrix(alignment)
+  if (!is.matrix(alignment)){
+    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+  }
+  else{
+    aligned_sequences_matrix = alignment
+  }
   sum = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -1332,7 +1370,7 @@ kolmogorov_smirnov_test<-function(protein_entropy, structure_entropy,alternative
         reference=protein_entropy[[i]][-c(range,structure_entropy[[j]][[2]])]
         cumulative_distribution=stats::ecdf(reference)
         temp=ecdf(structure_entropy[[j]][[1]][i,])
-        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="entropy",ylab="cumulative probability", col=scales::alpha("slategray",0.7), main=paste("CDF of",names(protein_entropy)[i], " for",pdb_name,"structures"))
+        plot(cumulative_distribution, xlim=c(0,1),ylim=c(0,1),xlab="Entropy",ylab="Cumulative probability", col=scales::alpha("slategray",0.7), main=paste("CDF of",names(protein_entropy)[i], " for",pdb_name,"structures"))
         par(new=T)
         plot(temp, xlim=c(0,1),ylim=c(0,1),col=scales::alpha(colors[j],0.7), ylab="",xlab="",main="")
         legend('bottomright',c(pdb_name,structure_names[j]),pch = c(16,16),col=scales::alpha(c("slategray",colors[j]),0.8))

@@ -5,14 +5,15 @@
 Calculate the Tunneling Group (TG) conservation metric
 }
 \description{
-This function facilitates the calculation of TG conservation metric.
+This function facilitates the calculation of TG conservation metric (in amino acid or group mode)
 }
 \usage{
-TG_conservativity(alignment)
+TG_conservativity(alignment, grouping_method = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
+  \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'general', 'hydrophobicity', 'size', 'aromaticity', default: NULL }
 }
 \details{
 The conservativity score is calculated according to the following formula:

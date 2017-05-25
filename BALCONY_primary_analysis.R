@@ -1,6 +1,6 @@
 # Load libraries
-require(seqinr)
-require(Biostrings)
+install.packages("/home/mstolarczyk/Uczelnia/PROJEKT/BALCONY/package/BALCONY_0.1.2.tar.gz", repos = NULL, type="source")
+library(BALCONY)
 # Source of BALCONY functions
 source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
 # Set working directory
@@ -67,7 +67,7 @@ final_CSV=create_final_CSV("BALCONY_OUTPUT",var_aa, structure,uniprot,file,entro
 # structure_analysis ------------------------------------------------------
 
 # get indices of tunnels in alignment
-structure=create_structure_seq(structure_list = structure_list,sequence_id = uniprot,alignment = file,pdb_path ="../package/BALCONY/inst/extdata/4jnc.pdb",chain_identifier = "B",shift = 236);
+structure=create_structure_seq(structure_list = structure_list,sequence_id = uniprot,alignment = file,pdb_path ="../package/BALCONY/inst/extdata/4jnc.pdb",chain_identifier = "A",shift = 236);
 structure = exclude_low_probability_structures(structure = structure,threshold = 0.4)
 indices=get_structures_idx(structure)
 protein_index = indices$proteinIndices
@@ -87,7 +87,7 @@ plot_structure_on_protein(prot_cons, structure_profiles = profiles_for_structure
 plot(structure$structure_probabilities[4,][which(!is.nan(structure$structure_probabilities[4,]))],y = profiles_for_structure$T4_4JNC$entropy["TG.entropy",],ylim = c(0,1),xlim = c(0,1))
 compare_cons_metrics(prot_cons,profiles_for_structure, pdb_name)
 # KS test
-EQUAL=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 1,range = c(1:233),make_plot = T)
+EQUAL=kolmogorov_smirnov_test(protein_entropy = prot_cons, structure_entropy = profiles_for_structure,alternative = 1,pdb_name = "4JNC",range = c(1:233),make_plot = T)
 write.csv(EQUAL, file = "SK_twosided.csv", sep = ",",row.names = T,col.names = T)
 LESS=smirnof_kolmogorov_test(protein_cons = prot_cons, structure_cons = profiles_for_structure,alternative = 2, pdb_name = pdb_name,range = c(1:233),make_plot = T)
 write.csv(LESS, file = "less.csv", sep = ",",row.names = T,col.names = T)

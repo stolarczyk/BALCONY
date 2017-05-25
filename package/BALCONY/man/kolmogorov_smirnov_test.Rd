@@ -5,7 +5,7 @@
 Perform Kolmogorov-Smirnov test for structural data
 }
 \description{
-This function facilitates the comparion of conservativity of structure of interest with the rest of the protein. For example comparison of tunnel conservativity with overall protein conservativity.
+This function facilitates the comparison of conservativity of structure of interest with the rest of the protein. For example comparison of tunnel conservativity with overall protein conservativity.
 }
 \usage{
 kolmogorov_smirnov_test(protein_entropy, structure_entropy, alternative,
@@ -17,7 +17,7 @@ kolmogorov_smirnov_test(protein_entropy, structure_entropy, alternative,
   \item{structure_entropy}{A list where each element is a list of structure indices in the protein and matrix with corresponding entropy values (each row is a separate score metric)}
   \item{alternative}{A numeric value indicating the character of alternative hypothesis of the test to be performed: 1 - two sided test, 2 - less, 3 - greater, following the generic \code{\link[stats]{ks.test}} function.}
   \item{pdb_name}{(optional) A string with name of the reference protein, default: "Reference"}
-  \item{range}{(optional) A numeric vector with region of reference protein to be excluded from the dataset. Useful when protein consists of additional chains with outstandingly low/high entropy values which may distort result of the test, default: NULL}
+  \item{range}{(optional) A numeric vector with region of reference protein to be excluded from the data set. Useful when protein consists of additional chains with outstandingly low/high entropy values which may distort result of the test, default: NULL}
   \item{make_plot}{(optional) A logical indicating if cumulative distribution functions should be displayed, default: TRUE}
   }
 \value{A matrix of p-values for each entropy metric (rows) and structure (columns)}
