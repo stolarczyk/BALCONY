@@ -366,22 +366,6 @@ alignment2matrix <- function(alignment) {
   return(aligned_sequences_matrix)
 }
 
-matrix2alignment <- function(matrix) {
-
-  prmt = alignment_parameters(alignment = alignment)
-  aligned_sequences_matrix = matrix("-", prmt$row_no, prmt$col_no)
-
-  for (i in seq(1, prmt$row_no)) {
-    #Putting aligned seqs into matrix
-    temp = seqinr::s2c(alignment$seq[i])
-    for (j in seq(1, prmt$col_no)) {
-      aligned_sequences_matrix[i, j] = temp[j]
-
-    }
-  }
-  return(aligned_sequences_matrix)
-}
-}
 calculate_AA_variation <-
   function(alignment,
            threshold,
