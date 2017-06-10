@@ -1,8 +1,6 @@
 # Load libraries
-install.packages("/home/mstolarczyk/Uczelnia/PROJEKT/BALCONY/package/BALCONY_0.1.2.tar.gz", repos = NULL, type="source")
+install.packages("/home/mstolarczyk/Uczelnia/PROJEKT/BALCONY/package/BALCONY_0.1.5.tar.gz", repos = NULL, type="source")
 library(BALCONY)
-# Source of BALCONY functions
-source("~/Uczelnia/PROJEKT/BALCONY/BALCONYfunctions.R")
 # Set working directory
 setwd("~/Uczelnia/PROJEKT/BALCONY/analiza_manual/")
 getwd()
@@ -10,7 +8,7 @@ getwd()
 # Alignment data (fasta format)
 file=read.alignment(file="~/Uczelnia/PROJEKT/BALCONY/analiza_manual/aln2_312_pro.fasta", format="fasta", forceToLower=F) #Read alignment to variable
 #file=read.alignment(file="aln2_312_pro_unix.fasta", format="fasta", forceToLower=F) #Read alignment to variable UNIX
-file = delete_isoforms(file);
+file = delete_isoforms(alignment = file);
 
 myFiles <- list.files(pattern = "*.txt");
 structure_list = read_structure(myFiles)
@@ -21,7 +19,7 @@ alignmnent_position = 925;
 # Set the threshold for consensus calculation
 threshold_consensus= 30;
 # Set the grouping method for calculation of consensus to the peptide sequence similarity: general, hydrophobicity, size, aromaticity
-grouping_method = 'general';
+grouping_method = 'substitution_matrix';
 # Set the threshold for detecting key amino acids (the percentage of all at the given position)
 threshold_variations = 0.01;
 # Substitution matrix name for Landgraf conservation
@@ -40,13 +38,15 @@ dictionary = list(
 # Calculating consensus sequence
 consensus_seq=consensus(file, threshold_consensus);
 # Convert aligned sequences to matrix
-aligned_sequences_matrix=alignment2matrix(file);
+aligned_sequences_matrix=alignment2matrix(file)
 # Calculate the identidy of consensus sequence to each sequence in the dataset
 consensus_sequences_identity=cons2seqs_ident(file, consensus_seq)
 # Calculating group consensus sequence to AA identity (instead of amino acids their group representatives are taken into consideration. Groups are established according to various AA properties - defined by the user)
-group_consensus=cons2seqs_sim(file,consensus_seq,grouping_method);
+grouped_alignment = aligned_sequences_matrix2groups(aligned_sequences_matrix = alignment2matrix(file),grouping_method = "substitution_matrix")
+grouped_consensus = consensus(alignment = aligned_sequences_matrix2groups(aligned_sequences_matrix = alignment2matrix(file),grouping_method = "substitution_matrix"),threshold = threshold_consensus)
+consensus_sequences_similarity=cons2seqs_sim(grouped_alignment = grouped_alignment,grouped_consensus_seq = grouped_consensus);
 # Following line find the most similar and the least similar sequences to the consensus (detecting outliers, which can be excluded from the analysis)
-noteworthy_seqs= noteworthy_sequences(consensus_sequences_identity, file);
+noteworthy_seqs = noteworthy_sequences(consensus_sequences_identity, file);
 # Calculating amino acids variations on each alignment (protein) position
 var_aa = calculate_AA_variation(file,threshold_variations);
 # Calculating amino acids groups variations on each alignment (protein) position

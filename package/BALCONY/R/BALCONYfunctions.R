@@ -65,17 +65,25 @@ delete_isoforms <- function(alignment) {
 }
 consensus <-  function(alignment, threshold) {
   #Function which calculates consensus
-  #alignment-output of read.alignment()
+  #alignment-output of read.alignment() or alignment2matrix() function
   #threshold-given threshold of conservation (%)
-  alignment_matrix = as.matrix(as.character(alignment[[3]]))
+  if (!is.matrix(alignment)) {
+    alignment_matrix = alignment2matrix(alignment = alignment)
+  } else{
+    alignment_matrix = alignment
+  }
+  #alignment_matrix = as.matrix(as.character(alignment[[3]]))
 
-  count_cols = length(alignment_matrix)
-  vec = seq(1, length(seqinr::s2c(alignment_matrix[1,])))
+  count_cols = dim(alignment_matrix)[1]
+  #count_cols = length(alignment_matrix)
+  vec = seq(1,dim(alignment_matrix)[2],1)
+  #vec = seq(1, length(seqinr::s2c(alignment_matrix[1,])))
   len_of_vers = length(vec)
   mat = matrix("-", count_cols, len_of_vers)
 
   for (i in seq(1, count_cols)) {
-    temp = seqinr::s2c(alignment_matrix[i])
+    #temp = seqinr::s2c(alignment_matrix[i])
+    temp = alignment_matrix[i,]
     for (j in vec) {
       mat[i, j] = temp[j]
     }
@@ -96,7 +104,7 @@ consensus <-  function(alignment, threshold) {
 cons2seqs_ident <-  function(alignment, consensus_seq) {
   #alignment_sequence- file[[3]]
   # number_of_seq- file[[1]]
-  #consensus- calculated consensusus (output of my_consensusus())
+  #consensus_seq - calculated consensus (output of consensusus())
   true_percentage = c()
 
   for (i in seq(1, alignment_parameters(alignment)$row_no)) {
@@ -123,68 +131,71 @@ aligned_sequences_matrix2groups <-
     rows = dim(aligned_sequences_matrix)[1]
     cols = dim(aligned_sequences_matrix)[2]
     aligned_sequences_matrixG = aligned_sequences_matrix
-    if (grouping_method == 'general') {
+    if (grouping_method == 'substitution_matrix') {
       for (i in seq(1, rows)) {
-        #Dividing AAs into groups of similar AAs in the matrices (general similarity)
+        #Dividing AAs into groups of similar AAs in the matrices (BLOSUM62 distance clustering based similarity)
         for (j in seq(1, cols)) {
-          if (aligned_sequences_matrix[i, j] == "I" ||
-              aligned_sequences_matrix[i, j] == "L" ||
-              aligned_sequences_matrix[i, j] == "V")
-            aligned_sequences_matrixG[i, j] = "G1"
-          if (aligned_sequences_matrix[i, j] == "F" ||
-              aligned_sequences_matrix[i, j] == "Y" ||
-              aligned_sequences_matrix[i, j] == "W")
-            aligned_sequences_matrixG[i, j] = "G2"
           if (aligned_sequences_matrix[i, j] == "A" ||
-              aligned_sequences_matrix[i, j] == "G")
-            aligned_sequences_matrixG[i, j] = "G3"
-          if (aligned_sequences_matrix[i, j] == "P")
-            aligned_sequences_matrixG[i, j] = "G4"
-          if (aligned_sequences_matrix[i, j] == "N" ||
-              aligned_sequences_matrix[i, j] == "Q" ||
+              aligned_sequences_matrix[i, j] == "P" ||
               aligned_sequences_matrix[i, j] == "S" ||
               aligned_sequences_matrix[i, j] == "T")
-            aligned_sequences_matrixG[i, j] = "G5"
+            aligned_sequences_matrixG[i, j] = "G1"
           if (aligned_sequences_matrix[i, j] == "R" ||
-              aligned_sequences_matrix[i, j] == "H" ||
+              aligned_sequences_matrix[i, j] == "Q" ||
+              aligned_sequences_matrix[i, j] == "E" ||
               aligned_sequences_matrix[i, j] == "K")
-            aligned_sequences_matrixG[i, j] = "G6"
-          if (aligned_sequences_matrix[i, j] == "D" ||
-              aligned_sequences_matrix[i, j] == "E")
-            aligned_sequences_matrixG[i, j] = "G7"
-          if (aligned_sequences_matrix[i, j] == "M" ||
-              aligned_sequences_matrix[i, j] == "C")
-            aligned_sequences_matrixG[i, j] = "G8"
-        }
-      }
-    }
-
-    if (grouping_method == 'hydrophobicity') {
-      for (i in seq(1, rows)) {
-        #Dividing AAs into groups of similar AAs in the matrices (according to the hydrophobicity scale)
-        for (j in seq(1, cols)) {
+            aligned_sequences_matrixG[i, j] = "G2"
+          if (aligned_sequences_matrix[i, j] == "N" ||
+              aligned_sequences_matrix[i, j] == "D" ||
+              aligned_sequences_matrix[i, j] == "G" ||
+              aligned_sequences_matrix[i, j] == "H")
+            aligned_sequences_matrixG[i, j] = "G3"
           if (aligned_sequences_matrix[i, j] == "I" ||
               aligned_sequences_matrix[i, j] == "L" ||
-              aligned_sequences_matrix[i, j] == "V")
-            aligned_sequences_matrixG[i, j] = "G1"
-          if (aligned_sequences_matrix[i, j] == "F" ||
-              aligned_sequences_matrix[i, j] == "C" ||
               aligned_sequences_matrix[i, j] == "M" ||
-              aligned_sequences_matrix[i, j] == "A")
-            aligned_sequences_matrixG[i, j] = "G2"
-          if (aligned_sequences_matrix[i, j] == "G" ||
+              aligned_sequences_matrix[i, j] == "V" )
+            aligned_sequences_matrixG[i, j] = "G4"
+          if (aligned_sequences_matrix[i, j] == "F" ||
+              aligned_sequences_matrix[i, j] == "W" ||
+              aligned_sequences_matrix[i, j] == "Y" )
+            aligned_sequences_matrixG[i, j] = "G5"
+          if (aligned_sequences_matrix[i, j] == "C" )
+            aligned_sequences_matrixG[i, j] = "G6"
+    }
+  }
+}
+
+    if (grouping_method == 'polarity') {
+      for (i in seq(1, rows)) {
+        #Dividing AAs into groups of similar AAs in the matrices (according to the polarity and charges of the residues)
+        for (j in seq(1, cols)) {
+          if (aligned_sequences_matrix[i, j] == "W" ||
               aligned_sequences_matrix[i, j] == "S" ||
               aligned_sequences_matrix[i, j] == "T" ||
-              aligned_sequences_matrix[i, j] == "W" ||
-              aligned_sequences_matrix[i, j] == "P" ||
-              aligned_sequences_matrix[i, j] == "Y")
-            aligned_sequences_matrixG[i, j] = "G3"
-          if (aligned_sequences_matrix[i, j] == "H" ||
+              aligned_sequences_matrix[i, j] == "Y" ||
               aligned_sequences_matrix[i, j] == "N" ||
-              aligned_sequences_matrix[i, j] == "E" ||
-              aligned_sequences_matrix[i, j] == "Q" ||
-              aligned_sequences_matrix[i, j] == "D" ||
+              aligned_sequences_matrix[i, j] == "Q")
+            #POLAR
+            aligned_sequences_matrixG[i, j] = "G1"
+          if (aligned_sequences_matrix[i, j] == "H" ||
+              aligned_sequences_matrix[i, j] == "R" ||
+              aligned_sequences_matrix[i, j] == "K" )
+            #POLAR AND CHARGED POSITIVELY
+            aligned_sequences_matrixG[i, j] = "G1A"
+          if (aligned_sequences_matrix[i, j] == "E" ||
+              aligned_sequences_matrix[i, j] == "D" )
+            #POLAR AND CHARGED NEGATIVELY
+            aligned_sequences_matrixG[i, j] = "G1B"
+          if (aligned_sequences_matrix[i, j] == "A" ||
+              aligned_sequences_matrix[i, j] == "P" ||
+              aligned_sequences_matrix[i, j] == "I" ||
+              aligned_sequences_matrix[i, j] == "L" ||
+              aligned_sequences_matrix[i, j] == "M" ||
+              aligned_sequences_matrix[i, j] == "F" ||
+              aligned_sequences_matrix[i, j] == "V" ||
+              aligned_sequences_matrix[i, j] == "G" ||
               aligned_sequences_matrix[i, j] == "K")
+            #OTHERS
             aligned_sequences_matrixG[i, j] = "G4"
         }
       }
@@ -194,24 +205,31 @@ aligned_sequences_matrix2groups <-
         #Dividing AAs into groups of similar AAs in the matrices (according to size)
         for (j in seq(1, cols)) {
           if (aligned_sequences_matrix[i, j] == "A" ||
-              aligned_sequences_matrix[i, j] == "C" ||
               aligned_sequences_matrix[i, j] == "G" ||
               aligned_sequences_matrix[i, j] == "S")
             #TINY
             aligned_sequences_matrixG[i, j] = "G1"
-          if (aligned_sequences_matrix[i, j] == "P" ||
-              aligned_sequences_matrix[i, j] == "V" ||
-              aligned_sequences_matrix[i, j] == "T" ||
+          if (aligned_sequences_matrix[i, j] == "V" ||
+              aligned_sequences_matrix[i, j] == "C" ||
               aligned_sequences_matrix[i, j] == "D" ||
-              aligned_sequences_matrix[i, j] == "N")
+              aligned_sequences_matrix[i, j] == "N" ||
+              aligned_sequences_matrix[i, j] == "T" ||
+              aligned_sequences_matrix[i, j] == "P")
             #SMALL
             aligned_sequences_matrixG[i, j] = "G2"
-          if (aligned_sequences_matrix[i, j] == "A" ||
-              aligned_sequences_matrix[i, j] == "G")
-            aligned_sequences_matrixG[i, j] = "G3"
-          else
-            aligned_sequences_matrixG[i, j] = "G4"
-        }
+          if (aligned_sequences_matrix[i, j] == "R" ||
+              aligned_sequences_matrix[i, j] == "E" ||
+              aligned_sequences_matrix[i, j] == "H" ||
+              aligned_sequences_matrix[i, j] == "I" ||
+              aligned_sequences_matrix[i, j] == "L" ||
+              aligned_sequences_matrix[i, j] == "K" ||
+              aligned_sequences_matrix[i, j] == "M" ||
+              aligned_sequences_matrix[i, j] == "F" ||
+              aligned_sequences_matrix[i, j] == "W" ||
+              aligned_sequences_matrix[i, j] == "Y" ||
+              aligned_sequences_matrix[i, j] == "Q")
+            #OTHERS
+              aligned_sequences_matrixG[i, j] = "G3"
       }
     }
 
@@ -223,129 +241,34 @@ aligned_sequences_matrix2groups <-
               aligned_sequences_matrix[i, j] == "W" ||
               aligned_sequences_matrix[i, j] == "H" ||
               aligned_sequences_matrix[i, j] == "Y")
+            #AROMATIC
             aligned_sequences_matrixG[i, j] = "G1"
           else
+            #NON-AROMATIC
             aligned_sequences_matrixG[i, j] = "G2"
         }
       }
+    }
     }
     return(aligned_sequences_matrixG)
   }
 
 cons2seqs_sim <-
-  function(alignment,
-           consensus_seq,
-           grouping_method) {
-    prmt = alignment_parameters(alignment = alignment)
-    aligned_sequences_matrix = alignment2matrix(alignment)
-    aligned_sequences_matrixG = aligned_sequences_matrix2groups(aligned_sequences_matrix, grouping_method)
-    consensusG = rep(x = "-", length(consensus_seq))
+  function(grouped_alignment,
+           grouped_consensus_seq) {
+    row_no = dim(grouped_alignment)[1]
+    col_no = dim(grouped_alignment)[2]
+    aligned_sequences_matrixG = grouped_alignment
+        consensusG = grouped_consensus_seq
 
     true_percentage_G = c()
 
-
-    if (grouping_method == 'general') {
-      for (i in seq(1, length(consensus_seq))) {
-        if (consensus_seq[i] == "I" ||
-            consensus_seq[i] == "L" || consensus_seq[i] == "V")
-          consensusG[i] = "G1"
-        if (consensus_seq[i] == "F" ||
-            consensus_seq[i] == "Y" || consensus_seq[i] == "W")
-          consensusG[i] = "G2"
-        if (consensus_seq[i] == "A" || consensus_seq[i] == "G")
-          consensusG[i] = "G3"
-        if (consensus_seq[i] == "P")
-          consensusG[i] = "G4"
-        if (consensus_seq[i] == "N" || consensus_seq[i] == "Q")
-          consensusG[i] = "G5"
-        if (consensus_seq[i] == "R" ||
-            consensus_seq[i] == "H" || consensus_seq[i] == "K")
-          consensusG[i] = "G6"
-        if (consensus_seq[i] == "D" || consensus_seq[i] == "E")
-          consensusG[i] = "G7"
-        if (consensus_seq[i] == "M" || consensus_seq[i] == "C")
-          consensusG[i] = "G8"
-      }
-      for (i in seq(1, prmt$row_no)) {
+      for (i in seq(from = 1, to = row_no,by = 1)) {
         true_percentage_G[i] = length(which((
           consensusG == (aligned_sequences_matrixG[i,])
-        ) == TRUE)) / prmt$col_no
+        ) == TRUE)) / col_no
         # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
       }
-    }
-
-    if (grouping_method == 'hydrophobicity') {
-      for (i in seq(1, length(consensus_seq))) {
-        if (consensus_seq[i] == "I" ||
-            consensus_seq[i] == "L" || consensus_seq[i] == "V")
-          consensusG[i] = "G1"
-        if (consensus_seq[i] == "F" ||
-            consensus_seq[i] == "C" ||
-            consensus_seq[i] == "M" || consensus_seq[i] == "A")
-          consensusG[i] = "G2"
-        if (consensus_seq[i] == "G" ||
-            consensus_seq[i] == "S" ||
-            consensus_seq[i] == "T" ||
-            consensus_seq[i] == "W" ||
-            consensus_seq[i] == "P" || consensus_seq[i] == "Y")
-          consensusG[i] = "G3"
-        if (consensus_seq[i] == "H" ||
-            consensus_seq[i] == "N" ||
-            consensus_seq[i] == "E" ||
-            consensus_seq[i] == "Q" ||
-            consensus_seq[i] == "D" || consensus_seq[i] == "K")
-          consensusG[i] = "G4"
-      }
-      for (i in seq(1, prmt$row_no)) {
-        true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
-        ) == TRUE)) / prmt$col_no
-        # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
-      }
-    }
-
-    if (grouping_method == 'size') {
-      for (i in seq(1, length(consensus_seq))) {
-        if (consensus_seq[i] == "A" ||
-            consensus_seq[i] == "C" ||
-            consensus_seq[i] == "G" || consensus_seq[i] == "S")
-          #TINY
-          consensusG[i] = "G1"
-        if (consensus_seq[i] == "P" ||
-            consensus_seq[i] == "V" ||
-            consensus_seq[i] == "T" ||
-            consensus_seq[i] == "D" || consensus_seq[i] == "N")
-          #SMALL
-          consensusG[i] = "G2"
-        if (consensus_seq[i] == "A" || consensus_seq[i] == "G")
-          consensusG[i] = "G3"
-        else
-          consensusG[i] = "G4"
-      }
-      for (i in seq(1, prmt$row_no)) {
-        true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
-        ) == TRUE)) / prmt$col_no
-        # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
-      }
-    }
-
-    if (grouping_method == 'aromaticity') {
-      for (i in seq(1, length(consensus))) {
-        if (consensus_seq[i] == "F" ||
-            consensus_seq[i] == "W" ||
-            consensus_seq[i] == "H" || consensus_seq[i] == "Y")
-          consensusG[i] = "G1"
-        else
-          consensusG[i] = "G2"
-      }
-      for (i in seq(1, prmt$row_no)) {
-        true_percentage_G[i] = length(which((
-          consensusG == (aligned_sequences_matrixG[i,])
-        ) == TRUE)) / prmt$col_no
-        # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
-      }
-    }
     return(true_percentage_G)
   }
 
@@ -743,7 +666,7 @@ schneider_conservativity <- function(alignment) {
   else{
     aligned_sequences_matrix = alignment
   }
-  symbols = length(table(aligned_sequences_matrix))-1
+  symbols = 21
   sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
@@ -915,7 +838,7 @@ create_structure_seq <-
         stop()
       }
       missing = find_consecutive_seq(
-        get_remarks465_pdb(pdb_file_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
+        get_remarks465_pdb(pdb_path = pdb_path, chain_identifier = chain_identifier)$aa_numbers
       )
     } else{
       missing = NULL
@@ -1017,12 +940,12 @@ create_structure_seq <-
     }
   }
 
-get_remarks465_pdb <- function(pdb_file_path, chain_identifier) {
+get_remarks465_pdb <- function(pdb_path, chain_identifier) {
   #pdb_file_path: a path to the pdb file
   #chain_identifier: a character spcifying the chain to analyze
   #returns: list of 1) numbers of aminocids which are missing 2) chain identifier
   pdb_file = Rpdb::read.pdb(
-    file = pdb_file_path,
+    file = pdb_path,
     REMARK = T,
     ATOM = T,
     CRYST1 = F,
@@ -1278,7 +1201,8 @@ compare_cons_metrics <-
     colors = rainbow(structures_count)
     structure_names = c()
     for (i in seq(1, structures_count)) {
-      structure_names[i] = paste("stru", i)
+      #structure_names[i] = paste("stru", i)
+      structure_names[i] = names(structure_profile)[i]
     }
     for (i in seq(1, metrics_count)) {
       for (j in seq(1, metrics_count)) {
@@ -1363,3 +1287,5 @@ kolmogorov_smirnov_test<-function(protein_entropy, structure_entropy,alternative
   }
   return(pval_mtx)
 }
+
+

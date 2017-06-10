@@ -8,11 +8,11 @@ Get "REMARK 465" data from PDB file
 This function extracts the data concerning missing amino acids in PDB protein structure from the PDB file
 }
 \usage{
-get_remarks465_pdb(pdb_file_path,chain_identifier)
+get_remarks465_pdb(pdb_path, chain_identifier)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{pdb_file_path}{A string specifying the path tp the PDB file}
+  \item{pdb_path}{A string specifying the path tp the PDB file}
   \item{chain_identifier}{A character specifying the chain to be considered}
 }
 \value{
@@ -32,10 +32,10 @@ Michal Stolarczyk & Alicja Pluciennik
 \examples{
 require(Rpdb)
 chain_identifier = "A"
-pdb_file_path = system.file("extdata", "4jnc.pdb", package = "BALCONY")
-print(pdb_file_path)
+pdb_path = system.file("extdata", "4jnc.pdb", package = "BALCONY")
+print(pdb_path)
 #pdb_file_path = "path_to_file"
-remark465_data = get_remarks465_pdb(pdb_file_path,chain_identifier)
+remark465_data = get_remarks465_pdb(pdb_path,chain_identifier)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
