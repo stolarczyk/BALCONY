@@ -5,13 +5,13 @@
 Read structure data from a text file
 }
 \description{
-By using this function you can read text file and create an stucture list which can be used in furter evolutionary analysis with BALCONY package. Text file should comprise 2 columns: first one should contain indices (positions) of amino acids in the protein, the scecond one should contain amino acid symbols on specified positions.}
+By using this function you can read text file and create an structure list which can be used in further evolutionary analysis with BALCONY package. Text file should comprise 2 or 3 columns: first one should contain indices (positions) of amino acids in the protein, the second one should contain amino acid symbols on specified positions and the third one (optionally) the numeric property of given residue. }
 \usage{
 read_structure(file_names)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{file_names}{A vector of strings with stucture file(s) name(s)}
+  \item{file_names}{A vector of strings with structure file(s) name(s)}
 }
 \details{
 The files should be formatted as follows:\cr
@@ -32,6 +32,7 @@ Alicja Pluciennik & Michal Stolarczyk
 
 \examples{
 #Generating exemplary input files for the function
+
 fileConn<-file("exemplary_input1.txt")
 writeLines(c("2 TYR 100","3 LEU 100", "7 VAL 50", "10 PHE 30", "20 SER 20"), fileConn)
 close(fileConn)

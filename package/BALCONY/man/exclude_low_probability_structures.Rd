@@ -5,7 +5,7 @@
 Exclude low probability structural data
 }
 \description{
-This function facilitates the exclusion of low probability structural data from the downstream conservativity analysis, which helps to reduce the effect of non-consistent stuctural amino acids on the conservativity analysis of the structure of interest
+This function facilitates the exclusion of low probability structural data from the downstream conservativity analysis, which helps to reduce the effect of non-consistent structural amino acids on the conservativity analysis of the structure of interest
 }
 \usage{
 exclude_low_probability_structures(structure, threshold)

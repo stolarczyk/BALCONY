@@ -5,7 +5,7 @@
 Convert amino acid symbols to groups according to their properties of user's choice.
 }
 \description{
-This function performs a conversion of amino acid symbols to group symbols according to their properties. Implemented grouping methods are: general (majority of properties taken into account), hydrophobicity, size and aromaticity. "GX", where X stands for group number, are group symbols.
+This function performs a conversion of amino acid symbols to group symbols according to their properties. Implemented grouping methods are: substitution_matrix (majority of properties taken into account), polarity, size and aromaticity. "GX", where X stands for group number, are group symbols.
 }
 \usage{
 aligned_sequences_matrix2groups(aligned_sequences_matrix,grouping_method)

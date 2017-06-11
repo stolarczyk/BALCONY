@@ -13,9 +13,9 @@ calculate_AA_variation(alignment, threshold, grouped, grouping_method)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{The data loaded with \code{\link[seqinr]{read.alignment}} function }
-  \item{threshold}{A number in range 0-100. A of minimal frequency of occurences of amino acids at each position}
+  \item{threshold}{(optional) A number in range 0-100. A of minimal frequency of occurences of amino acids at each position. Default: all the residues are visualized.}
   \item{grouped}{(optional) A logical indicating if the grouping of amino acids should be applied. Default: FALSE}
-  \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'general', 'hydrophobicity', 'size', 'aromaticity'. Default: 'general'}
+  \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity'. Default: 'substitution_matrix'}
 }
 \details{
 The output consists of amino acids and their fractions on each position of alignment. Amino acids with occurence frequencies lower than the threshold of user's choice are excluded.

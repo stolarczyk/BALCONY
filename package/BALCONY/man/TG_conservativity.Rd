@@ -13,7 +13,7 @@ TG_conservativity(alignment, grouping_method = NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
-  \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'general', 'hydrophobicity', 'size', 'aromaticity', default: NULL }
+  \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity', default: NULL }
 }
 \details{
 The conservativity score is calculated according to the following formula:
@@ -44,5 +44,5 @@ conservation_score = TG_conservativity(alignment)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{conservation}% use one of  RShowDoc("KEYWORDS")
-\keyword{mertic}
+\keyword{metric}
 \keyword{alignment}% __ONLY ONE__ keyword per line
