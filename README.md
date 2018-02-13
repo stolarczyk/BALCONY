@@ -1,7 +1,7 @@
 # BALCONY
 This repository holds the BALCONY R package, which can be downloaded at its [CRAN](https://CRAN.R-project.org/package=BALCONY) website.
 
-**BALCONY** is an R package that facilitates the evolutionary analysis and the
+**BALCONY** (Better ALignment CONsensus analYsis) is an R package that facilitates the evolutionary analysis and the
 identification of conservation check the variablity of selected amino acids in protein
 structure.
 One of the unique functionalities of the BALCONY package concerns the
