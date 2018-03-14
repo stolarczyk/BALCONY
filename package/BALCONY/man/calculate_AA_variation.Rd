@@ -8,7 +8,7 @@ Calculate AA variations on each position of the multiple sequence alignment
  This function calculates AA variations on each position of the alignment which may be further used for the conservativity study of the set of sequences in quiestion
 }
 \usage{
-calculate_AA_variation(alignment, threshold, grouped, grouping_method)
+calculate_AA_variation(alignment, threshold, grouped, grouping_method, weights)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,6 +16,7 @@ calculate_AA_variation(alignment, threshold, grouped, grouping_method)
   \item{threshold}{(optional) A number in range 0-100. A of minimal frequency of occurences of amino acids at each position. Default: all the residues are visualized.}
   \item{grouped}{(optional) A logical indicating if the grouping of amino acids should be applied. Default: FALSE}
   \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity'. Default: 'substitution_matrix'}
+  \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
 }
 \details{
 The output consists of amino acids and their fractions on each position of alignment. Amino acids with occurence frequencies lower than the threshold of user's choice are excluded.
@@ -27,7 +28,7 @@ Returns list of two matrices with tabelarized symbols of the most common AA in a
  \item{var_aa$matrix}{A combination of this two. The best suited element for visual inspection of the variability at each position}
 }
 \author{
-Alicja Pluciennik & Michal Stoalrczyk
+Alicja Pluciennik & Michal Stolarczyk
 }
 \seealso{
 \code{\link{align_params}}

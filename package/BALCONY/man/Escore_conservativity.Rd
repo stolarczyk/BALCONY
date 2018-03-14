@@ -14,6 +14,7 @@ Escore_conservativity(alignment, grouping_method = NULL)
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
   \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity', default: NULL }
+  \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
 }
 \details{
 The conservativity score is calculated according to the following formula:
