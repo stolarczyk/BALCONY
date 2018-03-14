@@ -310,13 +310,14 @@ calculate_AA_variation <-
   function(alignment,
            threshold = NULL,
            grouped = F,
-           grouping_method = "substitution_matrix") {
+           grouping_method = "substitution_matrix",
+           weights = NULL) {
     #prmt- size of alignment (output of get_parameter())
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
     prmt = align_params(alignment = alignment)
-
+    
     if (is.null(threshold)) {
       keyaas_treshold = 1 / prmt$row_no
     } else{
@@ -326,19 +327,19 @@ calculate_AA_variation <-
         keyaas_treshold = prmt$row_no * (threshold / 100)
       }
     }
-
+    
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
     if (grouped == T) {
       aligned_sequences_matrix = align_seq_mtx2grs(aligned_sequences_matrix, grouping_method = grouping_method)
     }
     keyaas = matrix("n", dim(aligned_sequences_matrix)[2], 20 * 2)
     keyaas_per = matrix("n", dim(aligned_sequences_matrix)[2], 20 * 2)
-
+    
     for (i in seq(1, dim(aligned_sequences_matrix)[2])) {
       table = (sort(table(aligned_sequences_matrix[, i]), decreasing = T))
       #AA types and frequencies
       aas = names(table)
-
+      
       keyaas[i, 1:length(matrix(aas[which(table >= keyaas_treshold)], 1, length(aas[which(table >= keyaas_treshold)])))] = matrix(aas[which(table >= keyaas_treshold)], 1, length(aas[which(table >= keyaas_treshold)]))
       #if there are any AA (=always) then these are introduced to the keyaas matrix
       keyaas_per[i, 1:length(matrix((table)[which(table >= keyaas_treshold)], 1, length((table)[which(table >= keyaas_treshold)])))] = matrix(round((table)[which(table >= keyaas_treshold)] / prmt$row_no, 3) * 100, 1, length(aas[which(table >= keyaas_treshold)]))
@@ -353,15 +354,35 @@ calculate_AA_variation <-
     #transpose matrix
     keyaas_per = t(keyaas_per[, 1:i]) #transpose matrix
     #merging key AAs symbols table with key AAs percentages table
+    
     size = dim(keyaas)
     output = matrix("-", size[1] * 2, size[2])
-    j = 1
+    if (!is.null(weights)) {
+      if(length(weights) != prmt$row_no){
+        stop("The length of weights vector must equal the number of sequences in the alignment!")
+      }else{
+        weight = matrix("n",ncol =  dim(aligned_sequences_matrix)[2],nrow =  21)
+        weights = weights/mean(weights)
+        for(i in seq_len(ncol(aligned_sequences_matrix))){
+          representatives = unique(keyaas[,i])
+          representatives = representatives[!representatives == "n"]
+          for(j in seq_len(length(representatives))){
+            which_representative = which(aligned_sequences_matrix[,i] == representatives[j])
+            weight[j,i] = mean(weights[which_representative])
+          }
+          keyaas_per[,i] = as.numeric(keyaas_per[,i]) * as.numeric(weight[,i])
+        }
+        
+      }
+    }
+    
+    j=1
     for (i in seq(1, size[1] * 2, 2)) {
       output[i,] = keyaas[j,]
       output[i + 1,] = keyaas_per[j,]
       j = j + 1
     }
-
+    
     return(list(
       AA = keyaas,
       percentage = keyaas_per,
@@ -606,15 +627,16 @@ create_final_CSV <-
   }
 
 Escore_conservativity <-
-  function(alignment, grouping_method = NULL) {
+  function(alignment, grouping_method = NULL, weights = NULL) {
     if (is.null(grouping_method)) {
-      var_aa = calculate_AA_variation(alignment, threshold = 0.01)
+      var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights)
     } else {
       var_aa = calculate_AA_variation(
         alignment,
         threshold = 0.01,
         grouped = T,
-        grouping_method = grouping_method
+        grouping_method = grouping_method,
+        weights = weights
       )
     }
     max_cons = c()
