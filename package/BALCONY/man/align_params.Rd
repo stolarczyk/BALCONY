@@ -1,5 +1,5 @@
-\name{alignment_parameters}
-\alias{alignment_parameters}
+\name{align_params}
+\alias{align_params}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Get alignment dimensions
@@ -8,7 +8,7 @@ Get alignment dimensions
 This function returns size of alignment, which facilitates the convenient performing upcoming steps of analysis.
 }
 \usage{
-alignment_parameters(alignment)
+align_params(alignment)
 }
 
 \arguments{
@@ -37,7 +37,7 @@ Alicja Pluciennik & Michal Stolarczyk
 }
 \examples{
 data("alignment")
-parameters=alignment_parameters(alignment);
+parameters=align_params(alignment);
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

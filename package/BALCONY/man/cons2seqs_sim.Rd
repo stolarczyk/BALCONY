@@ -29,14 +29,14 @@ Alicja Pluciennik & Michal Stolarczyk
 
 
 \seealso{
-\code{\link[seqinr]{read.alignment}}, \code{\link{consensus}}, \code{\link{alignment_parameters}}
+\code{\link[seqinr]{read.alignment}}, \code{\link{consensus}}, \code{\link{align_params}}
 }
 \examples{
-data("alignment")
-alignment = delete_isoforms(alignment)
+data("small_alignment")
+alignment = delete_isoforms(small_alignment)
 threshold_consensus = 30
 grouping_method = "substitution_matrix"
-alignment_grouped = aligned_sequences_matrix2groups(alignment2matrix(alignment),grouping_method)
+alignment_grouped = align_seq_mtx2grs(alignment2matrix(alignment),grouping_method)
 consensus_seq_grouped = consensus(alignment_grouped, threshold_consensus)
 consensus_to_seqs_similarity = cons2seqs_sim(alignment_grouped, consensus_seq_grouped)
 }

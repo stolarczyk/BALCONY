@@ -35,7 +35,7 @@ uniprot="P43914"
 chain_identifier = "B"
 structure_index=get_structures_idx(structure)
 entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
-                        TG_entropy = TG_conservativity(alignment))
+                        Escore_entropy = Escore_conservativity(alignment))
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
 
 # In case of one entropy score

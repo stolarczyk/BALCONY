@@ -1,5 +1,5 @@
-\name{exclude_low_probability_structures}
-\alias{exclude_low_probability_structures}
+\name{excl_low_prob_strcts}
+\alias{excl_low_prob_strcts}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Exclude low probability structural data
@@ -8,7 +8,7 @@ Exclude low probability structural data
 This function facilitates the exclusion of low probability structural data from the downstream conservativity analysis, which helps to reduce the effect of non-consistent structural amino acids on the conservativity analysis of the structure of interest
 }
 \usage{
-exclude_low_probability_structures(structure, threshold)
+excl_low_prob_strcts(structure, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,7 +42,7 @@ lib=list(c("Q84HB8","4I19","4QA9"),
 pdb_name = "4JNC"
 uniprot=find_seqid(pdb_name,lib)
 tunnel=create_structure_seq(structure_list,uniprot,alignment)
-tunnel_excluded = exclude_low_probability_structures(tunnel, 0.5)
+tunnel_excluded = excl_low_prob_strcts(tunnel, 0.5)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -30,7 +30,7 @@ Returns list of two matrices with tabelarized symbols of the most common AA in a
 Alicja Pluciennik & Michal Stoalrczyk
 }
 \seealso{
-\code{\link{alignment_parameters}}
+\code{\link{align_params}}
 }
 \examples{
 data("alignment")

@@ -32,7 +32,7 @@ Alicja Pluciennik & Michal Stolarczyk
 
 
 \seealso{
-\code{\link{create_structure_seq}}, \code{\link{schneider_conservativity}}, \code{\link{TG_conservativity}}, \code{\link{landgraf_conservativity}}, \code{\link[seqinr]{read.alignment}}
+\code{\link{create_structure_seq}}, \code{\link{schneider_conservativity}}, \code{\link{Escore_conservativity}}, \code{\link{landgraf_conservativity}}, \code{\link[seqinr]{read.alignment}}
 }
 \examples{
 data("alignment")
@@ -42,7 +42,7 @@ alignment = delete_isoforms(alignment)
 threshold = 1
 var_aa=calculate_AA_variation(alignment,threshold)
 entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
-                  TG.entropy = TG_conservativity(alignment))
+                  Escore.entropy = Escore_conservativity(alignment))
 create_final_CSV("my_filename",var_aa,structure,uniprot,alignment,entropy_data)
 }
 \keyword{ save }

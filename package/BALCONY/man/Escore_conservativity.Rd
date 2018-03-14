@@ -1,14 +1,14 @@
-\name{TG_conservativity}
-\alias{TG_conservativity}
+\name{Escore_conservativity}
+\alias{Escore_conservativity}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Calculate the Tunneling Group (TG) conservation metric
+Calculate the Escore conservation metric
 }
 \description{
-This function facilitates the calculation of TG conservation metric (in amino acid or group mode)
+This function facilitates the calculation of Escore conservation metric (in amino acid or group mode)
 }
 \usage{
-TG_conservativity(alignment, grouping_method = NULL)
+Escore_conservativity(alignment, grouping_method = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -39,7 +39,7 @@ Also, this function originally calculates the entropy values which can be used t
 
 \examples{
 data("alignment")
-conservation_score = TG_conservativity(alignment)
+conservation_score = Escore_conservativity(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

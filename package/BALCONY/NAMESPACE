@@ -6,4 +6,4 @@ importFrom("grDevices", "rainbow")
 importFrom("graphics", "barplot", "legend", "par", "plot", "text")
 importFrom("utils", "data", "read.table", "write.table")
 importFrom("stats", "ecdf", "ks.test")
-
+importFrom("grDevices", "dev.new")

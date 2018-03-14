@@ -1,5 +1,5 @@
-\name{noteworthy_sequences}
-\alias{noteworthy_sequences}
+\name{noteworthy_seqs}
+\alias{noteworthy_seqs}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Find noteworthy sequences in the dataset (aligned sequences)
@@ -8,7 +8,7 @@ Find noteworthy sequences in the dataset (aligned sequences)
 This function detects noteworthy sequences (most common, closest to the consensus and most different from the consesus) to facilitate convenient detection of outlying sequences that might be excluded from the further analysis.
 }
 \usage{
-noteworthy_sequences(percentage, alignment)
+noteworthy_seqs(percentage, alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,7 +30,7 @@ Alicja Pluciennik & Michal Stolarczyk
 data("alignment")
 consensus_seq = consensus(alignment, 30)
 consensus_to_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
-noteworthy_sequences(consensus_to_sequences_identity, alignment)
+noteworthy_seqs(consensus_to_sequences_identity, alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

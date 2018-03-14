@@ -32,7 +32,7 @@ Michal Stolarczyk & Alicja Pluciennik
 data("alignment")
 data("structure")
 entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
-              TG.entropy = TG_conservativity(alignment),
+              Escore.entropy = Escore_conservativity(alignment),
               Kabat.entropy =  kabat_conservativity(alignment))
 indices=get_structures_idx(structure)
 protein_index = indices$proteinIndices

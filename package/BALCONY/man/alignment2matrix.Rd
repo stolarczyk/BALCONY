@@ -21,7 +21,7 @@ Alicja Pluciennik & Michal Stolarczyk
 
 
 \seealso{
-\code{\link{alignment_parameters}}, \code{\link[seqinr]{read.alignment}}
+\code{\link{align_params}}, \code{\link[seqinr]{read.alignment}}
 }
 \examples{
 data("alignment")

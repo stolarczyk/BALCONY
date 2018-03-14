@@ -1,10 +1,10 @@
 Package: BALCONY
 Type: Package
 Title: Better ALignment CONsensus analYsis
-Version: 0.1.5
-Author: Alicja Płuciennik & Michał Stolarczyk 
+Version: 0.1.9
+Author: Michał Stolarczyk &  Alicja Płuciennik
 Maintainer: Michał Stolarczyk <stolarczyk.michal93@gmail.com>
-Description: This package facilitates the evolutionary analysis and structure conservation study of specified amino acids in proteins.
+Description: Facilitates the evolutionary analysis and structure conservation study of specified amino acids in proteins.
 License: GPL
 Encoding: UTF-8
 LazyData: true

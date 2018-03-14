@@ -12,7 +12,7 @@ consensus(alignment, threshold)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{output of of \code{\link[seqinr]{read.alignment}} function or grouped alignment created with: \code{\link{aligned_sequences_matrix2groups}} and \code{\link{alignment2matrix}}}
+  \item{alignment}{output of of \code{\link[seqinr]{read.alignment}} function or grouped alignment created with: \code{\link{align_seq_mtx2grs}} and \code{\link{alignment2matrix}}}
   \item{threshold}{minimal fraction of amino acids on the certain position in all sequences of the alignment to be taken for consensus letter on this position; number in range 0-100.  }
   }
 %%     ~~Describe \code{x} here~~
