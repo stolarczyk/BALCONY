@@ -8,7 +8,7 @@ Calculate the Escore conservation metric
 This function facilitates the calculation of Escore conservation metric (in amino acid or group mode)
 }
 \usage{
-Escore_conservativity(alignment, grouping_method = NULL)
+Escore_conservativity(alignment, grouping_method = NULL, weights = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

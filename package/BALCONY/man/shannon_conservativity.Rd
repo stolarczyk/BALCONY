@@ -8,11 +8,12 @@ Calculate Shannon conservation metric
 This function facilitates the calculation of Shannon conservation metric.
 }
 \usage{
-shannon_conservativity(alignment)
+shannon_conservativity(alignment, weights = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
+  \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
 }
 
 \value{

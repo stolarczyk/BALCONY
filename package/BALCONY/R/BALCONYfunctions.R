@@ -386,7 +386,8 @@ calculate_AA_variation <-
     return(list(
       AA = keyaas,
       percentage = keyaas_per,
-      matrix = output
+      matrix = output,
+      weights = weight
     ))
   }
 noteworthy_seqs <- function(percentage, alignment) {
@@ -668,7 +669,7 @@ Escore_conservativity <-
     return(return_data)
   }
 
-kabat_conservativity <- function(alignment) {
+kabat_conservativity <- function(alignment,weights=NULL) {
   if (!is.matrix(alignment)) {
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
   }
@@ -676,7 +677,10 @@ kabat_conservativity <- function(alignment) {
     aligned_sequences_matrix = alignment
   }
   Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
+  
+  var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights)
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+    
     column = aligned_sequences_matrix[, rep]
     #KABAT
     K = c()
@@ -686,18 +690,25 @@ kabat_conservativity <- function(alignment) {
     N = length(column)
     #no of objects
     K = length(as.numeric(table(column)))
+    if(!is.null(weights)){
+      aas = table(column)
+      for(i in length(aas)){
+        match = which(var_aa$AA[,rep] == names(aas)[i])
+        aas[i] = aas[i] * as.numeric(var_aa$weights[match,rep])
+      }
+    } else{
+      aas = table(column)
+    }
     #no of classes
-    n1 = as.numeric(sort(table(column))[length(table(column))])
-
+    n1 = as.numeric(sort(aas)[length(aas)])
     Kabat[rep] = (K / n1) * N
-
   }
   Kabat_entropy_normalized = Kabat / max(Kabat)
 
   return(Kabat_entropy_normalized)
 }
 
-schneider_conservativity <- function(alignment) {
+schneider_conservativity <- function(alignment,weights=NULL) {
   if (!is.matrix(alignment)) {
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
   }
@@ -706,10 +717,19 @@ schneider_conservativity <- function(alignment) {
   }
   symbols = 21
   sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
+  var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights)
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
-    #SCHNEIDER, SHANNON
-    tab = as.numeric(table(column))
+    if(!is.null(weights)){
+      tab = (table(column))
+      for(i in length(tab)){
+        match = which(var_aa$AA[,rep] == names(tab)[i])
+        tab[i] = tab[i] * as.numeric(var_aa$weights[match,rep])
+      }
+    } else{
+      tab = table(column)
+    }    
+    tab = as.numeric(tab)
     K = c()
     p = c()
     n = c()
@@ -734,7 +754,7 @@ schneider_conservativity <- function(alignment) {
   return(sum_schneider)
 }
 
-shannon_conservativity <- function(alignment) {
+shannon_conservativity <- function(alignment, weights=NULL) {
   if (!is.matrix(alignment)) {
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
   }
@@ -742,10 +762,20 @@ shannon_conservativity <- function(alignment) {
     aligned_sequences_matrix = alignment
   }
   sum = rep(NaN, dim(aligned_sequences_matrix)[2])
+  var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights)
+  
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
-    #SCHNEIDER, SHANNON
-    tab = as.numeric(table(column))
+    if(!is.null(weights)){
+      tab = (table(column))
+      for(i in length(tab)){
+        match = which(var_aa$AA[,rep] == names(tab)[i])
+        tab[i] = tab[i] * as.numeric(var_aa$weights[match,rep])
+      }
+    } else{
+      tab = table(column)
+    }    
+    tab = as.numeric(tab)
     K = c()
     p = c()
     n = c()

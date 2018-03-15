@@ -8,11 +8,12 @@ Calculate Kabat conservation metric
 This function facilitates the calculation of Kabat conservation metric.
 }
 \usage{
-kabat_conservativity(alignment)
+kabat_conservativity(alignment, weights = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
+  \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
 }
 \value{
 \item{conservation_score}{A vector of length equal to the length of aligned sequences}
