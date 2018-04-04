@@ -59,6 +59,8 @@ delete_isoforms <- function(alignment) {
     new$nam = alignment$nam[-lines_to_delete]
     new$seq = alignment$seq[-lines_to_delete]
     output = new
+    no_deleted = length(lines_to_delete)
+    warning(paste(no_deleted,"isoforms were deleted"))
   }
   else{
     output = alignment
@@ -825,11 +827,26 @@ preprocess_hmm_output <- function(hmm_out){
   return(list(probabilities=probs,alignment_positions=sites))
 }
 
-CRE_conservativity <- function(alignment, hmmbuild_path, pairwiseAlignemnt_scores=NULL) {
+CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_scores=NULL) {
   
   if(is.null(pairwiseAlignemnt_scores)){
     pairwiseAlignemnt_scores=pairwise_alignment_MSA(alignment)
   }
+  #Make sure the hmmbuild is there
+  if(.Platform$OS.type == "unix") {
+    if(is.null(hmmbuild_path)){
+      hmmbuild_path = system("which hmmbuild",intern = T)
+    }
+    if(length(hmmbuild_path)==0){
+      stop("You need to speficy the hmmbuild path as it cannot be located in your system")
+    }
+  } else {
+    if(is.null(hmmbuild_path)){
+      stop("You need to speficy the hmmbuild path as it cannot be located in your system")
+    }
+  }
+  
+  
   
   #perform hierarchical clustering on the distance matrix obtained from pairwise alignemnt matrix
   dendro = hclust(dist(pairwiseAlignemnt_scores), method = "average")
