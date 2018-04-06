@@ -55,10 +55,10 @@ delete_isoforms <- function(alignment) {
   }
   new = list()
   if (length(lines_to_delete >= 1)) {
-    new$nb = alignment$nb - (length(lines_to_delete))
-    new$nam = alignment$nam[-lines_to_delete]
-    new$seq = alignment$seq[-lines_to_delete]
-    output = new
+    alignment$nb = alignment$nb - (length(lines_to_delete))
+    alignment$nam = alignment$nam[-lines_to_delete]
+    alignment$seq = alignment$seq[-lines_to_delete]
+    output = as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
     no_deleted = length(lines_to_delete)
     warning(paste(no_deleted,"isoforms were deleted"))
   }
@@ -299,7 +299,7 @@ alignment2matrix <- function(alignment) {
 
   for (i in seq(1, prmt$row_no)) {
     #Putting aligned seqs into matrix
-    temp = seqinr::s2c(alignment$seq[i])
+    temp = toupper(seqinr::s2c(alignment$seq[i]))
     for (j in seq(1, prmt$col_no)) {
       aligned_sequences_matrix[i, j] = temp[j]
 
@@ -838,11 +838,11 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       hmmbuild_path = system("which hmmbuild",intern = T)
     }
     if(length(hmmbuild_path)==0){
-      stop("You need to speficy the hmmbuild path as it cannot be located in your system")
+      stop("You need to specify the hmmbuild path as it cannot be located in your system")
     }
   } else {
     if(is.null(hmmbuild_path)){
-      stop("You need to speficy the hmmbuild path as it cannot be located in your system")
+      stop("You need to specify the hmmbuild path as it cannot be located in your system")
     }
   }
   
@@ -866,7 +866,7 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
     leftover_alignment = alignment
     #get the indices of the sequences in the cluster of interest
     to_delete = which(clusters == clusters[i])
-    #delete approproate sequences and their names in the objects and adjust the sequeces counts
+    #delete appropriate sequences and their names in the objects and adjust the sequeces counts
     sub_alignment$seq = sub_alignment$seq[to_delete]
     leftover_alignment$seq = leftover_alignment$seq[-to_delete]
     sub_converted_seq = lapply(sub_alignment$seq, s2c)
