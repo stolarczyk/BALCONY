@@ -796,7 +796,7 @@ schneider_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
     sum_schneider[rep] = -sum_internal_schneider
 
   }
-  return(sum_schneider)
+  return(sum_schneider/max(sum_schneider))
 }
 
 shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
@@ -844,7 +844,7 @@ shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
     }
     sum[rep] = -sum_internal
   }
-  return(sum)
+  return(sum/max(sum))
 }
 
 pairwise_alignment_MSA <- function(alignment) {
