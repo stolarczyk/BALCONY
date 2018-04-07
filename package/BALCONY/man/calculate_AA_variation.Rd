@@ -8,7 +8,8 @@ Calculate AA variations on each position of the multiple sequence alignment
  This function calculates AA variations on each position of the alignment which may be further used for the conservativity study of the set of sequences in quiestion
 }
 \usage{
-calculate_AA_variation(alignment, threshold, grouped, grouping_method, weights)
+calculate_AA_variation(alignment, threshold, grouped,
+  grouping_method, weights,pseudo_counts=F)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,7 +33,7 @@ Returns list of thre matrices with tabelarized symbols of the most common AA in 
 Michal Stolarczyk & Alicja Pluciennik
 }
 \seealso{
-\code{\link{align_params}},\code{\link{pseudo_counts}}
+\code{\link{align_params}},\code{\link{calculate_pseudo_counts}}
 }
 \examples{
 data("alignment")

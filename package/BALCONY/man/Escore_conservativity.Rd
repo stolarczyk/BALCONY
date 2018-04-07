@@ -8,7 +8,7 @@ Calculate the Escore conservation metric
 This function facilitates the calculation of Escore conservation metric (in amino acid or group mode)
 }
 \usage{
-Escore_conservativity(alignment, grouping_method = NULL, weights = NULL)
+Escore_conservativity(alignment, grouping_method = NULL, weights = NULL,pseudo_counts=F)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +16,6 @@ Escore_conservativity(alignment, grouping_method = NULL, weights = NULL)
   \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity', default: NULL }
   \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
       \item{pseudo_counts}{(optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only in non-group mode and without weights. Using these options with pseudo-counts will be suppressed. Default: FALSE}
-}
 }
 \details{
 The conservativity score is calculated according to the following formula:

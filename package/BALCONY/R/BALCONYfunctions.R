@@ -334,14 +334,14 @@ calculate_AA_variation <-
         keyaas_treshold = prmt$row_no * (threshold / 100)
       }
     }
-    
+
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
     if (grouped == T) {
       aligned_sequences_matrix = align_seq_mtx2grs(aligned_sequences_matrix, grouping_method = grouping_method)
     }
     keyaas = matrix("n", dim(aligned_sequences_matrix)[2], 21 * 2)
     keyaas_per = matrix("n", dim(aligned_sequences_matrix)[2], 21 * 2)
-    pc = pseudo_counts_sub(alignment)
+    pc = calculate_pseudo_counts(alignment)
     for (i in seq(1, dim(aligned_sequences_matrix)[2])) {
       if (length(table(aligned_sequences_matrix[, i])) == 1) {
         x = append(aligned_sequences_matrix[, i], "X")
@@ -371,7 +371,7 @@ calculate_AA_variation <-
       order_decresasing = order(Frequency, decreasing = T)
       Frequency = Frequency[order_decresasing]
       AAs = AAs[order_decresasing]
-      
+
       keyaas[i, 1:length(matrix(AAs, 1, length(AAs)))] = matrix(AAs, 1, length(AAs))
       #if there are any AA (=always) then these are introduced to the keyaas matrix
       keyaas_per[i, 1:length(matrix(Frequency, 1, length(Frequency)))] = matrix(round(Frequency / sum(Frequency), 6) * 100, 1, length(AAs))
@@ -386,7 +386,7 @@ calculate_AA_variation <-
     #transpose matrix
     keyaas_per = t(keyaas_per[, 1:i]) #transpose matrix
     #merging key AAs symbols table with key AAs percentages table
-    
+
     size = dim(keyaas)
     output = matrix("-", size[1] * 2, size[2])
     if (!is.null(weights)) {
@@ -406,17 +406,17 @@ calculate_AA_variation <-
           }
           keyaas_per[, i] = as.numeric(keyaas_per[, i]) * as.numeric(weight[, i])
         }
-        
+
       }
     }
-    
+
     j = 1
     for (i in seq(1, size[1] * 2, 2)) {
       output[i, ] = keyaas[j, ]
       output[i + 1, ] = keyaas_per[j, ]
       j = j + 1
     }
-    
+
     return(list(
       AA = keyaas,
       percentage = keyaas_per,
@@ -707,15 +707,14 @@ Escore_conservativity <-
 kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
   if (!is.matrix(alignment)) {
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-  }
-  else{
+  }else{
     aligned_sequences_matrix = alignment
   }
   Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
-  
+
   var_aa = calculate_AA_variation(alignment,weights = weights,pseudo_counts = pseudo_counts)
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
-    
+
     column = aligned_sequences_matrix[, rep]
     #KABAT
     K = c()
@@ -733,7 +732,7 @@ kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
       }
     } else{
       AAs=var_aa$AA[,rep]
-      PER=as.numeric(var_aa$percentage[,rep])
+      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
       per = PER[!is.na(PER)]
       aas = AAs[!is.na(PER)]
       names(per) = aas
@@ -768,12 +767,12 @@ schneider_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
       }
     } else{
       AAs=var_aa$AA[,rep]
-      PER=as.numeric(var_aa$percentage[,rep])
+      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
       per = PER[!is.na(PER)]
       aas = AAs[!is.na(PER)]
       names(per) = aas
       table=per
-    }    
+    }
     tab = as.numeric(table)
     K = c()
     p = c()
@@ -808,7 +807,7 @@ shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
   }
   sum = rep(NaN, dim(aligned_sequences_matrix)[2])
   var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights,pseudo_counts = pseudo_counts)
-  
+
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
     if(!is.null(weights)){
@@ -819,12 +818,12 @@ shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
       }
     } else{
       AAs=var_aa$AA[,rep]
-      PER=as.numeric(var_aa$percentage[,rep])
+      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
       per = PER[!is.na(PER)]
       aas = AAs[!is.na(PER)]
       names(per) = aas
       table=per
-    } 
+    }
     tab = as.numeric(table)
     K = c()
     p = c()
@@ -850,13 +849,13 @@ shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
 pairwise_alignment_MSA <- function(alignment) {
   #define a function to use in sapply
   convert_then_align <- function(seqj, seqi) {
-    seqi = s2c(seqi)
-    seqi = c2s(seqi[seqi != "-"])
-    seqj = s2c(seqj)
-    seqj = c2s(seqj[seqj != "-"])
-    return(pairwiseAlignment(seqi, seqj, scoreOnly = T))
+    seqi = seqinr::s2c(seqi)
+    seqi = seqinr::c2s(seqi[seqi != "-"])
+    seqj = seqinr::s2c(seqj)
+    seqj = seqinr::c2s(seqj[seqj != "-"])
+    return(Biostrings::pairwiseAlignment(seqi, seqj, scoreOnly = T))
   }
-  
+
   score_mtx = matrix(NA, nrow = alignment$nb, ncol = alignment$nb)
   for (i in seq_len(alignment$nb)) {
     seqi = alignment$seq[i]
@@ -877,7 +876,7 @@ preprocess_hmm_output <- function(hmm_out){
 }
 
 CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_scores=NULL) {
-  
+
   if(is.null(pairwiseAlignemnt_scores)){
     pairwiseAlignemnt_scores=pairwise_alignment_MSA(alignment)
   }
@@ -894,16 +893,16 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       stop("You need to specify the hmmbuild path as it cannot be located in your system")
     }
   }
-  
+
   #perform hierarchical clustering on the distance matrix obtained from pairwise alignemnt matrix
-  dendro = hclust(dist(pairwiseAlignemnt_scores), method = "average")
+  dendro = stats::hclust(stats:dist(pairwiseAlignemnt_scores), method = "average")
   #cut the tree and get clusters
-  clusters = cutree(dendro, h = 8000)
+  clusters = stats::cutree(dendro, h = 8000)
   #get the number of clusters
   no_clusters = max(clusters)
   RE = matrix(data = NA,
               nrow = no_clusters,
-              ncol = length(s2c(alignment$seq[1])))
+              ncol = length(seqinr::s2c(alignment$seq[1])))
   CRE = c()
   Z = c()
   #iterate over each clusters
@@ -917,8 +916,8 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       #delete appropriate sequences and their names in the objects and adjust the sequeces counts
       sub_alignment$seq = sub_alignment$seq[to_delete]
       leftover_alignment$seq = leftover_alignment$seq[-to_delete]
-      sub_converted_seq = lapply(sub_alignment$seq, s2c)
-      leftover_converted_seq = lapply(leftover_alignment$seq, s2c)
+      sub_converted_seq = lapply(sub_alignment$seq, seqinr::s2c)
+      leftover_converted_seq = lapply(leftover_alignment$seq, seqinr::s2c)
       sub_alignment$nam = sub_alignment$nam[to_delete]
       leftover_alignment$nam = leftover_alignment$nam[-to_delete]
       leftover_alignment$nb = leftover_alignment$nb - length(to_delete)
@@ -926,10 +925,10 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       #write updated objects to files
       leftover_fasta_name = "leftover_MSA.fasta"
       sub_fasta_name = "sub_MSA.fasta"
-      write.fasta(sequences = leftover_converted_seq,
+      seqinr::write.fasta(sequences = leftover_converted_seq,
                   names = leftover_alignment$nam,
                   file.out = leftover_fasta_name)
-      write.fasta(sequences = sub_converted_seq,
+      seqinr::write.fasta(sequences = sub_converted_seq,
                   names = sub_alignment$nam,
                   file.out = sub_fasta_name)
       #prepare commands to run HMMER
@@ -939,11 +938,11 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       system(command = leftover_hmm_command, wait = T)
       #read the HMMER outputs in
       leftover_hmm <-
-        read_table("leftover_hmm.out",
+        readr::read_table("leftover_hmm.out",
                     col_names = FALSE,
                     skip = 21)
       sub_hmm <-
-        read_table("sub_hmm.out", col_names = FALSE, skip = 21)
+        readr::read_table("sub_hmm.out", col_names = FALSE, skip = 21)
       #preprocess the data
       leftover_prob = preprocess_hmm_output(leftover_hmm)$probabilities
       leftover_pos = preprocess_hmm_output(leftover_hmm)$alignment_positions
@@ -951,7 +950,7 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       sub_pos = preprocess_hmm_output(sub_hmm)$alignment_positions
       #get the indices of alignemnt positions avaialble in both groups
       intersection_pos = intersect(sub_pos, leftover_pos)
-      for (pos in seq_len(length(s2c(alignment$seq[1])))) {
+      for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
         which_pos = which(intersection_pos == pos)
         if (length(which_pos) > 0) {
           pre_RE = c()
@@ -970,7 +969,7 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
       RE[i,] = 0
     }
   }
-  for (pos in seq_len(length(s2c(alignment$seq[1])))) {
+  for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
     CRE[pos] = sum(RE[, pos])
   }
   return(CRE/max(CRE))
@@ -1098,7 +1097,7 @@ landgraf_conservativity <-
     return(Landgraf_normalized_entropy)
   }
 
-pseudo_counts <- function(alignment, substitution_mtx = NULL) {
+calculate_pseudo_counts <- function(alignment, substitution_mtx = NULL) {
   if (is.null(substitution_mtx)) {
     gonnet = BALCONY::gonnet
     substitution_mtx <-
@@ -1109,13 +1108,13 @@ pseudo_counts <- function(alignment, substitution_mtx = NULL) {
           as.numeric(as.character(X))
       )
     substitution_mtx = exp(substitution_mtx)
-    colnames(substitution_mtx) <- gonnet_mtx[[1]]
-    rownames(substitution_mtx) <- gonnet_mtx[[1]]
+    colnames(substitution_mtx) <- gonnet[[1]]
+    rownames(substitution_mtx) <- gonnet[[1]]
   }
   #warning - other substitution matrices may have different symbols (like '*', or other letters)
   mtx_alignment = alignment2matrix(alignment)
   pseudoCounts = matrix(NA,
-                        nrow = length(append(AA_STANDARD, "-")),
+                        nrow = length(append(Biostrings::AA_STANDARD, "-")),
                         ncol = dim(mtx_alignment)[2])
   B = apply(
     X = mtx_alignment,
@@ -1124,8 +1123,8 @@ pseudo_counts <- function(alignment, substitution_mtx = NULL) {
       (5 * length(unique(X)))
   )
   calc_ba <- function(column, B, substitution_mtx) {
-    pseudocounts = matrix(NA, nrow = length(append(AA_STANDARD, "-")), ncol = 1)
-    names(pseudocounts) <- append(AA_STANDARD, "-")
+    pseudocounts = matrix(NA, nrow = length(append(Biostrings::AA_STANDARD, "-")), ncol = 1)
+    names(pseudocounts) <- append(Biostrings::AA_STANDARD, "-")
     N = sum((table(column)))
     AA = table(column)
     for (i in names(pseudocounts)) {
@@ -1144,7 +1143,7 @@ pseudo_counts <- function(alignment, substitution_mtx = NULL) {
     pseudoCounts[, column] <-
       calc_ba(mtx_alignment[, column], B[column], substitution_mtx)
   }
-  rownames(pseudoCounts) = names(pseudocounts)
+  rownames(pseudoCounts) = append(Biostrings::AA_STANDARD, "-")
   return(pseudoCounts)
 }
 
