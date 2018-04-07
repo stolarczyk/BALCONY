@@ -14,6 +14,8 @@ schneider_conservativity(alignment, weights = NULL)
 \arguments{
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
   \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
+      \item{pseudo_counts}{(optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only without weights. Using this option with pseudo-counts will be suppressed. Default: FALSE}
+}
 }
 
 \value{

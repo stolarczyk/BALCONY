@@ -15,6 +15,8 @@ Escore_conservativity(alignment, grouping_method = NULL, weights = NULL)
   \item{alignment}{Alignment data read with \code{\link[seqinr]{read.alignment}} function}
   \item{grouping_method}{(optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity', default: NULL }
   \item{weights}{(optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.}
+      \item{pseudo_counts}{(optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only in non-group mode and without weights. Using these options with pseudo-counts will be suppressed. Default: FALSE}
+}
 }
 \details{
 The conservativity score is calculated according to the following formula:
