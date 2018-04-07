@@ -29,20 +29,20 @@ CRE_conservativity(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_scores=NULL)
 \enumerate{
 
     \item (If score matrix is not provided) Run pairwise alignments for all available sequences in the input MSA and save scores to a matrix
-    
+
     \item (If score matrix is not provided) Calculate a distance matrix based off of the alignment scores one
-    
+
     \item Perform hierarchical clustering on the distance matrix (UPGMA method)
-    
+
     \item Get the sequence clusters
-    
+
     \item Divide the alignment into \code{sub_groups} which are the clusters
-    
+
     \item Run hmmbuild for \code{whole_alignment} without \code{sub-group} and \code{sub_group}
-    
+
     \item Calculate relative entropy using these two as indicated in the Reference and repeat for each \code{sub_group}
-    
-    \item Calculate the cumulative relative entropy 
+
+    \item Calculate the cumulative relative entropy
 }
 
 \strong{hmmbuild program}:
@@ -62,7 +62,7 @@ Michal Stolarczyk & Alicja Pluciennik
 
 }
 \examples{
-
+#No example due to external softwware requirements
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -13,14 +13,14 @@ delete_isoforms(alignment)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alignment}{
-An alignment object read with \code{\link[seqinr]{read.alignment}} function
+An object (S3) class alignment read with \code{\link[seqinr]{read.alignment}} function
 }
 }
 \details{
 The isoforms are detected as entries with \code{"-digit|"} in the sequence name. If no isoforms are detected this function prints a "No isiforms detected" notification instead
 }
 \value{
-Alignment without isoforms
+Alignment without isoforms - an object (S3) class alignment
 }
 
 \author{
