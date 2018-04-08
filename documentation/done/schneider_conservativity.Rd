@@ -44,5 +44,5 @@ conservation_score = schneider_conservativity(alignment)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{conservation}% use one of  RShowDoc("KEYWORDS")
-\keyword{mertic}
+\keyword{metric}
 \keyword{alignment}% __ONLY ONE__ keyword per line

@@ -8,7 +8,7 @@ Calculate real-value Evolutionary Trace (ET)
 This function allows to calculate real-valued ET for MSA.
 }
 \usage{
-realval_ET = RealValET_conservativity(alignment)
+RealValET_conservativity(alignment)
 }
 
 \arguments{
@@ -19,7 +19,7 @@ Here, the real-valued ET is calculated using an evolutionary tree calculated for
 Real-valued ET score can be used as complimentary analysis of evolutionary entropy measures.
 }
 \value{\
-item{realValuedET}{A vector of real valued ET score corresponding to each MSA column }
+item{x}{A vector of real valued ET score corresponding to each MSA column }
 }
 \references{ Mihalek, Res, Lichtarge, 2004}
 \author{
