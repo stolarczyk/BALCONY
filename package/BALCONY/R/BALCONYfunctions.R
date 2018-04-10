@@ -319,6 +319,7 @@ calculate_AA_variation <-
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
+    freq=c()
     prmt = align_params(alignment = alignment)
     if(pseudo_counts){
       grouped = F

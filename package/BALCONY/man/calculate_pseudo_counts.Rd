@@ -4,7 +4,7 @@
 \title{
 Calculate pseudo counts for alignment }
 \description{
-This function calculates pseudo counts for alignment using substitution matrices. It is recommended to obtain amino acid frequencies for MSA with small number of sequences. This allows to calculate reliable entropy scores. 
+This function calculates pseudo counts for alignment using substitution matrices. It is recommended to obtain amino acid frequencies for MSA with small number of sequences. This allows to calculate reliable entropy scores.
 }
 \usage{
 calculate_pseudo_counts(alignment, substitution_mtx)
@@ -34,10 +34,8 @@ Please, using other scoring matrix make sure that all alignment symbols are pres
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \examples{
-
-library(BALCONY)
-load(alignment)
-PC <- pseudo_counts_sub(alignment)
+data("alignment")
+PC <- calculate_pseudo_counts(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

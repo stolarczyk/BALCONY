@@ -26,9 +26,8 @@ Michal Stolarczyk & Alicja Pluciennik
 }
 
 \examples{
-library(BALCONY)
-data("alignment")
-pairwiseAlignemnt_scores=pairwise_alignment_MSA(alignment)
+data("small_alignment")
+pairwiseAlignemnt_scores=pairwise_alignment_MSA(small_alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

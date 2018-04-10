@@ -26,7 +26,7 @@ Alicja Pluciennik & Michal Stolarczyk
 \code{\link{alignment2matrix}}, \code{\link[seqinr]{read.alignment}}
 }
 \examples{
-data("alignment")
+data(alignment)
 alignment = delete_isoforms(alignment)
 grouping_method = "general"
 aligned_sequences_matrix = alignment2matrix(alignment)
