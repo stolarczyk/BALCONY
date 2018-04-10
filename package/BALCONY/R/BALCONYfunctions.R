@@ -58,7 +58,7 @@ delete_isoforms <- function(alignment) {
     alignment$nb = alignment$nb - (length(lines_to_delete))
     alignment$nam = alignment$nam[-lines_to_delete]
     alignment$seq = alignment$seq[-lines_to_delete]
-    output = ape::as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
+    output = seqinr::as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
     no_deleted = length(lines_to_delete)
     warning(paste(no_deleted,"isoforms were deleted"))
   }
