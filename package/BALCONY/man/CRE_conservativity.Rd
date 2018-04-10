@@ -62,7 +62,7 @@ Michal Stolarczyk & Alicja Pluciennik
 
 }
 \examples{
-#No example due to external softwware requirements
+#No example due to external software requirements
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

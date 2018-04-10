@@ -8,26 +8,33 @@ Calculate real-value Evolutionary Trace (ET)
 This function allows to calculate real-valued ET for MSA.
 }
 \usage{
-RealValET_conservativity(alignment)
+realval_ET = RealValET_conservativity(alignment)
 }
 
 \arguments{
   \item{alignment}{Alignment data read with read.alignment() function}
 }
 \details{
-Here, the real-valued ET is calculated using an evolutionary tree calculated for given alignment. The tree is calculated using UPGMA method.
+Here, the real-valued ET is calculated using an evolutionary tree calculated for given alignment. The tree is calculated using UPGMA method. 
 Real-valued ET score can be used as complimentary analysis of evolutionary entropy measures.
 }
-\value{\
-item{x}{A vector of real valued ET score corresponding to each MSA column }
-}
+\value{realValuedET} {A vector of real valued ET score corresponding to each MSA column }
 \references{ Mihalek, Res, Lichtarge, 2004}
 \author{
 Alicja Plucennik & Michal Stolarczyk
 }
+\note{
+%%  ~~further notes~~
+}
+
+%% ~Make other sections like Warning with \section{Warning }{....} ~
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
 \examples{
-data("small_alignment")
-alignment = small_alignment
+library(BALCONY)
+load(alignment)
 conservation_score = schneider_conservativity(alignment)
 realval_ET = RealValET_conservativity(alignment)
 }

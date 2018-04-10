@@ -1,0 +1,10 @@
+* using log directory 'C:/Users/alicj/Downloads/Balcony_I/BALCONY/BALCONY.Rcheck'
+* using R version 3.3.3 (2017-03-06)
+* using platform: x86_64-w64-mingw32 (64-bit)
+* using session charset: CP1250
+* using option '--as-cran'
+* checking for file 'BALCONY/DESCRIPTION' ... OK
+* checking extension type ... Package
+* this is package 'BALCONY' version '0.1.9'
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ...

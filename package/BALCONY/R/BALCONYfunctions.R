@@ -58,7 +58,7 @@ delete_isoforms <- function(alignment) {
     alignment$nb = alignment$nb - (length(lines_to_delete))
     alignment$nam = alignment$nam[-lines_to_delete]
     alignment$seq = alignment$seq[-lines_to_delete]
-    output = as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
+    output = ape::as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
     no_deleted = length(lines_to_delete)
     warning(paste(no_deleted,"isoforms were deleted"))
   }
@@ -321,8 +321,8 @@ calculate_AA_variation <-
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
     prmt = align_params(alignment = alignment)
     if(pseudo_counts){
-      grouped=F
-      weights=NULL
+      grouped = F
+      weights = NULL
     }
     if (is.null(threshold)) {
       # keyaas_treshold = 1 / prmt$row_no
@@ -354,11 +354,11 @@ calculate_AA_variation <-
         names(df_table) = c("AAs", "freq")
         pseudo_counts = pc[, i]
         df_pc = as.data.frame(pseudo_counts)
-        df_pc = mutate(df_pc, AAs = rownames(df_pc))
-        df_merged_table = df_pc %>% full_join(df_table)
+        df_pc = dplyr::mutate(df_pc, AAs = rownames(df_pc))
+        df_merged_table = df_pc %>% dplyr::full_join(df_table)
         df_merged_table[is.na(df_merged_table)] = 0
-        df_merged_table = df_merged_table %>% mutate(Frequency = pseudo_counts +
-                                                       freq) %>% select(AAs, Frequency)
+        df_merged_table = df_merged_table %>% dplyr::mutate(Frequency = pseudo_counts +
+                                                       freq) %>% dplyr::select(AAs, Frequency)
       } else{
         df_merged_table = as.data.frame(table)
         names(df_merged_table) = c("AAs", "Frequency")
@@ -895,7 +895,7 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
   }
 
   #perform hierarchical clustering on the distance matrix obtained from pairwise alignemnt matrix
-  dendro = stats::hclust(stats:dist(pairwiseAlignemnt_scores), method = "average")
+  dendro = stats::hclust(stats::dist(pairwiseAlignemnt_scores), method = "average")
   #cut the tree and get clusters
   clusters = stats::cutree(dendro, h = 8000)
   #get the number of clusters
@@ -973,42 +973,6 @@ CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_
     CRE[pos] = sum(RE[, pos])
   }
   return(CRE/max(CRE))
-}
-
-RealValET_conservativity <- function(alignment){
-  ET_groups = seq(1,length(alignment$nam))
-  dist <- seqinr::dist.alignment(alignment)
-  clust <- hclust(dist, method = "average") #upgma
-  groups <- list() # groups for all nodes
-  for (i in ET_groups) {
-    groups[[i]] <- cutree(clust,i)
-  }
-  aligned_matrix <- alignment2matrix(alignment = alignment)
-  shannon_group <- function(group){
-    counts = table(group)
-    len = length(group)
-    freq = counts/len
-    Shannon = -sum(freq * log(freq))
-  }
-  realValET <- function(column, group_tree){
-    nodes = length(group_tree) - 1
-    node_group = rep(0,nodes)
-    for (i in 1:nodes) {
-      temp = split(column, group_tree[[i]])
-      group = rep(0,length(temp))
-      for (j in 1:length(temp)) {
-        group[j] = shannon_group(temp[[j]])
-      }
-      node_group[i] = (1/i)*sum(group)
-    }
-    RO = 1 + sum(node_group)
-    return(RO)
-  }
-  x = rep(0,dim(aligned_matrix)[2])
-  for (i in 1:dim(aligned_matrix)[2]) {
-    x[i] = realValET(aligned_matrix[,i], groups)
-  }
-  return(x)
 }
 
 
@@ -1701,3 +1665,38 @@ kolmogorov_smirnov_test <-
     }
     return(pval_mtx)
   }
+RealValET_conservativity <- function(alignment){
+  ET_groups = seq(1,length(alignment$nam))
+  dist <- seqinr::dist.alignment(alignment)
+  clust <- stats::hclust(dist, method = "average") #upgma
+  groups <- list() # groups for all nodes
+  for (i in ET_groups) {
+    groups[[i]] <- stats::cutree(clust,i)
+  }
+  aligned_matrix <- alignment2matrix(alignment = alignment)
+  shannon_group <- function(group){
+    counts = table(group)
+    len = length(group)
+    freq = counts/len
+    Shannon = -sum(freq * log(freq))
+  }
+  realValET <- function(column, group_tree){
+    nodes = length(group_tree) - 1
+    node_group = rep(0,nodes)
+    for (i in 1:nodes) {
+      temp = split(column, group_tree[[i]])
+      group = rep(0,length(temp))
+      for (j in 1:length(temp)) {
+        group[j] = shannon_group(temp[[j]])
+      }
+      node_group[i] = (1/i)*sum(group)
+    }
+    RO = 1 + sum(node_group)
+    return(RO)
+  }
+  x = rep(0,dim(aligned_matrix)[2])
+  for (i in 1:dim(aligned_matrix)[2]) {
+    x[i] = realValET(aligned_matrix[,i], groups)
+  }
+  return(x)
+}
