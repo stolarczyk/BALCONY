@@ -26,7 +26,8 @@ item{x}{A vector of real valued ET score corresponding to each MSA column }
 Alicja Plucennik & Michal Stolarczyk
 }
 \examples{
-data("alignment")
+data("small_alignment")
+alignment = small_alignment
 conservation_score = schneider_conservativity(alignment)
 realval_ET = RealValET_conservativity(alignment)
 }

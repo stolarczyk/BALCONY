@@ -354,11 +354,11 @@ calculate_AA_variation <-
         names(df_table) = c("AAs", "freq")
         pseudo_counts = pc[, i]
         df_pc = as.data.frame(pseudo_counts)
-        df_pc = plyr::mutate(df_pc, AAs = rownames(df_pc))
-        df_merged_table = df_pc %>% plyr::full_join(df_table)
+        df_pc = dplyr::mutate(df_pc, AAs = rownames(df_pc))
+        df_merged_table = df_pc %>% dplyr::full_join(df_table)
         df_merged_table[is.na(df_merged_table)] = 0
-        df_merged_table = df_merged_table %>% plyr::mutate(Frequency = pseudo_counts +
-                                                       freq) %>% plyr::select(AAs, Frequency)
+        df_merged_table = df_merged_table %>% dplyr::mutate(Frequency = pseudo_counts +
+                                                       freq) %>% dplyr::select(AAs, Frequency)
       } else{
         df_merged_table = as.data.frame(table)
         names(df_merged_table) = c("AAs", "Frequency")
