@@ -36,7 +36,7 @@ Also, this function originally calculates the entropy values which can be used t
 }
 \examples{
 data("small_alignment")
-conservation_score = kabat_conservativity(alignment)
+\donttest{conservation_score = kabat_conservativity(alignment)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

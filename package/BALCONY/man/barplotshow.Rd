@@ -25,10 +25,10 @@ Alicja Pluciennik & Michal Stolarczyk
 \code{\link{calculate_AA_variation}}
 }
 \examples{
-data("alignment")
-position = 919
+data("small_alignment")
+position = 100
 threshold = 0.01
-var_aa = calculate_AA_variation(alignment,threshold)
+var_aa = calculate_AA_variation(small_alignment,threshold)
 barplotshow(position, var_aa)}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

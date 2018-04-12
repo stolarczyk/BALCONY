@@ -36,11 +36,11 @@ Michal Stolarczyk & Alicja Pluciennik
 \code{\link{align_params}},\code{\link{calculate_pseudo_counts}}
 }
 \examples{
-data("alignment")
-alignment = delete_isoforms(alignment)
+data("small_alignment")
+alignment = delete_isoforms(small_alignment)
 threshold=10
 grouped = FALSE
-var_aa=calculate_AA_variation(alignment, threshold, grouped)
+var_aa=calculate_AA_variation(small_alignment, threshold, grouped)
 }
 \keyword{ amino acids }
 \keyword{ variation }% __ONLY ONE__ keyword per line

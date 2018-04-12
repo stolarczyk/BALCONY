@@ -41,7 +41,7 @@ Also, this function originally calculates the entropy values which can be used t
 
 \examples{
 data("small_alignment")
-conservation_score = Escore_conservativity(alignment)
+\donttest{conservation_score = Escore_conservativity(alignment)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
