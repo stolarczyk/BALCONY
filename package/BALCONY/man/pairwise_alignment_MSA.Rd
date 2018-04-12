@@ -27,7 +27,7 @@ Michal Stolarczyk & Alicja Pluciennik
 
 \examples{
 data("small_alignment")
-pairwiseAlignemnt_scores=pairwise_alignment_MSA(small_alignment)
+\donttest{pairwiseAlignemnt_scores=pairwise_alignment_MSA(small_alignment)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -40,7 +40,7 @@ Also, this function originally calculates the entropy values which can be used t
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \examples{
-data("alignment")
+data("small_alignment")
 conservation_score = Escore_conservativity(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

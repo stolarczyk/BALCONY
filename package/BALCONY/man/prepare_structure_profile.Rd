@@ -31,10 +31,10 @@ uniprot="P34914"
 indices=get_structures_idx(structure)
 protein_index = indices$proteinIndices
 structure_index = indices$structureIndices
-entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+\donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
                         Escore_entropy = Escore_conservativity(alignment))
 structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
-structure_profile = prepare_structure_profile(structure, structure_entropy)
+structure_profile = prepare_structure_profile(structure, structure_entropy)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

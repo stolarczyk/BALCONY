@@ -28,8 +28,7 @@ Alicja Plucennik & Michal Stolarczyk
 \examples{
 data("small_alignment")
 alignment = small_alignment
-conservation_score = schneider_conservativity(alignment)
-realval_ET = RealValET_conservativity(alignment)
+\donttest{realval_ET = RealValET_conservativity(alignment)}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

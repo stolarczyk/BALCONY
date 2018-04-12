@@ -35,13 +35,13 @@ data("alignment")
 data("structure")
 uniprot="P34914"
 structure_index=get_structures_idx(structure)
-entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+\donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
                         Escore_entropy = Escore_conservativity(alignment))
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
 
 plot_entropy(prot_entropy, colors = c("red","green","blue"),
             impose = TRUE, prot_name = "Murine Epoxide Hydrolase",
-            legend_pos = "bottomright")
+            legend_pos = "bottomright")}
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

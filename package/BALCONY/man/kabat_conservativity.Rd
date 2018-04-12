@@ -35,7 +35,7 @@ Also, this function originally calculates the entropy values which can be used t
 \url{http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract}
 }
 \examples{
-data("alignment")
+data("small_alignment")
 conservation_score = kabat_conservativity(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

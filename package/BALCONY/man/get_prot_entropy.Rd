@@ -34,14 +34,14 @@ pdb_name = "1CQZ" #A string with path to PDB file
 uniprot="P43914"
 chain_identifier = "B"
 structure_index=get_structures_idx(structure)
-entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+\donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
                         Escore_entropy = Escore_conservativity(alignment))
 prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
 
 # In case of one entropy score
 entropy_scores_list = list()
 entropy_scores_list[[1]] = Schneider_entropy = schneider_conservativity(alignment)
-prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
+prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)}
 
 }
 

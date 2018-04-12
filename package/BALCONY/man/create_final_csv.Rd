@@ -41,9 +41,9 @@ uniprot="P34914"
 alignment = delete_isoforms(alignment)
 threshold = 1
 var_aa=calculate_AA_variation(alignment,threshold)
-entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+\donttest{entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
                   Escore.entropy = Escore_conservativity(alignment))
-create_final_CSV("my_filename",var_aa,structure,uniprot,alignment,entropy_data)
+create_final_CSV("my_filename",var_aa,structure,uniprot,alignment,entropy_data)}
 }
 \keyword{ save }
 \keyword{ output }% __ONLY ONE__ keyword per line

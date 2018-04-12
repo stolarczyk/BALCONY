@@ -31,7 +31,7 @@ Michal Stolarczyk & Alicja Pluciennik
 \examples{
 data("alignment")
 data("structure")
-entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+\donttest{entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
               Escore.entropy = Escore_conservativity(alignment),
               Kabat.entropy =  kabat_conservativity(alignment))
 indices=get_structures_idx(structure)
@@ -42,7 +42,7 @@ stru_entropy=get_structures_entropy(structure_index,entropy_data)
 profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
 EQUAL=kolmogorov_smirnov_test(protein_entropy = prot_cons,
                               structure_entropy = profiles_for_structure,
-                              alternative = 1,range = c(1:233),make_plot = TRUE)
+                              alternative = 1,range = c(1:233),make_plot = TRUE)}
 }
 
 \keyword{ test }% use one of  RShowDoc("KEYWORDS")
