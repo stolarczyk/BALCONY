@@ -597,6 +597,44 @@ barplotshow <- function(position, AA_variation) {
       T
   )
 }
+
+get_seq_weights <- function(alignment){
+  weights=c()
+  gonnet_mtx = BALCONY::gonnet
+  maxm = max(as.numeric(as.matrix(gonnet_mtx[[2]])))
+  minm = min(as.numeric(as.matrix(gonnet_mtx[[2]])))
+  sumMut = 0
+  dist = matrix(data = NaN,nrow = length(alignment$seq),ncol = length(alignment$seq))
+  pb <- progress_bar$new(
+    format = paste("Distance calculation"," [:bar] :percent eta: :eta"),
+    total = length(alignment$seq), clear = T, width= 80)
+  for(i in seq_len(length(alignment$seq))){
+    pb$tick()
+    for(j in seq_len(length(alignment$seq))){
+      if(i!=j){
+        seqi = s2c(alignment$seq[i])
+        seqj = s2c(alignment$seq[j])
+        non_gaps = intersect(which(seqi != "-"),which(seqj != "-"))
+        for(pos in non_gaps){
+          aai = which(gonnet_mtx[[1]] == seqi[pos])
+          aaj = which(gonnet_mtx[[1]] == seqj[pos])
+          m = as.numeric(as.character(gonnet_mtx[[2]][aai,aaj]))
+          Mut = (m - minm)/(maxm - minm)
+          sumMut = sumMut + Mut
+        }
+        dist[i,j] = 1 - (sumMut/length(non_gaps))
+        sumMut = 0
+      }else{
+        dist[i,j] = 0
+      }
+    }
+  }
+  for(sq in seq_len(length(alignment$seq))){
+    weights[sq] = sum(dist[sq,])/(length(alignment$seq) - 1)
+  }
+  return(weights)
+}
+
 create_final_CSV <-
   function(filename,
            variations_matrix,
