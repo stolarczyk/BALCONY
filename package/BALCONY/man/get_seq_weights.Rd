@@ -44,15 +44,7 @@ Valdar, W. S. J. & Thornton, J. M. Protein–protein interfaces: Analysis of ami
 \author{
 Michal Stolarczyk & Alicja Pluciennik
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 data("small_alignment")
 alignment = small_alignment
