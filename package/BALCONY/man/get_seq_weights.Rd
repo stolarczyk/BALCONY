@@ -15,9 +15,9 @@ get_seq_weights(alignment)
   \item{alignment}{ alignment loaded with \code{\link[seqinr]{read.alignment}}}
 }
 \details{
-The weights are calculated as show in: \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/1097-0134\%2820010101\%2942\%3A1\%3C108\%3A\%3AAID-PROT110\%3E3.0.CO\%3B2-O}{Valdar and Thronton (2001)}
+The weights are calculated as shown in: \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/1097-0134\%2820010101\%2942\%3A1\%3C108\%3A\%3AAID-PROT110\%3E3.0.CO\%3B2-O}{Valdar and Thronton (2001)}
 
-According to the following formulas:
+\strong{According to the following formulas:}
 
 \deqn{W_{j} = \frac{\sum_{k\neq j}^{N}Dist(s_{j},s_{k}))}{N-1}}{Wj = (\sum Dist(sj,sk))/N-1}\cr
 where:\cr
@@ -35,14 +35,11 @@ where:\cr
 \eqn{Mut(a,b)} measures the similarity between amino acids \eqn{a} and \eqn{b} as derived from \eqn{a} mutation data matrix \eqn{m}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+A vector with weights of length equal to the number of sequences in the alignment
 }
 \references{
-%% ~put references to the literature/web site here ~
+Valdar, W. S. J. & Thornton, J. M. Protein–protein interfaces: Analysis of amino acid conservation in homodimers. Proteins: Structure, Function, and Bioinformatics 42, 108–124 (2001).
+
 }
 \author{
 Michal Stolarczyk & Alicja Pluciennik
@@ -57,14 +54,9 @@ Michal Stolarczyk & Alicja Pluciennik
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x)
-{
-  }
+data("small_alignment")
+alignment = small_alignment
+weights = get_seq_weights(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

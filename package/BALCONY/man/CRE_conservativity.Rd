@@ -52,7 +52,10 @@ This function uses hmmbuild program of \href{http://www.hmmer.org/}{HMMER} suite
 
 We recommend downloading and installing HMMER by following the instructions and steps in the \href{http://hmmer.org/download.html}{ HMMER installation website }.
 }
+\references{
+Hannenhalli, S. S. & Russell, R. B. Analysis and prediction of functional sub-types from protein sequence alignments11Edited by J. Thornton. Journal of Molecular Biology 303, 61–76 (2000).
 
+}
 \author{
 Michal Stolarczyk & Alicja Pluciennik
 }

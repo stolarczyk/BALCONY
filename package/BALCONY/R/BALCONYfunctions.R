@@ -1729,7 +1729,11 @@ RealValET_conservativity <- function(alignment){
     return(RO)
   }
   x = rep(0,dim(aligned_matrix)[2])
+  pb <- progress_bar$new(
+    format = paste("Real valued ET score calculation"," [:bar] :percent eta: :eta"),
+    total = dim(aligned_matrix)[2], clear = T, width= 80)
   for (i in 1:dim(aligned_matrix)[2]) {
+    pb$tick()
     x[i] = realValET(aligned_matrix[,i], groups)
   }
   return(x)

@@ -28,9 +28,9 @@ Alicja Plucennik & Michal Stolarczyk
 \examples{
 data("small_alignment")
 alignment = small_alignment
-\donttest{realval_ET = RealValET_conservativity(alignment)}
+weights = get_seq_weights(alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{conservation}% use one of  RShowDoc("KEYWORDS")
-\keyword{Evolutionary Trace}% __ONLY ONE__ keyword per line
+\keyword{weights}% __ONLY ONE__ keyword per line
