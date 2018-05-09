@@ -1061,7 +1061,11 @@ landgraf_conservativity <-
     conservation = rep(NaN, dim(aligned_sequences_matrix)[2])
     status = 0
 
+    pb <- progress_bar$new(
+      format = paste("Landgraf calculation"," [:bar] :percent eta: :eta"),
+      total = dim(aligned_sequences_matrix)[2], clear = T, width= 80)
     for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+      pb$tick()
       column = aligned_sequences_matrix[, rep]
 
       values = as.numeric(as.matrix(dissim_mtx[[2]]))
@@ -1086,15 +1090,6 @@ landgraf_conservativity <-
         }
       }
       conservation[rep] = global_sum / length(column)
-
-
-      if (round((rep / dim(aligned_sequences_matrix)[2]) * 100) != status) {
-        print(paste("Position: ", rep, ", ", round((
-          rep / dim(aligned_sequences_matrix)[2]
-        ) * 100), "% DONE", sep = ""))
-
-        status = round((rep / dim(aligned_sequences_matrix)[2]) * 100)
-      }
     }
     Landgraf_normalized_entropy = conservation / max(conservation)
     return(Landgraf_normalized_entropy)
