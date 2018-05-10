@@ -4,23 +4,22 @@
 \title{
 Calculate pseudo counts for alignment }
 \description{
-This function calculates pseudo counts for alignment using substitution matrices. It is recommended to obtain amino acid frequencies for MSA with small number of sequences. This allows to calculate reliable entropy scores.
+This function calculates pseudo-counts (as shown in \href{https://doi.org/10.1093/bioinformatics/12.2.135}{Henikoff et al. (1996)}) for an alignment with the use of substitution matrices. It is recommended to estimate amino acid frequencies for alignments with small number of sequences (in order to calculate reliable entropy scores)
 }
 \usage{
 calculate_pseudo_counts(alignment, substitution_mtx)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment }{Alignment data read with read.alignment() function}
-  \item{substitution_mtx }{Matrix with amino acids substitution frequencies. Default is GONNET.}
+  \item{alignment}{alignment loaded with \code{\link[seqinr]{read.alignment}}}
+  \item{substitution_mtx}{Matrix with amino acids substitution frequencies. Default: GONNET}
 }
 
 \value{
- \item{pseudoCounts }{Matrix with pseudo counts of size 21x number of alignment columns}
+ \item{pseudoCounts}{Matrix with pseudo counts of size 21x number of alignment columns}
  }
 \references{
-Henikoff et al.(1996) Using substitution probabilities to improve position-specific scoring matrices, Bioinformatics, 12, 135–143
-[https://doi.org/10.1093/bioinformatics/12.2.135]
+Henikoff et al.(1996) Using substitution probabilities to improve position-specific scoring matrices, Bioinformatics, 12, 135–143\cr
 Claverie (1994) Some useful statistical properties of position-weight matrices.
 Comput. Chem., 18, 287-293
 }
@@ -28,7 +27,7 @@ Comput. Chem., 18, 287-293
 Alicja Płuciennik & Michał Stolarczyk
 }
 \note{
-Please, using other scoring matrix make sure that all alignment symbols are present inside! Missing symbol will call an error.
+Please note that when using other scoring matrix user needs to make sure that all alignment symbols are present there. Missing symbol will issue an error.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

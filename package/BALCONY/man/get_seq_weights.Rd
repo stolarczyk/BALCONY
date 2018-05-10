@@ -12,7 +12,7 @@ get_seq_weights(alignment)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{alignment}{ alignment loaded with \code{\link[seqinr]{read.alignment}}}
+  \item{alignment}{alignment loaded with \code{\link[seqinr]{read.alignment}}}
 }
 \details{
 The weights are calculated as shown in: \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/1097-0134\%2820010101\%2942\%3A1\%3C108\%3A\%3AAID-PROT110\%3E3.0.CO\%3B2-O}{Valdar and Thronton (2001)}
