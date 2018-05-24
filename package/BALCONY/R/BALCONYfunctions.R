@@ -751,7 +751,7 @@ kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
   }
   Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
 
-  var_aa = calculate_AA_variation(alignment,weights = weights,pseudo_counts = pseudo_counts)
+  var_aa = suppressWarnings(calculate_AA_variation(alignment,weights = weights,pseudo_counts = pseudo_counts))
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
 
     column = aligned_sequences_matrix[, rep]
@@ -763,22 +763,13 @@ kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
     N = length(column)
     #no of objects
     K = length(as.numeric(table(column)))
-    if(!is.null(weights)){
-      aas = table(column)
-      for(i in length(aas)){
-        match = which(var_aa$AA[,rep] == names(aas)[i])
-        aas[i] = aas[i] * as.numeric(var_aa$weights[match,rep])
-      }
-    } else{
-      AAs=var_aa$AA[,rep]
-      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-      per = PER[!is.na(PER)]
-      aas = AAs[!is.na(PER)]
-      names(per) = aas
-      table=per
-    }
+    AAs=var_aa$AA[,rep]
+    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
+    per = PER[!is.na(PER)]
+    aas = AAs[!is.na(PER)]
+    names(per) = aas
     #no of classes
-    n1 = as.numeric(sort(table)[length(table)])
+    n1 = as.numeric(sort(per)[length(per)])
     Kabat[rep] = (K / n1) * N
   }
   Kabat_entropy_normalized = Kabat / max(Kabat)
@@ -789,30 +780,20 @@ kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
 schneider_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
   if (!is.matrix(alignment)) {
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-  }
-  else{
+  }else{
     aligned_sequences_matrix = alignment
   }
   symbols = 21
   sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
-  var_aa = calculate_AA_variation(alignment, weights = weights,pseudo_counts = pseudo_counts)
+  var_aa = suppressWarnings(calculate_AA_variation(alignment, weights = weights,pseudo_counts = pseudo_counts))
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
-    if(!is.null(weights)){
-      aas = table(column)
-      for(i in length(aas)){
-        match = which(var_aa$AA[,rep] == names(aas)[i])
-        aas[i] = aas[i] * as.numeric(var_aa$weights[match,rep])
-      }
-    } else{
-      AAs=var_aa$AA[,rep]
-      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-      per = PER[!is.na(PER)]
-      aas = AAs[!is.na(PER)]
-      names(per) = aas
-      table=per
-    }
-    tab = as.numeric(table)
+    AAs=var_aa$AA[,rep]
+    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
+    per = PER[!is.na(PER)]
+    aas = AAs[!is.na(PER)]
+    names(per) = aas
+    tab = as.numeric(per)
     K = c()
     p = c()
     n = c()
@@ -845,25 +826,16 @@ shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
     aligned_sequences_matrix = alignment
   }
   sum = rep(NaN, dim(aligned_sequences_matrix)[2])
-  var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights,pseudo_counts = pseudo_counts)
+  var_aa = suppressWarnings(calculate_AA_variation(alignment, threshold = 0.01, weights = weights,pseudo_counts = pseudo_counts))
 
   for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
     column = aligned_sequences_matrix[, rep]
-    if(!is.null(weights)){
-      aas = table(column)
-      for(i in length(aas)){
-        match = which(var_aa$AA[,rep] == names(aas)[i])
-        aas[i] = aas[i] * as.numeric(var_aa$weights[match,rep])
-      }
-    } else{
-      AAs=var_aa$AA[,rep]
-      PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-      per = PER[!is.na(PER)]
-      aas = AAs[!is.na(PER)]
-      names(per) = aas
-      table=per
-    }
-    tab = as.numeric(table)
+    AAs=var_aa$AA[,rep]
+    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
+    per = PER[!is.na(PER)]
+    aas = AAs[!is.na(PER)]
+    names(per) = aas
+    tab = as.numeric(per)
     K = c()
     p = c()
     n = c()
