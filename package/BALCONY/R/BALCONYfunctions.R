@@ -5,6 +5,7 @@
 
 
 
+
 if (getRversion() >= "2.15.1")
   utils::globalVariables(c("sequence", "gonnet"))
 
@@ -58,9 +59,14 @@ delete_isoforms <- function(alignment) {
     alignment$nb = alignment$nb - (length(lines_to_delete))
     alignment$nam = alignment$nam[-lines_to_delete]
     alignment$seq = alignment$seq[-lines_to_delete]
-    output = seqinr::as.alignment(nb = alignment$nb,nam = alignment$nam, seq = alignment$seq,com=NA )
+    output = seqinr::as.alignment(
+      nb = alignment$nb,
+      nam = alignment$nam,
+      seq = alignment$seq,
+      com = NA
+    )
     no_deleted = length(lines_to_delete)
-    warning(paste(no_deleted,"isoforms were deleted"))
+    warning(paste(no_deleted, "isoforms were deleted"))
   }
   else{
     output = alignment
@@ -88,7 +94,7 @@ consensus <-  function(alignment, threshold) {
 
   for (i in seq(1, count_cols)) {
     #temp = seqinr::s2c(alignment_matrix[i])
-    temp = alignment_matrix[i,]
+    temp = alignment_matrix[i, ]
     for (j in vec) {
       mat[i, j] = temp[j]
     }
@@ -284,7 +290,7 @@ cons2seqs_sim <-
 
     for (i in seq(from = 1, to = row_no, by = 1)) {
       true_percentage_G[i] = length(which((
-        consensusG == (aligned_sequences_matrixG[i,])
+        consensusG == (aligned_sequences_matrixG[i, ])
       ) == TRUE)) / col_no
       # true percentage calculation (number of the same AAs in consensus (grouped AAs) and in each sequence/number of all AAs)
     }
@@ -319,9 +325,9 @@ calculate_AA_variation <-
     #sequence_alignment-file[[3]]
     #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
     #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
-    freq=c()
+    freq = c()
     prmt = align_params(alignment = alignment)
-    if(pseudo_counts){
+    if (pseudo_counts) {
       grouped = F
       weights = NULL
     }
@@ -359,7 +365,7 @@ calculate_AA_variation <-
         df_merged_table = df_pc %>% dplyr::full_join(df_table)
         df_merged_table[is.na(df_merged_table)] = 0
         df_merged_table = df_merged_table %>% dplyr::mutate(Frequency = pseudo_counts +
-                                                       freq) %>% dplyr::select(AAs, Frequency)
+                                                              freq) %>% dplyr::select(AAs, Frequency)
       } else{
         df_merged_table = as.data.frame(table)
         names(df_merged_table) = c("AAs", "Frequency")
@@ -413,8 +419,8 @@ calculate_AA_variation <-
 
     j = 1
     for (i in seq(1, size[1] * 2, 2)) {
-      output[i, ] = keyaas[j, ]
-      output[i + 1, ] = keyaas_per[j, ]
+      output[i,] = keyaas[j,]
+      output[i + 1,] = keyaas_per[j,]
       j = j + 1
     }
 
@@ -555,7 +561,7 @@ excl_low_prob_strcts <-
   function(structure, threshold) {
     if (length(structure) == 3) {
       for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
-        to_exclude = which(structure[[3]][i, ] < threshold)
+        to_exclude = which(structure[[3]][i,] < threshold)
         structure[[3]][i, to_exclude] = NaN
         structure[[1]][i, to_exclude] = "N"
       }
@@ -565,72 +571,77 @@ excl_low_prob_strcts <-
     return(structure)
   }
 
-barplotshow <- function(position, AA_variation) {
-  #position=position-1;
+barplotshow <- function (position, AA_variation)
+{
   row = max(which(AA_variation$percentage[, position] != "n"))
-  #checking how many different AA is on the position
   x_names = AA_variation$AA[seq(1, row), position]
-  x_val = round(as.numeric(AA_variation$percentage[seq(1, row), position]))
-  plot = barplot(
-    x_val,
-    names.arg = x_names,
-    cex.main = 1.8,
-    cex.lab = 1.3,
-    cex.names =
-      1.5,
-    cex.axis = 1.5,
-    width = rep(1.1, row),
-    xlim = c(0, dim(AA_variation[[1]])[1]),
-    ylim = c(0, max(x_val) +
-               10),
-    ylab = "Percentage",
-    main = bquote(Amino ~
-                    acid ~ variation ~ on ~ the ~ .(position) ~ position)
-  )
+  x_val = round(as.numeric(AA_variation$percentage[seq(1,
+                                                       row), position]), digits = 1)
+  x_val = format(x_val,nsmall=1)
 
-  text(
-    x = plot,
-    y = x_val / 2,
-    cex = 1.0,
-    labels = paste(as.character(x_val), "%", sep = ""),
-    xpd =
-      T
-  )
+  x_val_raw = as.numeric(AA_variation$percentage[seq(1,
+                                                     row), position])
+
+  ind = order(-x_val_raw)
+
+  x_names = x_names[ind]
+  x_val = x_val[ind]
+  x_val_raw = x_val_raw[ind]
+
+
+
+  plot = barplot(x_val_raw, names.arg = x_names, cex.main = 1.8,
+                 cex.lab = 1.0, cex.names = 0.8, cex.axis = 1.2, width = rep(0.6,
+                                                                             row), xlim = c(0, 1+dim(AA_variation[[1]])[1]), ylim = c(0,
+                                                                                                                                      100), ylab = "Percentage", main = bquote(Amino ~ acid ~ variation ~ on ~ the ~ .(position) ~ position), col = "lightgrey")
+
+  z <- function(s) {if (s=="0.0"){"<0.1"} else {s}}
+
+  x_val_raw <- x_val_raw+9
+
+  text(x = plot, y = x_val_raw, cex = 0.9, labels = paste(sapply(format(x_val,nsmall = 1),z),"%", sep = ""), xpd = T, srt = 90)
 }
 
-get_seq_weights <- function(alignment){
-  weights=c()
+get_seq_weights <- function(alignment) {
+  weights = c()
   gonnet_mtx = BALCONY::gonnet
   maxm = max(as.numeric(as.matrix(gonnet_mtx[[2]])))
   minm = min(as.numeric(as.matrix(gonnet_mtx[[2]])))
   sumMut = 0
-  dist = matrix(data = NaN,nrow = length(alignment$seq),ncol = length(alignment$seq))
+  dist = matrix(
+    data = NaN,
+    nrow = length(alignment$seq),
+    ncol = length(alignment$seq)
+  )
   pb <- progress_bar$new(
-    format = paste("Distance calculation"," [:bar] :percent eta: :eta"),
-    total = length(alignment$seq), clear = T, width= 80)
-  for(i in seq_len(length(alignment$seq))){
+    format = paste("Distance calculation", " [:bar] :percent eta: :eta"),
+    total = length(alignment$seq),
+    clear = T,
+    width = 80
+  )
+  for (i in seq_len(length(alignment$seq))) {
     pb$tick()
-    for(j in seq_len(length(alignment$seq))){
-      if(i!=j){
+    for (j in seq_len(length(alignment$seq))) {
+      if (i != j) {
         seqi = s2c(alignment$seq[i])
         seqj = s2c(alignment$seq[j])
-        non_gaps = intersect(which(seqi != "-"),which(seqj != "-"))
-        for(pos in non_gaps){
+        non_gaps = intersect(which(seqi != "-"), which(seqj != "-"))
+        for (pos in non_gaps) {
           aai = which(gonnet_mtx[[1]] == seqi[pos])
           aaj = which(gonnet_mtx[[1]] == seqj[pos])
-          m = as.numeric(as.character(gonnet_mtx[[2]][aai,aaj]))
-          Mut = (m - minm)/(maxm - minm)
+          m = as.numeric(as.character(gonnet_mtx[[2]][aai, aaj]))
+          Mut = (m - minm) / (maxm - minm)
           sumMut = sumMut + Mut
         }
-        dist[i,j] = 1 - (sumMut/length(non_gaps))
+        dist[i, j] = 1 - (sumMut / length(non_gaps))
         sumMut = 0
-      }else{
-        dist[i,j] = 0
+      } else{
+        dist[i, j] = 0
       }
     }
   }
-  for(sq in seq_len(length(alignment$seq))){
-    weights[sq] = sum(dist[sq,])/(length(alignment$seq) - 1)
+  for (sq in seq_len(length(alignment$seq))) {
+    weights[sq] = sum(dist[sq, ]) / (length(alignment$seq) - 1)
   }
   return(weights)
 }
@@ -663,7 +674,7 @@ create_final_CSV <-
       scores_mtx_names = c()
 
       for (i in seq(1, length(score_list))) {
-        scores_mtx[i,] = score_list[[i]]
+        scores_mtx[i, ] = score_list[[i]]
         scores_mtx_names[i] = names(score_list)[i]
 
       }
@@ -701,9 +712,17 @@ create_final_CSV <-
   }
 
 Escore_conservativity <-
-  function(alignment, grouping_method = NULL, weights = NULL,pseudo_counts = F) {
+  function(alignment,
+           grouping_method = NULL,
+           weights = NULL,
+           pseudo_counts = F) {
     if (is.null(grouping_method)) {
-      var_aa = calculate_AA_variation(alignment, threshold = 0.01, weights = weights,pseudo_counts = pseudo_counts)
+      var_aa = calculate_AA_variation(
+        alignment,
+        threshold = 0.01,
+        weights = weights,
+        pseudo_counts = pseudo_counts
+      )
     } else {
       var_aa = calculate_AA_variation(
         alignment,
@@ -716,7 +735,7 @@ Escore_conservativity <-
     }
     max_cons = c()
 
-    for (i in seq(1, length(var_aa$matrix[1, ]), 1)) {
+    for (i in seq(1, length(var_aa$matrix[1,]), 1)) {
       if (is.na(as.numeric(var_aa$matrix[2, i])) == FALSE) {
         max_cons[i] = as.numeric(var_aa$matrix[2, i])
       }
@@ -743,119 +762,138 @@ Escore_conservativity <-
     return(return_data)
   }
 
-kabat_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
-  if (!is.matrix(alignment)) {
-    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-  }else{
-    aligned_sequences_matrix = alignment
+kabat_conservativity <-
+  function(alignment,
+           weights = NULL,
+           pseudo_counts = F) {
+    if (!is.matrix(alignment)) {
+      aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+    } else{
+      aligned_sequences_matrix = alignment
+    }
+    Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
+
+    var_aa = suppressWarnings(
+      calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts)
+    )
+    for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+      column = aligned_sequences_matrix[, rep]
+      #KABAT
+      K = c()
+      p = c()
+      n = c()
+      tab = c()
+      N = length(column)
+      #no of objects
+      K = length(as.numeric(table(column)))
+      AAs = var_aa$AA[, rep]
+      PER = suppressWarnings(as.numeric(var_aa$percentage[, rep]))
+      per = PER[!is.na(PER)]
+      aas = AAs[!is.na(PER)]
+      names(per) = aas
+      #no of classes
+      n1 = as.numeric(sort(per)[length(per)])
+      Kabat[rep] = (K / n1) * N
+    }
+    Kabat_entropy_normalized = Kabat / max(Kabat)
+
+    return(Kabat_entropy_normalized)
   }
-  Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
 
-  var_aa = suppressWarnings(calculate_AA_variation(alignment,weights = weights,pseudo_counts = pseudo_counts))
-  for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+schneider_conservativity <-
+  function(alignment,
+           weights = NULL,
+           pseudo_counts = F) {
+    if (!is.matrix(alignment)) {
+      aligned_sequences_matrix = alignment2matrix(alignment = alignment)
+    } else{
+      aligned_sequences_matrix = alignment
+    }
+    symbols = 21
+    sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
+    var_aa = suppressWarnings(
+      calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts)
+    )
+    for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+      column = aligned_sequences_matrix[, rep]
+      AAs = var_aa$AA[, rep]
+      PER = suppressWarnings(as.numeric(var_aa$percentage[, rep]))
+      per = PER[!is.na(PER)]
+      aas = AAs[!is.na(PER)]
+      names(per) = aas
+      tab = as.numeric(per)
+      K = c()
+      p = c()
+      n = c()
+      N = length(column)
+      K = length(as.numeric(table(column)))
+      sum_internal_schneider = 0
+      for (i in seq(1, K, by = 1)) {
+        n[i] = tab[i]
 
-    column = aligned_sequences_matrix[, rep]
-    #KABAT
-    K = c()
-    p = c()
-    n = c()
-    tab = c()
-    N = length(column)
-    #no of objects
-    K = length(as.numeric(table(column)))
-    AAs=var_aa$AA[,rep]
-    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-    per = PER[!is.na(PER)]
-    aas = AAs[!is.na(PER)]
-    names(per) = aas
-    #no of classes
-    n1 = as.numeric(sort(per)[length(per)])
-    Kabat[rep] = (K / n1) * N
-  }
-  Kabat_entropy_normalized = Kabat / max(Kabat)
+        p[i] = n[i] / N
 
-  return(Kabat_entropy_normalized)
-}
+        res = p[i] * log2(p[i])
 
-schneider_conservativity <- function(alignment,weights=NULL,pseudo_counts=F) {
-  if (!is.matrix(alignment)) {
-    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-  }else{
-    aligned_sequences_matrix = alignment
-  }
-  symbols = 21
-  sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
-  var_aa = suppressWarnings(calculate_AA_variation(alignment, weights = weights,pseudo_counts = pseudo_counts))
-  for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
-    column = aligned_sequences_matrix[, rep]
-    AAs=var_aa$AA[,rep]
-    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-    per = PER[!is.na(PER)]
-    aas = AAs[!is.na(PER)]
-    names(per) = aas
-    tab = as.numeric(per)
-    K = c()
-    p = c()
-    n = c()
-    N = length(column)
-    K = length(as.numeric(table(column)))
-    sum_internal_schneider = 0
-    for (i in seq(1, K, by = 1)) {
-      n[i] = tab[i]
+        res_schneider = p[i] * log(p[i]) * (1 / log(symbols))
 
-      p[i] = n[i] / N
+        sum_internal_schneider = sum_internal_schneider + res_schneider
 
-      res = p[i] * log2(p[i])
-
-      res_schneider = p[i] * log(p[i]) * (1 / log(symbols))
-
-      sum_internal_schneider = sum_internal_schneider + res_schneider
+      }
+      sum_schneider[rep] = -sum_internal_schneider
 
     }
-    sum_schneider[rep] = -sum_internal_schneider
-
+    return(sum_schneider / max(sum_schneider))
   }
-  return(sum_schneider/max(sum_schneider))
-}
 
-shannon_conservativity <- function(alignment, weights=NULL,pseudo_counts=F) {
-  if (!is.matrix(alignment)) {
-    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-  }
-  else{
-    aligned_sequences_matrix = alignment
-  }
-  sum = rep(NaN, dim(aligned_sequences_matrix)[2])
-  var_aa = suppressWarnings(calculate_AA_variation(alignment, threshold = 0.01, weights = weights,pseudo_counts = pseudo_counts))
-
-  for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
-    column = aligned_sequences_matrix[, rep]
-    AAs=var_aa$AA[,rep]
-    PER=suppressWarnings(as.numeric(var_aa$percentage[,rep]))
-    per = PER[!is.na(PER)]
-    aas = AAs[!is.na(PER)]
-    names(per) = aas
-    tab = as.numeric(per)
-    K = c()
-    p = c()
-    n = c()
-    N = length(column)
-    K = length(as.numeric(table(column)))
-    sum_internal = 0
-    for (i in seq(1, K, by = 1)) {
-      n[i] = tab[i]
-
-      p[i] = n[i] / N
-
-      res = p[i] * log2(p[i])
-
-      sum_internal = sum_internal + res
-
+shannon_conservativity <-
+  function(alignment,
+           weights = NULL,
+           pseudo_counts = F) {
+    if (!is.matrix(alignment)) {
+      aligned_sequences_matrix = alignment2matrix(alignment = alignment)
     }
-    sum[rep] = -sum_internal
+    else{
+      aligned_sequences_matrix = alignment
+    }
+    sum = rep(NaN, dim(aligned_sequences_matrix)[2])
+    var_aa = suppressWarnings(
+      calculate_AA_variation(
+        alignment,
+        threshold = 0.01,
+        weights = weights,
+        pseudo_counts = pseudo_counts
+      )
+    )
+
+    for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
+      column = aligned_sequences_matrix[, rep]
+      AAs = var_aa$AA[, rep]
+      PER = suppressWarnings(as.numeric(var_aa$percentage[, rep]))
+      per = PER[!is.na(PER)]
+      aas = AAs[!is.na(PER)]
+      names(per) = aas
+      tab = as.numeric(per)
+      K = c()
+      p = c()
+      n = c()
+      N = length(column)
+      K = length(as.numeric(table(column)))
+      sum_internal = 0
+      for (i in seq(1, K, by = 1)) {
+        n[i] = tab[i]
+
+        p[i] = n[i] / N
+
+        res = p[i] * log2(p[i])
+
+        sum_internal = sum_internal + res
+
+      }
+      sum[rep] = -sum_internal
+    }
+    return(sum / max(sum))
   }
-  return(sum/max(sum))
-}
 
 pairwise_alignment_MSA <- function(alignment) {
   #define a function to use in sapply
@@ -870,121 +908,123 @@ pairwise_alignment_MSA <- function(alignment) {
   score_mtx = matrix(NA, nrow = alignment$nb, ncol = alignment$nb)
   for (i in seq_len(alignment$nb)) {
     seqi = alignment$seq[i]
-    score_mtx[i,] = sapply(alignment$seq, convert_then_align, seqi)
+    score_mtx[i, ] = sapply(alignment$seq, convert_then_align, seqi)
     print(i)
   }
   return(score_mtx)
 }
 
-preprocess_hmm_output <- function(hmm_out){
+preprocess_hmm_output <- function(hmm_out) {
   size = dim(hmm_out)
-  hmm_out = hmm_out[seq(from = 1,to = size[1]-1,by = 3),-1]
-  sites = as.numeric(unlist(hmm_out[,21]))
-  probs = hmm_out[,1:20]
+  hmm_out = hmm_out[seq(from = 1, to = size[1] - 1, by = 3), -1]
+  sites = as.numeric(unlist(hmm_out[, 21]))
+  probs = hmm_out[, 1:20]
   #calculate probabilities; prob = -log(x)
   probs = exp(-probs)
-  return(list(probabilities=probs,alignment_positions=sites))
+  return(list(probabilities = probs, alignment_positions = sites))
 }
 
-CRE_conservativity <- function(alignment, hmmbuild_path=NULL, pairwiseAlignemnt_scores=NULL) {
-
-  if(is.null(pairwiseAlignemnt_scores)){
-    pairwiseAlignemnt_scores=pairwise_alignment_MSA(alignment)
-  }
-  #Make sure the hmmbuild is there
-  if(.Platform$OS.type == "unix") {
-    if(is.null(hmmbuild_path)){
-      hmmbuild_path = system("which hmmbuild",intern = T)
+CRE_conservativity <-
+  function(alignment,
+           hmmbuild_path = NULL,
+           pairwiseAlignemnt_scores = NULL) {
+    if (is.null(pairwiseAlignemnt_scores)) {
+      pairwiseAlignemnt_scores = pairwise_alignment_MSA(alignment)
     }
-    if(length(hmmbuild_path)==0){
-      stop("You need to specify the hmmbuild path as it cannot be located in your system")
-    }
-  } else {
-    if(is.null(hmmbuild_path)){
-      stop("You need to specify the hmmbuild path as it cannot be located in your system")
-    }
-  }
-
-  #perform hierarchical clustering on the distance matrix obtained from pairwise alignemnt matrix
-  dendro = stats::hclust(stats::dist(pairwiseAlignemnt_scores), method = "average")
-  #cut the tree and get clusters
-  clusters = stats::cutree(dendro, h = 8000)
-  #get the number of clusters
-  no_clusters = max(clusters)
-  RE = matrix(data = NA,
-              nrow = no_clusters,
-              ncol = length(seqinr::s2c(alignment$seq[1])))
-  CRE = c()
-  Z = c()
-  #iterate over each clusters
-  for (i in seq_len(no_clusters)) {
-    #create copies of the alignemnt object to work on
-    sub_alignment = alignment
-    leftover_alignment = alignment
-    #get the indices of the sequences in the cluster of interest
-    to_delete = which(clusters == clusters[i])
-    if(length(to_delete)>1){
-      #delete appropriate sequences and their names in the objects and adjust the sequeces counts
-      sub_alignment$seq = sub_alignment$seq[to_delete]
-      leftover_alignment$seq = leftover_alignment$seq[-to_delete]
-      sub_converted_seq = lapply(sub_alignment$seq, seqinr::s2c)
-      leftover_converted_seq = lapply(leftover_alignment$seq, seqinr::s2c)
-      sub_alignment$nam = sub_alignment$nam[to_delete]
-      leftover_alignment$nam = leftover_alignment$nam[-to_delete]
-      leftover_alignment$nb = leftover_alignment$nb - length(to_delete)
-      sub_alignment$nb = length(to_delete)
-      #write updated objects to files
-      leftover_fasta_name = "leftover_MSA.fasta"
-      sub_fasta_name = "sub_MSA.fasta"
-      seqinr::write.fasta(sequences = leftover_converted_seq,
-                  names = leftover_alignment$nam,
-                  file.out = leftover_fasta_name)
-      seqinr::write.fasta(sequences = sub_converted_seq,
-                  names = sub_alignment$nam,
-                  file.out = sub_fasta_name)
-      #prepare commands to run HMMER
-      sub_hmm_command = paste(hmmbuild_path, "sub_hmm.out", sub_fasta_name)
-      leftover_hmm_command = paste(hmmbuild_path, "leftover_hmm.out", leftover_fasta_name)
-      system(command = sub_hmm_command, wait = T)
-      system(command = leftover_hmm_command, wait = T)
-      #read the HMMER outputs in
-      leftover_hmm <-
-        readr::read_table("leftover_hmm.out",
-                    col_names = FALSE,
-                    skip = 21)
-      sub_hmm <-
-        readr::read_table("sub_hmm.out", col_names = FALSE, skip = 21)
-      #preprocess the data
-      leftover_prob = preprocess_hmm_output(leftover_hmm)$probabilities
-      leftover_pos = preprocess_hmm_output(leftover_hmm)$alignment_positions
-      sub_prob = preprocess_hmm_output(sub_hmm)$probabilities
-      sub_pos = preprocess_hmm_output(sub_hmm)$alignment_positions
-      #get the indices of alignemnt positions avaialble in both groups
-      intersection_pos = intersect(sub_pos, leftover_pos)
-      for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
-        which_pos = which(intersection_pos == pos)
-        if (length(which_pos) > 0) {
-          pre_RE = c()
-          for (aa in seq_len(dim(sub_prob)[2])) {
-            sub_prob_pos = which(sub_pos == pos)
-            leftover_prob_pos = which(leftover_pos == pos)
-            pre_RE[aa] = sub_prob[sub_prob_pos, aa] * log(sub_prob[sub_prob_pos, aa] /
-                                                            leftover_prob[leftover_prob_pos, aa])
-          }
-          RE[i, pos] = sum(pre_RE, na.rm = T)
-        } else{
-          RE[i, pos] = 0
-        }
+    #Make sure the hmmbuild is there
+    if (.Platform$OS.type == "unix") {
+      if (is.null(hmmbuild_path)) {
+        hmmbuild_path = system("which hmmbuild", intern = T)
       }
-    }else{
-      RE[i,] = 0
+      if (length(hmmbuild_path) == 0) {
+        stop("You need to specify the hmmbuild path as it cannot be located in your system")
+      }
+    } else {
+      if (is.null(hmmbuild_path)) {
+        stop("You need to specify the hmmbuild path as it cannot be located in your system")
+      }
     }
+
+    #perform hierarchical clustering on the distance matrix obtained from pairwise alignemnt matrix
+    dendro = stats::hclust(stats::dist(pairwiseAlignemnt_scores), method = "average")
+    #cut the tree and get clusters
+    clusters = stats::cutree(dendro, h = 8000)
+    #get the number of clusters
+    no_clusters = max(clusters)
+    RE = matrix(data = NA,
+                nrow = no_clusters,
+                ncol = length(seqinr::s2c(alignment$seq[1])))
+    CRE = c()
+    Z = c()
+    #iterate over each clusters
+    for (i in seq_len(no_clusters)) {
+      #create copies of the alignemnt object to work on
+      sub_alignment = alignment
+      leftover_alignment = alignment
+      #get the indices of the sequences in the cluster of interest
+      to_delete = which(clusters == clusters[i])
+      if (length(to_delete) > 1) {
+        #delete appropriate sequences and their names in the objects and adjust the sequeces counts
+        sub_alignment$seq = sub_alignment$seq[to_delete]
+        leftover_alignment$seq = leftover_alignment$seq[-to_delete]
+        sub_converted_seq = lapply(sub_alignment$seq, seqinr::s2c)
+        leftover_converted_seq = lapply(leftover_alignment$seq, seqinr::s2c)
+        sub_alignment$nam = sub_alignment$nam[to_delete]
+        leftover_alignment$nam = leftover_alignment$nam[-to_delete]
+        leftover_alignment$nb = leftover_alignment$nb - length(to_delete)
+        sub_alignment$nb = length(to_delete)
+        #write updated objects to files
+        leftover_fasta_name = "leftover_MSA.fasta"
+        sub_fasta_name = "sub_MSA.fasta"
+        seqinr::write.fasta(sequences = leftover_converted_seq,
+                            names = leftover_alignment$nam,
+                            file.out = leftover_fasta_name)
+        seqinr::write.fasta(sequences = sub_converted_seq,
+                            names = sub_alignment$nam,
+                            file.out = sub_fasta_name)
+        #prepare commands to run HMMER
+        sub_hmm_command = paste(hmmbuild_path, "sub_hmm.out", sub_fasta_name)
+        leftover_hmm_command = paste(hmmbuild_path, "leftover_hmm.out", leftover_fasta_name)
+        system(command = sub_hmm_command, wait = T)
+        system(command = leftover_hmm_command, wait = T)
+        #read the HMMER outputs in
+        leftover_hmm <-
+          readr::read_table("leftover_hmm.out",
+                            col_names = FALSE,
+                            skip = 21)
+        sub_hmm <-
+          readr::read_table("sub_hmm.out", col_names = FALSE, skip = 21)
+        #preprocess the data
+        leftover_prob = preprocess_hmm_output(leftover_hmm)$probabilities
+        leftover_pos = preprocess_hmm_output(leftover_hmm)$alignment_positions
+        sub_prob = preprocess_hmm_output(sub_hmm)$probabilities
+        sub_pos = preprocess_hmm_output(sub_hmm)$alignment_positions
+        #get the indices of alignemnt positions avaialble in both groups
+        intersection_pos = intersect(sub_pos, leftover_pos)
+        for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
+          which_pos = which(intersection_pos == pos)
+          if (length(which_pos) > 0) {
+            pre_RE = c()
+            for (aa in seq_len(dim(sub_prob)[2])) {
+              sub_prob_pos = which(sub_pos == pos)
+              leftover_prob_pos = which(leftover_pos == pos)
+              pre_RE[aa] = sub_prob[sub_prob_pos, aa] * log(sub_prob[sub_prob_pos, aa] /
+                                                              leftover_prob[leftover_prob_pos, aa])
+            }
+            RE[i, pos] = sum(pre_RE, na.rm = T)
+          } else{
+            RE[i, pos] = 0
+          }
+        }
+      } else{
+        RE[i, ] = 0
+      }
+    }
+    for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
+      CRE[pos] = sum(RE[, pos])
+    }
+    return(CRE / max(CRE))
   }
-  for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
-    CRE[pos] = sum(RE[, pos])
-  }
-  return(CRE/max(CRE))
-}
 
 
 substitution_mtx <- function (matrix_name) {
@@ -992,8 +1032,8 @@ substitution_mtx <- function (matrix_name) {
   # into a list of alphabet (the range of letters in matrix) and
   # mtx(valuse into substitution matrix)
   matrix = read.table(matrix_name)
-  mtx = matrix[-1,-1]
-  alphabet = as.character(unlist(matrix[1,-1]))
+  mtx = matrix[-1, -1]
+  alphabet = as.character(unlist(matrix[1, -1]))
   sub_mtx = list(names = alphabet, matrix = mtx)
   return(sub_mtx)
 }
@@ -1025,7 +1065,7 @@ landgraf_conservativity <-
       #data("gonnet")
       gonnet = BALCONY::gonnet
       pre_dissim_mtx = gonnet
-    }else{
+    } else{
       pre_dissim_mtx = substitution_mtx(matrix_name)
     }
     aligned_sequences_matrix = alignment2matrix(alignment = alignment)
@@ -1034,8 +1074,11 @@ landgraf_conservativity <-
     status = 0
 
     pb <- progress_bar$new(
-      format = paste("Landgraf calculation"," [:bar] :percent eta: :eta"),
-      total = dim(aligned_sequences_matrix)[2], clear = T, width= 80)
+      format = paste("Landgraf calculation", " [:bar] :percent eta: :eta"),
+      total = dim(aligned_sequences_matrix)[2],
+      clear = T,
+      width = 80
+    )
     for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
       pb$tick()
       column = aligned_sequences_matrix[, rep]
@@ -1067,55 +1110,56 @@ landgraf_conservativity <-
     return(Landgraf_normalized_entropy)
   }
 
-calculate_pseudo_counts <- function(alignment, substitution_mtx = NULL) {
-  if (is.null(substitution_mtx)) {
-    gonnet = BALCONY::gonnet
-    substitution_mtx <-
-      apply(
-        X = gonnet[[2]],
-        MARGIN = 2,
-        FUN = function(X)
-          as.numeric(as.character(X))
-      )
-    substitution_mtx = exp(substitution_mtx)
-    colnames(substitution_mtx) <- gonnet[[1]]
-    rownames(substitution_mtx) <- gonnet[[1]]
-  }
-  #warning - other substitution matrices may have different symbols (like '*', or other letters)
-  mtx_alignment = alignment2matrix(alignment)
-  pseudoCounts = matrix(NA,
-                        nrow = length(append(Biostrings::AA_STANDARD, "-")),
-                        ncol = dim(mtx_alignment)[2])
-  B = apply(
-    X = mtx_alignment,
-    MARGIN = 2,
-    FUN = function(X)
-      (5 * length(unique(X)))
-  )
-  calc_ba <- function(column, B, substitution_mtx) {
-    pseudocounts = matrix(NA, nrow = length(append(Biostrings::AA_STANDARD, "-")), ncol = 1)
-    names(pseudocounts) <- append(Biostrings::AA_STANDARD, "-")
-    N = sum((table(column)))
-    AA = table(column)
-    for (i in names(pseudocounts)) {
-      to_sum <- rep(NA, length(AA))
-      cnt=1
-      for (j in names(AA)) {
-        to_sum[cnt] <- as.numeric(AA[j]/ N) * substitution_mtx[j, i]
-        cnt = cnt + 1
-      }
-      pseudocounts[i] <- sum(to_sum)
+calculate_pseudo_counts <-
+  function(alignment, substitution_mtx = NULL) {
+    if (is.null(substitution_mtx)) {
+      gonnet = BALCONY::gonnet
+      substitution_mtx <-
+        apply(
+          X = gonnet[[2]],
+          MARGIN = 2,
+          FUN = function(X)
+            as.numeric(as.character(X))
+        )
+      substitution_mtx = exp(substitution_mtx)
+      colnames(substitution_mtx) <- gonnet[[1]]
+      rownames(substitution_mtx) <- gonnet[[1]]
     }
-    output = pseudocounts*(B/sum(pseudocounts))
-    return(output)
+    #warning - other substitution matrices may have different symbols (like '*', or other letters)
+    mtx_alignment = alignment2matrix(alignment)
+    pseudoCounts = matrix(NA,
+                          nrow = length(append(Biostrings::AA_STANDARD, "-")),
+                          ncol = dim(mtx_alignment)[2])
+    B = apply(
+      X = mtx_alignment,
+      MARGIN = 2,
+      FUN = function(X)
+        (5 * length(unique(X)))
+    )
+    calc_ba <- function(column, B, substitution_mtx) {
+      pseudocounts = matrix(NA, nrow = length(append(Biostrings::AA_STANDARD, "-")), ncol = 1)
+      names(pseudocounts) <- append(Biostrings::AA_STANDARD, "-")
+      N = sum((table(column)))
+      AA = table(column)
+      for (i in names(pseudocounts)) {
+        to_sum <- rep(NA, length(AA))
+        cnt = 1
+        for (j in names(AA)) {
+          to_sum[cnt] <- as.numeric(AA[j] / N) * substitution_mtx[j, i]
+          cnt = cnt + 1
+        }
+        pseudocounts[i] <- sum(to_sum)
+      }
+      output = pseudocounts * (B / sum(pseudocounts))
+      return(output)
+    }
+    for (column in seq_len(ncol(mtx_alignment))) {
+      pseudoCounts[, column] <-
+        calc_ba(mtx_alignment[, column], B[column], substitution_mtx)
+    }
+    rownames(pseudoCounts) = append(Biostrings::AA_STANDARD, "-")
+    return(pseudoCounts)
   }
-  for (column in seq_len(ncol(mtx_alignment))) {
-    pseudoCounts[, column] <-
-      calc_ba(mtx_alignment[, column], B[column], substitution_mtx)
-  }
-  rownames(pseudoCounts) = append(Biostrings::AA_STANDARD, "-")
-  return(pseudoCounts)
-}
 
 
 
@@ -1212,9 +1256,9 @@ create_structure_seq <-
     probability_output = matrix(NaN, count, struc_length)
     v = seq(1, count, by = 1)
     for (i in v) {
-      struct_output[i, ] = structure[[i]]
+      struct_output[i,] = structure[[i]]
       if (prob_data == T) {
-        probability_output[i, ] = probability[[i]]
+        probability_output[i,] = probability[[i]]
       }
     }
     nr_stru = rep("-", length(structure[[1]]))
@@ -1302,10 +1346,10 @@ get_structures_idx <- function(structure) {
   structure = structure$structure_matrix
   stru_index = list()
   for (i in seq(1:length(structure[, 1]))) {
-    stru_index[[i]] = which(structure[i, ] == "S")
+    stru_index[[i]] = which(structure[i,] == "S")
 
   }
-  whole_prot = which(structure[1, ] != "-")
+  whole_prot = which(structure[1,] != "-")
 
   out = list(proteinIndices = whole_prot, structureIndices = stru_index)
   names(out[[2]]) = rownames(structure)
@@ -1393,7 +1437,7 @@ get_structures_entropy <- function(structure_index, score_list) {
     lengths[[i]] = length(t_index[[i]])
     output = matrix(NA, nrow = length(score_list), ncol = lengths[[i]])
     for (j in seq(1:length(score_list))) {
-      output[j, ] = score_list[[j]][t_index[[i]]]
+      output[j,] = score_list[[j]][t_index[[i]]]
     }
     rownames(output) <- names(score_list)
     Entropy[[i]] = output
@@ -1411,11 +1455,11 @@ prepare_structure_profile <-
     names <- rownames(structure[[1]])
     for (i in seq(1, length(structure[[1]][, 1]))) {
       StruEnt = list(entropy = c(), idx = c())
-      StruEnt$idx = as.numeric(structure[[2]][which(structure[[1]][i, ] ==
+      StruEnt$idx = as.numeric(structure[[2]][which(structure[[1]][i,] ==
                                                       "S")])
       entropy_mtx = matrix(NaN, nrow = score_count, ncol = length(StruEnt$idx))
       for (j in seq(1, score_count)) {
-        entropy_mtx[j, ] = structure_entropy[[i]][j,]
+        entropy_mtx[j,] = structure_entropy[[i]][j, ]
       }
       rownames(entropy_mtx) <- rownames(structure_entropy[[1]])
       StruEnt$entropy = entropy_mtx
@@ -1458,9 +1502,9 @@ plot_structure_on_protein <-
         legend_pos = "bottomleft"
       }
       for (i in seq(1, length(score_names))) {
-        if(isRStudio <- Sys.getenv("RSTUDIO") == "1"){
+        if (isRStudio <- Sys.getenv("RSTUDIO") == "1") {
 
-        }else{
+        } else{
           #X11()
           dev.new()
         }
@@ -1475,11 +1519,10 @@ plot_structure_on_protein <-
           ylab = 'Entropy'
         )
         for (j in seq(1, StruLen)) {
-
           par(new = T)
           plot(
             structure_profiles[[j]][[2]],
-            structure_profiles[[j]][[1]][i, ],
+            structure_profiles[[j]][[1]][i,],
             col = colors[[j]],
             main = "",
             pch = j,
@@ -1488,20 +1531,20 @@ plot_structure_on_protein <-
             xlab = '',
             ylab = ''
           )
-        legend(
-          legend_pos,
-          c(pdb_name, structure_names),
-          lty = c(1, rep(0, j)),
-          pch = c(-1, seq(1, j)),
-          lwd = c(2.5, 2.5),
-          col = c("black", colors)
-        )
+          legend(
+            legend_pos,
+            c(pdb_name, structure_names),
+            lty = c(1, rep(0, j)),
+            pch = c(-1, seq(1, j)),
+            lwd = c(2.5, 2.5),
+            col = c("black", colors)
+          )
+        }
       }
-      }
-      }else{
+    } else{
       print("The lists contain different number of conservation/entropy scores!")
+    }
   }
-}
 compare_cons_metrics <-
   function(protein_entropy,
            structure_profile,
@@ -1517,44 +1560,44 @@ compare_cons_metrics <-
     for (i in seq(1, metrics_count)) {
       for (j in seq(1, metrics_count)) {
         if (i != j) {
-          if(isRStudio <- Sys.getenv("RSTUDIO") == "1"){
-          plot(
-            protein_entropy[[i]],
-            protein_entropy[[j]],
-            main = paste(
-              'Scatterplot of',
-              names(protein_entropy)[i],
-              "vs. ",
-              names(protein_entropy)[j]
-            ),
-            xlim = c(0, 1),
-            ylim = c(0, 1),
-            xlab = names(protein_entropy)[i],
-            ylab = names(protein_entropy)[j],
-            pch = 20,
-            col = alpha("slategray", 0.5)
-          )
-          for (k in seq(1, structures_count)) {
-            par(new = T)
+          if (isRStudio <- Sys.getenv("RSTUDIO") == "1") {
             plot(
-              structure_profile[[k]][[1]][i, ],
-              structure_profile[[k]][[1]][j, ],
-              col = alpha(colors[k], 0.7),
-              pch = k,
-              main = "",
+              protein_entropy[[i]],
+              protein_entropy[[j]],
+              main = paste(
+                'Scatterplot of',
+                names(protein_entropy)[i],
+                "vs. ",
+                names(protein_entropy)[j]
+              ),
               xlim = c(0, 1),
               ylim = c(0, 1),
-              xlab = "",
-              ylab = ""
+              xlab = names(protein_entropy)[i],
+              ylab = names(protein_entropy)[j],
+              pch = 20,
+              col = alpha("slategray", 0.5)
             )
-          }
-          legend(
-            'bottomright',
-            c(pdb_name, structure_names),
-            pch = c(20, seq(1, k)),
-            col = scales::alpha(c("slategray", colors), 0.5)
-          )
-          }else{
+            for (k in seq(1, structures_count)) {
+              par(new = T)
+              plot(
+                structure_profile[[k]][[1]][i,],
+                structure_profile[[k]][[1]][j,],
+                col = alpha(colors[k], 0.7),
+                pch = k,
+                main = "",
+                xlim = c(0, 1),
+                ylim = c(0, 1),
+                xlab = "",
+                ylab = ""
+              )
+            }
+            legend(
+              'bottomright',
+              c(pdb_name, structure_names),
+              pch = c(20, seq(1, k)),
+              col = scales::alpha(c("slategray", colors), 0.5)
+            )
+          } else{
             #X11()
             dev.new()
             plot(
@@ -1576,8 +1619,8 @@ compare_cons_metrics <-
             for (k in seq(1, structures_count)) {
               par(new = T)
               plot(
-                structure_profile[[k]][[1]][i, ],
-                structure_profile[[k]][[1]][j, ],
+                structure_profile[[k]][[1]][i,],
+                structure_profile[[k]][[1]][j,],
                 col = alpha(colors[k], 0.7),
                 pch = k,
                 main = "",
@@ -1622,7 +1665,7 @@ kolmogorov_smirnov_test <-
     for (i in seq(1, metrics_count)) {
       for (j in seq(1, structures_count)) {
         reference = protein_entropy[[i]][-c(range, structure_entropy[[j]][[2]])]
-        temp = structure_entropy[[j]][[1]][i,]
+        temp = structure_entropy[[j]][[1]][i, ]
         pval_mtx[i, j] = stats::ks.test(reference, temp, alternative = alt_hip)$p.value
       }
     }
@@ -1634,7 +1677,7 @@ kolmogorov_smirnov_test <-
         for (j in seq(1, structures_count)) {
           reference = protein_entropy[[i]][-c(range, structure_entropy[[j]][[2]])]
           cumulative_distribution = stats::ecdf(reference)
-          temp = ecdf(structure_entropy[[j]][[1]][i,])
+          temp = ecdf(structure_entropy[[j]][[1]][i, ])
           plot(
             cumulative_distribution,
             xlim = c(0, 1),
@@ -1671,42 +1714,45 @@ kolmogorov_smirnov_test <-
     }
     return(pval_mtx)
   }
-RealValET_conservativity <- function(alignment){
-  ET_groups = seq(1,length(alignment$nam))
+RealValET_conservativity <- function(alignment) {
+  ET_groups = seq(1, length(alignment$nam))
   dist <- seqinr::dist.alignment(alignment)
   clust <- stats::hclust(dist, method = "average") #upgma
   groups <- list() # groups for all nodes
   for (i in ET_groups) {
-    groups[[i]] <- stats::cutree(clust,i)
+    groups[[i]] <- stats::cutree(clust, i)
   }
   aligned_matrix <- alignment2matrix(alignment = alignment)
-  shannon_group <- function(group){
+  shannon_group <- function(group) {
     counts = table(group)
     len = length(group)
-    freq = counts/len
+    freq = counts / len
     Shannon = -sum(freq * log(freq))
   }
-  realValET <- function(column, group_tree){
+  realValET <- function(column, group_tree) {
     nodes = length(group_tree) - 1
-    node_group = rep(0,nodes)
+    node_group = rep(0, nodes)
     for (i in 1:nodes) {
       temp = split(column, group_tree[[i]])
-      group = rep(0,length(temp))
+      group = rep(0, length(temp))
       for (j in 1:length(temp)) {
         group[j] = shannon_group(temp[[j]])
       }
-      node_group[i] = (1/i)*sum(group)
+      node_group[i] = (1 / i) * sum(group)
     }
     RO = 1 + sum(node_group)
     return(RO)
   }
-  x = rep(0,dim(aligned_matrix)[2])
+  x = rep(0, dim(aligned_matrix)[2])
   pb <- progress_bar$new(
-    format = paste("Real valued ET score calculation"," [:bar] :percent eta: :eta"),
-    total = dim(aligned_matrix)[2], clear = T, width= 80)
+    format = paste("Real valued ET score calculation", " [:bar] :percent eta: :eta"),
+    total = dim(aligned_matrix)[2],
+    clear = T,
+    width = 80
+  )
   for (i in 1:dim(aligned_matrix)[2]) {
     pb$tick()
-    x[i] = realValET(aligned_matrix[,i], groups)
+    x[i] = realValET(aligned_matrix[, i], groups)
   }
-  return(x)
+  return(x / max(x))
 }
