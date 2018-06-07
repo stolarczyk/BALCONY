@@ -591,7 +591,7 @@ barplotshow <- function (position, AA_variation)
 
 
   plot = barplot(x_val_raw, names.arg = x_names, cex.main = 1.8,
-                 cex.lab = 1.0, cex.names = 0.8, cex.axis = 1.2, width = rep(0.6,
+                 cex.lab = 1.0, cex.names = 1.2, cex.axis = 1.2, width = rep(0.95,
                                                                              row), xlim = c(0, 1+dim(AA_variation[[1]])[1]), ylim = c(0,
                                                                                                                                       100), ylab = "Percentage", main = bquote(Amino ~ acid ~ variation ~ on ~ the ~ .(position) ~ position), col = "lightgrey")
 
@@ -601,6 +601,8 @@ barplotshow <- function (position, AA_variation)
 
   text(x = plot, y = x_val_raw, cex = 0.9, labels = paste(sapply(format(x_val,nsmall = 1),z),"%", sep = ""), xpd = T, srt = 90)
 }
+
+
 
 get_seq_weights <- function(alignment) {
   weights = c()
@@ -892,7 +894,7 @@ shannon_conservativity <-
       }
       sum[rep] = -sum_internal
     }
-    return(sum / max(sum))
+    return(sum)
   }
 
 pairwise_alignment_MSA <- function(alignment) {
