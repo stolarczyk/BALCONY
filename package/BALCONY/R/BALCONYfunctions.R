@@ -674,6 +674,60 @@ get_seq_weights <- function(alignment) {
   return(weights)
 }
 
+get_pos_based_seq_weights <- function(alignment, gap = TRUE, normalized = TRUE){
+  align_param = align_params(alignment)
+  weights_mtx = matrix(NA,nrow = align_param$row_no, ncol = align_param$col_no)
+  alignment_mtx = alignment2matrix(alignment)
+  
+  if (gap == TRUE){
+    # treat gap as other residues
+    for(i in seq(1, ncol(alignment_mtx))){
+      temp_table <- table(alignment_mtx[,i])
+      for(j in 1:align_param$row_no){
+        weights_mtx[j,i] = 1/(length(temp_table)*temp_table[alignment_mtx[j,i]])
+      }
+    }
+    
+    # chcecking if weights should be normalized
+    if(normalized ==TRUE){
+      weights = apply(weights_mtx,MARGIN = 1, sum)/align_param$col_no
+      
+    }else{
+      weights = apply(weights_mtx,MARGIN = 1, sum)
+    }
+    return(weights)
+    
+    
+  }else{
+    
+    # skip gaps
+    for(i in seq(1, ncol(alignment_mtx))){
+      temp_table <- table(alignment_mtx[,i])
+      if("-" %in% names(temp_table)){
+        temp_table <- temp_table[-which(names(temp_table)=="-")]
+      }
+      for(j in 1:align_param$row_no){
+        if(alignment_mtx[j,i]== "-"){
+          weights_mtx[j,i] = 0
+        } else{
+          weights_mtx[j,i] = 1/(length(temp_table)*temp_table[alignment_mtx[j,i]])
+          
+        }
+      }
+    }
+    # chcecking if weights should be normalized
+    if(normalized ==TRUE){
+      weights = apply(weights_mtx,MARGIN = 1, sum)/align_param$col_no
+      
+    }else{
+      weights = apply(weights_mtx,MARGIN = 1, sum)
+    }
+    return(weights)
+    
+  }
+}
+
+
 create_final_CSV <-
   function(filename,
            variations_matrix,
