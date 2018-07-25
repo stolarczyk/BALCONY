@@ -29,8 +29,8 @@ Henikoff, S. & Henikoff, J. G. Position-based sequence weights. Journal of Molec
 Alicja Pluciennik & Michal Stolarczyk
 }
 \examples{
-data("alignment")
-pos_based_weights <- get_pos_based_seq_weights(alignment)
+data("small_alignment")
+pos_based_weights <- get_pos_based_seq_weights(small_alignment)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
