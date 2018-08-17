@@ -20,3 +20,10 @@ stability.
 ## Package installation
 
 ``` install.packages("BALCONY") ```
+
+## Publication
+
+See the [publication](https://doi.org/10.1186/s12859-018-2294-z) introducing the BALCONY package. 
+
+Płuciennik, Alicja, Michał Stolarczyk, Maria Bzówka, Agata Raczyńska, Tomasz Magdziarz, and Artur Góra. “BALCONY: An R Package for MSA and Functional Compartments of Protein Variability Analysis.” BMC Bioinformatics 19, no. 1 (August 14, 2018): 300. https://doi.org/10.1186/s12859-018-2294-z.
+
