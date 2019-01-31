@@ -1,3 +1,6 @@
+[![](http://cranlogs.r-pkg.org/badges/grand-total/BALCONY)](http://cranlogs.r-pkg.org/badges/grand-total/BALCONY)
+[![](http://www.r-pkg.org/badges/version-last-release/BALCONY)](http://www.r-pkg.org/badges/version-last-release/BALCONY)
+
 # BALCONY
 This repository holds the BALCONY R package, which can be downloaded at its [CRAN](https://CRAN.R-project.org/package=BALCONY) website.
 
