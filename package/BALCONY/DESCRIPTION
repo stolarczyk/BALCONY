@@ -1,7 +1,7 @@
 Package: BALCONY
 Type: Package
 Title: Better ALignment CONsensus analYsis
-Version: 0.2.9
+Version: 0.2.10
 Authors@R: c(
     person("Michal", "Stolarczyk", , "stolarczyk.michal93@gmail.com", role = c("aut","cre")
     ),person("Alicja", "Pluciennik", , "alicja.pluciennik@outlook.com", role = c("aut")
@@ -13,4 +13,4 @@ License: GPL
 Encoding: UTF-8
 LazyData: true
 Imports: seqinr, Rpdb, scales, stats, base, dplyr, Biostrings, readr, progress
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
