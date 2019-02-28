@@ -365,7 +365,11 @@ calculate_AA_variation <-
           dplyr::mutate(Frequency = pseudo_counts + freq) %>%
           dplyr::select(AAs, Frequency)
       } else{
-        df_merged_table = as.data.frame(table)
+        if(length(table) == 1){
+          df_merged_table = data.frame(col1=names(table), col2=table[1],row.names = 1)
+        }else{
+          df_merged_table = as.data.frame(table)
+        }
         names(df_merged_table) = c("AAs", "Frequency")
       }
       #AA types and frequencies
