@@ -10,6 +10,8 @@
 if (getRversion() >= "2.15.1")
   utils::globalVariables(c("sequence", "gonnet"))
 
+AA_COUNT = length(append(Biostrings::AA_STANDARD, "-"))
+
 # Conservation analysis ---------------------------------------------------
 read_structure <- function(file_names) {
   structure_names = c()
@@ -315,6 +317,28 @@ alignment2matrix <- function(alignment) {
   return(aligned_sequences_matrix)
 }
 
+.check_alignment_characters <- function(aligned_sequences_matrix) {
+  total_char = length(unique(c(aligned_sequences_matrix)))
+  if(total_char != AA_COUNT-1)
+    warning("There are ", total_char," character (AA) types in your alignment, which is more than ", AA_COUNT,": (", AA_COUNT-1 ,"AA + '-')")
+  return(total_char)
+}
+
+.apply_pseudocounts_position <- function(alignment, df_table, position) {
+  pc = calculate_pseudo_counts(alignment)
+  names(df_table) = c("AAs", "freq")
+  pseudo_counts = pc[, position]
+  df_pc = as.data.frame(pseudo_counts)
+  df_pc = dplyr::mutate(df_pc, AAs = rownames(df_pc))
+  df_merged_table = suppressMessages(df_pc %>% dplyr::full_join(df_table))
+  df_merged_table[is.na(df_merged_table)] = 0
+  df_merged_table =
+    df_merged_table %>%
+    dplyr::mutate(Frequency = pseudo_counts + freq) %>%
+    dplyr::select(AAs, Frequency)
+  return(df_merged_table)
+}
+
 calculate_AA_variation <-
   function(alignment,
            threshold = NULL,
@@ -322,116 +346,96 @@ calculate_AA_variation <-
            grouping_method = "substitution_matrix",
            weights = NULL,
            pseudo_counts = F) {
-    #prmt- size of alignment (output of get_parameter())
-    #sequence_alignment-file[[3]]
-    #threshold-threshold for detecting key amino acids (the percentage of all at the given position)
-    #returns list of matrices with tabelarised symbols of the most common AA in alignment column and percentage values for contributed AA
     freq = c()
     prmt = align_params(alignment = alignment)
     if (pseudo_counts) {
+      # pseudocounts calculation takes a long time, initialize a progress bar
+      pb <- progress_bar$new(
+        format = paste("Pseudocounts calculation", " [:bar] :percent eta: :eta"),
+        total = prmt$col_no,
+        clear = T,
+        width = 80
+      )
+      if (grouped)
+        message("Using pseudo counts, grouping set to False")
       grouped = F
+      if (!is.null(weights))
+        message("Using pseudo counts, weights set to NULL")
       weights = NULL
     }
     if (is.null(threshold)) {
-      # keyaas_treshold = 1 / prmt$row_no
-      keyaas_treshold = 0.0000001
+      keyaas_treshold = 1e-07
+    } else if (threshold > 0){
+      keyaas_treshold = prmt$row_no * (threshold / 100)
     } else{
-      if (threshold <= 0) {
-        stop("The threshold must be > 0! Do not specify any to inspect all the residues in MSA.")
-      } else{
-        keyaas_treshold = prmt$row_no * (threshold / 100)
-      }
+      stop(paste0("The threshold must be > 0. Got: ", threshold, ". Do not specify any to inspect all the residues in MSA."))
     }
 
-    aligned_sequences_matrix = alignment2matrix(alignment = alignment)
-    if (grouped == T) {
-      aligned_sequences_matrix = align_seq_mtx2grs(aligned_sequences_matrix, grouping_method = grouping_method)
-    }
-    keyaas = matrix("n", dim(aligned_sequences_matrix)[2], 21 * 2)
-    keyaas_per = matrix("n", dim(aligned_sequences_matrix)[2], 21 * 2)
-    for (i in seq(1, dim(aligned_sequences_matrix)[2])) {
-      table = (sort(table(aligned_sequences_matrix[, i]), decreasing = T))
+    aligned_sequences_matrix = alignment2matrix(alignment)
+    total_char = .check_alignment_characters(aligned_sequences_matrix)
+    if (grouped == T)
+      aligned_sequences_matrix = align_seq_mtx2grs(aligned_sequences_matrix, grouping_method)
+    keyaas = keyaas_per = matrix(NA, total_char, prmt$col_no)
+    for (col in seq_len(prmt$col_no)) {
+      aa_counts = sort(table(aligned_sequences_matrix[, col]), decreasing = T)
+      if(length(aa_counts) == 1){
+        # in case there's only one character type in the column
+        df_table = data.frame(col1 = names(aa_counts), col2 = aa_counts[1], row.names = 1)
+      } else{
+        df_table = as.data.frame(aa_counts)
+      }
       if (pseudo_counts) {
-        pc = calculate_pseudo_counts(alignment)
-        df_table = as.data.frame(table)
-        names(df_table) = c("AAs", "freq")
-        pseudo_counts = pc[, i]
-        df_pc = as.data.frame(pseudo_counts)
-        df_pc = dplyr::mutate(df_pc, AAs = rownames(df_pc))
-        df_merged_table = df_pc %>% dplyr::full_join(df_table)
-        df_merged_table[is.na(df_merged_table)] = 0
-        df_merged_table =
-          df_merged_table %>%
-          dplyr::mutate(Frequency = pseudo_counts + freq) %>%
-          dplyr::select(AAs, Frequency)
-      } else{
-        if(length(table) == 1){
-          df_merged_table = data.frame(col1=names(table), col2=table[1],row.names = 1)
-        }else{
-          df_merged_table = as.data.frame(table)
-        }
-        names(df_merged_table) = c("AAs", "Frequency")
+        pb$tick()
+        df_table = .apply_pseudocounts_position(alignment, df_table, col)
       }
-      #AA types and frequencies
-      aas = names(table)
-      over_threshold = which(df_merged_table$Frequency > keyaas_treshold)
-      AAs = df_merged_table$AAs[over_threshold]
-      Frequency = df_merged_table$Frequency[over_threshold]
-      order_decresasing = order(Frequency, decreasing = T)
-      Frequency = Frequency[order_decresasing]
-      AAs = AAs[order_decresasing]
-
-      keyaas[i, 1:length(matrix(AAs, 1, length(AAs)))] = matrix(AAs, 1, length(AAs))
-      #if there are any AA (=always) then these are introduced to the keyaas matrix
-      keyaas_per[i, 1:length(matrix(Frequency, 1, length(Frequency)))] = matrix(round(Frequency / sum(Frequency), 6) * 100, 1, length(AAs))
-      #similarly in the percentages case
+      names(df_table) = c("AAs", "Frequency")
+      over_threshold = which(df_table$Frequency > keyaas_treshold)
+      aas = df_table$AAs[over_threshold]
+      frequency = df_table$Frequency[over_threshold]
+      order_decresasing = order(frequency, decreasing = T)
+      frequency = frequency[order_decresasing]
+      aas = as.character(aas[order_decresasing])
+      col_aa_cnt = length(frequency)
+      keyaas[1:col_aa_cnt, col] = matrix(aas, col_aa_cnt, 1)
+      keyaas_per[1:col_aa_cnt, col] = matrix(round(frequency / sum(frequency), 6) * 100, col_aa_cnt, 1)
     }
-    i = 1
-    while (length(which(keyaas[, i] != "n")) > 0) {
-      i = i + 1
-    }
-    i = i - 1
-    keyaas = t(keyaas[, 1:i])
-    #transpose matrix
-    keyaas_per = t(keyaas_per[, 1:i]) #transpose matrix
-    #merging key AAs symbols table with key AAs percentages table
-
-    size = dim(keyaas)
-    output = matrix("-", size[1] * 2, size[2])
     if (!is.null(weights)) {
       if (length(weights) != prmt$row_no)
-        stop("The length of weights vector must equal the number of sequences in the alignment!")
-      total_char = length(unique(c(aligned_sequences_matrix)))
-      if(total_char != 21)
-        warning("There are more than 20 AA types in your alignment.")
-      weight = matrix("n",
-                      ncol =  dim(aligned_sequences_matrix)[2],
-                      nrow =  total_char)
+        stop("The length of weights vector (got: ", length(weights),") must equal the number of sequences in the alignment (", prmt$row_no,")")
+      weight = matrix(NA, ncol=prmt$col_no, nrow=total_char)
       weights = weights / mean(weights)
-      for (i in seq_len(ncol(aligned_sequences_matrix))) {
-        representatives = unique(keyaas[, i])
-        representatives = representatives[!representatives == "n"]
-        for (j in seq_len(length(representatives))) {
-          which_representative = which(aligned_sequences_matrix[, i] == representatives[j])
-          weight[j, i] = mean(weights[which_representative])
+      for (col in seq_len(prmt$col_no)) {
+        representatives = unique(keyaas[, col])
+        representatives = representatives[!is.na(representatives)]
+        for (i in seq_len(length(representatives))) {
+          which_representative = which(aligned_sequences_matrix[, col] == representatives[i])
+          weight[i, col] = mean(weights[which_representative])
         }
-        a = weight[,i][which(weight[,i]!="n")]
-        b = keyaas_per[,i][which(keyaas_per[,i]!="n")]
-        keyaas_per[1:length(a), i] = as.numeric(b) * as.numeric(a)
+        a = weight[,col][which(!is.na(weight[,col]))]
+        b = keyaas_per[,col][which(!is.na(keyaas_per[,col]))]
+        keyaas_per[1:length(a), col] = round(as.numeric(b) * as.numeric(a), 6)
         }
-      }
-    j = 1
-    for (i in seq(1, size[1] * 2, 2)) {
-      output[i, ] = keyaas[j, ]
-      output[i + 1, ] = keyaas_per[j, ]
-      j = j + 1
     }
     return(list(
       AA = keyaas,
       percentage = keyaas_per,
-      matrix = output
+      matrix = .merge_matrices(keyaas, keyaas_per)
     ))
   }
+
+.merge_matrices <- function(m1, m2) {
+  row_count = NROW(m1)
+  col_count = NCOL(m1)
+  output = matrix(NA, row_count * 2, col_count)
+  counter = 1
+  for (row in seq(1, row_count * 2, 2)) {
+    output[row, ] = m1[counter, ]
+    output[row + 1, ] = m2[counter, ]
+    counter = counter + 1
+  }
+  return(output)
+}
+
 
 noteworthy_seqs <- function(percentage, alignment) {
   max = which.max(percentage)
@@ -740,8 +744,7 @@ create_final_CSV <-
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
     structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
-    rownames(variations_matrix$matrix) = rep(c("AA name", "Percentage"), (dim(variations_matrix$matrix)[1] /
-                                                                            2))
+    rownames(variations_matrix$matrix) = rep(c("AA name", "Percentage"), (dim(variations_matrix$matrix)[1] / 2))
     if (is.null(score_list)) {
       alignment_position = seq(1, dim(variations_matrix$matrix)[2], by = 1)
       final_output = rbind(alignment_position,
@@ -856,9 +859,7 @@ kabat_conservativity <-
     }
     Kabat = rep(NaN, dim(aligned_sequences_matrix)[2])
 
-    var_aa = suppressWarnings(
-      calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts)
-    )
+    var_aa = calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts)
     N = length(aligned_sequences_matrix[, 1])
     for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
       column = aligned_sequences_matrix[, rep]
@@ -896,9 +897,7 @@ schneider_conservativity <-
     }
     symbols = 21
     sum_schneider = rep(NaN, dim(aligned_sequences_matrix)[2])
-    var_aa = suppressWarnings(
-      calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts)
-    )
+    var_aa = calculate_AA_variation(alignment, weights = weights, pseudo_counts = pseudo_counts))
     for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
       column = aligned_sequences_matrix[, rep]
       AAs = var_aa$AA[, rep]
@@ -936,14 +935,12 @@ shannon_conservativity <-
       aligned_sequences_matrix = alignment
     }
     sum = rep(NaN, dim(aligned_sequences_matrix)[2])
-    var_aa = suppressWarnings(
-      calculate_AA_variation(
+    var_aa = calculate_AA_variation(
         alignment,
         threshold = 0.01,
         weights = weights,
         pseudo_counts = pseudo_counts
       )
-    )
 
     for (rep in seq(1, dim(aligned_sequences_matrix)[2], 1)) {
       column = aligned_sequences_matrix[, rep]
@@ -1202,7 +1199,7 @@ calculate_pseudo_counts <-
     #warning - other substitution matrices may have different symbols (like '*', or other letters)
     mtx_alignment = alignment2matrix(alignment)
     pseudoCounts = matrix(NA,
-                          nrow = length(append(Biostrings::AA_STANDARD, "-")),
+                          nrow = AA_COUNT,
                           ncol = dim(mtx_alignment)[2])
     B = apply(
       X = mtx_alignment,
@@ -1211,9 +1208,9 @@ calculate_pseudo_counts <-
         (5 * length(unique(X)))
     )
     calc_ba <- function(column, B, substitution_mtx) {
-      pseudocounts = matrix(NA, nrow = length(append(Biostrings::AA_STANDARD, "-")), ncol = 1)
+      pseudocounts = matrix(NA, nrow = AA_COUNT, ncol = 1)
       names(pseudocounts) <- append(Biostrings::AA_STANDARD, "-")
-      N = sum((table(column)))
+      N = sum(table(column))
       AA = table(column)
       for (i in names(pseudocounts)) {
         to_sum <- rep(NA, length(AA))
