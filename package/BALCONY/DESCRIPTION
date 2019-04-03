@@ -1,7 +1,7 @@
 Package: BALCONY
 Type: Package
 Title: Better ALignment CONsensus analYsis
-Version: 0.2.10
+Version: 0.2.11
 Authors@R: c(
     person("Michal", "Stolarczyk", , "stolarczyk.michal93@gmail.com", role = c("aut","cre")
     ),person("Alicja", "Pluciennik", , "alicja.pluciennik@outlook.com", role = c("aut")
