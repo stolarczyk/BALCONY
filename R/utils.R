@@ -5,6 +5,49 @@
   return(total_char)
 }
 
+
+#' Remove gaps and perform MSA
+#'
+#' @param seqj sequence to align
+#' @param seqi sequence to align
+#'
+#' @return matrix of MSA scores
+#' 
+#' @export
+#' 
+#' @importFrom Biostrings pairwiseAlignment
+#' 
+#' @examples 
+#' data("small_alignment")
+#' seq = small_alignment$seq[1]
+#' seq2 = small_alignment$seq[2]
+#' .convertAlign(seq, seq2)
+.convertAlign <- function(seqj, seqi) {
+    return(pairwiseAlignment(.removeGaps(seqi),
+                             .removeGaps(seqj), scoreOnly = T))
+}
+
+#' Remove gaps from string
+#'
+#' Can be used to remove gaps from an alignment sequence
+#' 
+#' @param string string with gaps decoded as "-"
+#'
+#' @return string without gaps
+#' 
+#' @export
+#' 
+#' @importFrom seqinr c2s s2c
+#' 
+#' @examples
+#' data("small_alignment")
+#' seq = small_alignment$seq[1]
+#' .removeGaps(seq)
+.removeGaps <- function(string) {
+    char = s2c(string)
+    return(c2s(char[char != "-"]))
+}
+
 #' Find sequences of numbers in a numeric vector
 #'
 #' This function finds sequences of consecutive numbers in numeric vectors

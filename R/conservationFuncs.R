@@ -1258,27 +1258,29 @@ shannon_conservativity <-
 #' For given alignment calculate pariwise alignments and returns alignment score.
 #'
 #' @param alignment An alignment object read with \code{\link[seqinr]{read.alignment}} function
-#'
+#' 
 #' @return Matrix of alignment scores
+#' 
+#' @importFrom Biostrings pairwiseAlignment
+#' @importFrom progress progress_bar
+#'
 #' @export
 #'
 #' @examples
 #' data("small_alignment")
 #' \donttest{pairwiseAlignemnt_scores=pairwise_alignment_MSA(small_alignment)}
 pairwise_alignment_MSA <- function(alignment) {
-    #define a function to use in sapply
-    convert_then_align <- function(seqj, seqi) {
-        seqi = seqinr::s2c(seqi)
-        seqi = seqinr::c2s(seqi[seqi != "-"])
-        seqj = seqinr::s2c(seqj)
-        seqj = seqinr::c2s(seqj[seqj != "-"])
-        return(Biostrings::pairwiseAlignment(seqi, seqj, scoreOnly = T))
-    }
+    pb <- progress_bar$new(
+        format = paste("MSA", " [:bar] :percent eta: :eta"),
+        total = alignment$nb,
+        clear = T,
+        width = 80
+    )
     score_mtx = matrix(NA, nrow = alignment$nb, ncol = alignment$nb)
     for (i in seq_len(alignment$nb)) {
+        pb$tick()
         seqi = alignment$seq[i]
-        score_mtx[i,] = sapply(alignment$seq, convert_then_align, seqi)
-        print(i)
+        score_mtx[i,] = sapply(alignment$seq, .convertAlign, seqi)
     }
     return(score_mtx)
 }
@@ -1588,7 +1590,7 @@ calculate_pseudo_counts <-
             colnames(substitution_mtx) <- gonnet[[1]]
             rownames(substitution_mtx) <- gonnet[[1]]
         }
-        #warning - other substitution matrices may have different symbols (like '*', or other letters)
+        # note that other substitution matrices may have different symbols (like '*', or other letters)
         mtx_alignment = alignment2matrix(alignment)
         pseudoCounts = matrix(NA,
                               nrow = AA_COUNT,
