@@ -5,6 +5,47 @@
   return(total_char)
 }
 
+#' Find sequences of numbers in a numeric vector
+#'
+#' This function finds sequences of consecutive numbers in numeric vectors
+#'
+#' Out of the following vector: 1,2,3,4,5,6,7,20,21,140,141 the function will find values starting the sequences: 1,20,140 and their lengths 7,2,2 respectively}
+#'
+#' @param vector A numeric vector to be analyzed
+#'
+#' @return \item{values}{A vector of values starting the consecutive sequences}
+#' \item{lengths}{A vector of lengths of identified sequences}
+#'
+#' @export
+#'
+#' @examples
+#' find_consecutive_seq(c(1,2,3,4,5,6,7,20,21,140,141,300,301,302))
+find_consecutive_seq <- function(vector) {
+  vector = append(vector, vector[length(vector)] + 2)
+  diffs = diff(vector)
+  ind = append(vector[1], vector[which(diffs != 1) + 1])
+  cnt = 1
+  lengths = c()
+  for (i in seq(2, length(ind))) {
+    lengths[cnt] = which(vector == ind[i]) - which(vector == ind[i - 1])
+    cnt = cnt + 1
+  }
+  ind = ind[-length(ind)] # usuniecie sztucznej wartosci
+  return(list(values = ind, lengths = lengths))
+}
+
+#' apply the pseudocounts to the position
+#'
+#' @param alignment The data loaded with \code{\link[seqinr]{read.alignment}} function
+#' @param df_table a data.frame object
+#' @param position position id
+#'
+#' @return a matrix
+#'
+#' @importFrom dplyr %>%
+#'
+#' @examples
+#' #no example
 .apply_pseudocounts_position <- function(alignment, df_table, position) {
   pc = calculate_pseudo_counts(alignment)
   names(df_table) = c("AAs", "freq")
@@ -37,7 +78,24 @@
   return(all(grepl("[[:upper:]]", strsplit(string, "")[[1]])))
 }
 
-.find_seqid <- function(sequence_id, library) {
+#' Get sequence identifier by other sequence identifier in given alignment within a specified library
+#'
+#' This function allows to find sequence id from alignment file corresponding to the given sequence id. Function requires library of equivalent sequences id defined by user and it is useful to find sequences from other databases in alignment for examined sequence from other database (like PDB sequence for structure and UniProt sequences in alignment).
+#'
+#' @param sequence_id A string. An ID of e.g. PDB structure identifier
+#' @param library A list of vectors which contain a defined by user library e.g. of UniProt ids <-> PDB ids. See examples
+#'
+#' @return A string. The equivalent ID to the one provided as the input.
+#' @export
+#'
+#' @examples
+#' #creating library uniprot - PDB
+#' lib=list(  c("Q84HB8","4I19","4QA9"),
+#'            c("P34913","4JNC"),
+#'            c("P34914","1EK2","1CR6","1EK1","1CQZ"))
+#' PDB_name = "1CQZ"
+#' find_seqid(PDB_name,lib)
+find_seqid <- function(sequence_id, library) {
   found = c()
   sequence_id = toupper(sequence_id)
   for (i in seq(1, length(library))) {
@@ -48,9 +106,27 @@
   return(seqid)
 }
 
-.get_seq <- function(sequence_id, alignment) {
+#' Get sequence by id in alignment.
+#'
+#' This function allows to search for a sequence with its id. Useful for browsing a larg multiple sequence alignment data or for automatization purposes.
+#'
+#' @param sequence_id identifier of desired sequence from alignment
+#' @param alignment data loaded with \code{\link[seqinr]{read.alignment}}
+#'
+#' @return A string, the desired aligned sequence form alignment
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' #creating library uniprot - PDB
+#' lib=list(  c("Q84HB8","4I19","4QA9"),
+#'            c("P34913","4JNC"),
+#'            c("P34914","1EK2","1CR6","1EK1","1CQZ"))
+#' sequence_id=find_seqid("1CQZ",lib)
+#' sequence=find_seq(sequence_id, alignment)
+find_seq <- function(sequence_id, alignment) {
   mat = as.matrix(as.character(alignment[[3]]))
-  nazwy_mat = get_seq_names(alignment)
+  nazwy_mat = .get_seq_names(alignment)
   which_uniprot = c()
   for (i in seq(1, length(nazwy_mat))) {
     #finding indices of uniprot ID in seq
@@ -74,7 +150,7 @@
   return(seq)
 }
 
-.excl_low_prob_strcts <-
+excl_low_prob_strcts <-
   function(structure, threshold) {
     if (length(structure) == 3) {
       for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
@@ -83,7 +159,7 @@
         structure[[1]][i, to_exclude] = "N"
       }
     } else{
-      print("No probability information provided for the structure.")
+      warning("No probability information provided for the structure.")
     }
     return(structure)
   }

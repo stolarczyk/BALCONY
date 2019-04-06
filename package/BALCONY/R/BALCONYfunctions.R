@@ -5,6 +5,35 @@ if (getRversion() >= "2.15.1")
 AA_COUNT = length(append(Biostrings::AA_STANDARD, "-"))
 
 # Conservation analysis ---------------------------------------------------
+
+#' Read structure data from a text file
+#'
+#' By using this function you can read text file and create an structure list which can be used in further evolutionary analysis with BALCONY package. Text file should comprise 2 or 3 columns: first one should contain indices (positions) of amino acids in the protein, the second one should contain amino acid symbols on specified positions and the third one (optionally) the numeric property of given residue.
+#'
+#' The files should be formatted as follows:\cr
+#' 2  ASP 100\cr
+#' 6   TYR 80\cr
+#' 11  PHE 30\cr
+#' 6   TYR 30
+#'
+#' @param file_names A vector of strings with structure file(s) name(s)
+#'
+#' @return A list with read structure data. Number of elements of this list equals to the number of files specified
+#'
+#' @keywords structure
+#'
+#' @export
+#'
+#' @importFrom utils read.table write.table
+#'
+#' @examples
+#' fileConn<-file("exemplary_input1.txt")
+#' writeLines(c("2 TYR 100","3 LEU 100", "7 VAL 50", "10 PHE 30", "20 SER 20"), fileConn)
+#' close(fileConn)
+#' fileConn<-file("exemplary_input2.txt")
+#' writeLines(c("5 ALA 100","6 ILE 100", "18 GLY 100", "40 PHE 100"), fileConn)
+#' close(fileConn)
+#' structure_list = read_structure(file_names = c("exemplary_input1.txt", "exemplary_input2.txt"))
 read_structure <- function(file_names) {
   structure_names = c()
   for (i in seq(1, length(file_names), by = 1)) {
@@ -22,10 +51,24 @@ read_structure <- function(file_names) {
   return(structure_list)
 }
 
+#' Delete protein isoforms from alignment object
+#'
+#' This function searches for isoforms in the alignment object (entries with "-digit|" in the name) and deletes them
+#'
+#' The isoforms are detected as entries with \code{"-digit|"} in the sequence name. If no isoforms are detected this function prints a "No isiforms detected" notification instead
+#'
+#' @param alignment An object class alignment read with \code{\link[seqinr]{read.alignment}} function
+#'
+#' @return Alignment without isoforms
+#'
+#' @export
+#'
+#' @keywords alignment
+#'
+#' @examples
+#' data("alignment")
+#' delete_isoforms(alignment)
 delete_isoforms <- function(alignment) {
-  # This function searches for isoforms in the alignment (entries with "-digit|" in the name) and deletes them
-  # As input it takes the alignment file
-  # Output: alignment without isoforms
   lines_to_delete = c()
   pattern = "(-\\d+\\|)"
   for (i in seq(1, length(alignment$nam))) {
@@ -57,6 +100,28 @@ delete_isoforms <- function(alignment) {
   return(output)
 }
 
+#' Determine consensus sequence
+#'
+#' Function calculates consensus sequence for given alignment with a threshold of user's choice.
+#'
+#' If maximum fraction of any amino acid on the certain position is lower than a threshold then "*" is printed instead.
+#'
+#' @param alignment output of of \code{\link[seqinr]{read.alignment}} function or grouped alignment created with: \code{\link{align_seq_mtx2grs}} and \code{\link{alignment2matrix}}
+#' @param threshold minimal fraction of amino acids on the certain position in all sequences of the alignment to be taken for consensus letter on this position; number in range 0-100.
+#'
+#' @return A character vector of length of the aligned sequence containing consesus sequence based on the input alignment
+#'
+#' @note Please note that this function masks the seqinr package function  \code{\link[seqinr]{consensus}}
+#'
+#' @keywords consensus
+#'
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' alignment = delete_isoforms(alignment)
+#' threshold=80 # Set the consensus threshold
+#' consensus_sequence=consensus(alignment, threshold)
 consensus <-  function(alignment, threshold) {
   #Function which calculates consensus
   #alignment-output of read.alignment() or alignment2matrix() function
@@ -93,10 +158,28 @@ consensus <-  function(alignment, threshold) {
   return(consens)
 }
 
+#' Calculate identity of each sequence in the alignment to the consensus sequence.
+#'
+#' The function calculates identity of consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment. Also, it can be used to weight conservativity metrics results in further steps of analysis with BALCONY package.
+#'
+#' Returned values are percentage of identical symbols (AA and "-") in consensus sequence and aligned sequence.
+#'
+#' @param alignment Data loaded with \code{\link[seqinr]{read.alignment}} function
+#' @param consensus_seq Consensus sequence (output of  \code{\link{consensus}} function)
+#'
+#' @return Numeric vector of identity score (percentage); positions in the numeric vector correspond to sequences in alignment, respectively
+#'
+#' @export
+#'
+#' @keywords consensus
+#'
+#' @examples
+#' data("alignment")
+#' alignment = delete_isoforms(alignment)
+#' threshold=60
+#' consensus=consensus(alignment, threshold)
+#' true_consensus=cons2seqs_ident(alignment, consensus)
 cons2seqs_ident <-  function(alignment, consensus_seq) {
-  #alignment_sequence- file[[3]]
-  # number_of_seq- file[[1]]
-  #consensus_seq - calculated consensus (output of consensusus())
   true_percentage = c()
 
   for (i in seq(1, get_align_params(alignment)$row_no)) {
@@ -108,6 +191,21 @@ cons2seqs_ident <-  function(alignment, consensus_seq) {
   return(true_percentage)
 }
 
+#' Get alignment dimensions
+#'
+#' This function returns size of alignment, which facilitates the convenient performing upcoming steps of analysis.
+#'
+#' Function returns list of two elements row_no(number of rows, sequences) and col_no(number of columns,length of aligned sequences)
+#'
+#' @param alignment data loaded with \code{\link[seqinr]{read.alignment}}
+#'
+#' @return \item{row_no }{number of sequences}
+#' \item{col_no }{length of aligned sequences}
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' parameters=get_align_params(alignment);
 get_align_params <- function(alignment) {
   #alignment data
   #return list of alignment size [row_numbers, col_numbers]
@@ -118,9 +216,26 @@ get_align_params <- function(alignment) {
   return(param)
 }
 
+#' Convert amino acid symbols to groups according to their properties of user's choice
+#'
+#' This function performs a conversion of amino acid symbols to group symbols according to their properties. Implemented grouping methods are: substitution_matrix (majority of properties taken into account), polarity, size and aromaticity. "GX", where X stands for group number, are group symbols.
+#'
+#' @param aligned_sequences_matrix A matrix that contains aligned sequences. It is an output of \code{\link{alignment2matrix}} function
+#' @param grouping_method A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity'
+#'
+#' @return A matrix of size of the input matrix but with group symbols instead of amino acid symbols
+#' @export
+#' @keywords groups matrix
+#'
+#' @examples
+#' data(alignment)
+#' alignment = delete_isoforms(alignment)
+#' grouping_method = "general"
+#' aligned_sequences_matrix = alignment2matrix(alignment)
+#' grouped = align_seq_mtx2grs(aligned_sequences_matrix,grouping_method)
 align_seq_mtx2grs <-
   function(aligned_sequences_matrix,
-           grouping_method) {
+           grouping_method="substitution_matrix") {
     rows = dim(aligned_sequences_matrix)[1]
     cols = dim(aligned_sequences_matrix)[2]
     aligned_sequences_matrixG = aligned_sequences_matrix
@@ -260,6 +375,29 @@ align_seq_mtx2grs <-
     return(aligned_sequences_matrixG)
   }
 
+#' Group consensus to each sequence in the alignment similarity
+#'
+#' The function calculates similarity of group consensus to each sequence in the alignment. It facilitates an assessment of consensus accuracy and identification of outlying sequences in the alignment. Grouping amino acids allows to check similiarity between sequences by amino acids properties of user's choice.
+#'
+#' AA in  consensus sequences and aligned sequences are converted into groups symbols according to method of user's choice. Returned values are percentage of similar amino acids considering the properties in consensus sequence and aligned sequence.
+#'
+#' @param grouped_alignment The output of \code{\link[seqinr]{read.alignment}} function
+#' @param grouped_consensus_seq A string of amino acids, the output of  \code{\link{consensus}} function
+#'
+#' @return numeric vector of identity score (percentage); positions in the numeric vector correspond to sequences in alignment, respectively
+#'
+#' @export
+#'
+#' @keywords consensus
+#'
+#' @examples
+#' data("small_alignment")
+#' alignment = delete_isoforms(small_alignment)
+#' threshold_consensus = 30
+#' grouping_method = "substitution_matrix"
+#' alignment_grouped = align_seq_mtx2grs(alignment2matrix(alignment),grouping_method)
+#' consensus_seq_grouped = consensus(alignment_grouped, threshold_consensus)
+#' consensus_to_seqs_similarity = cons2seqs_sim(alignment_grouped, consensus_seq_grouped)
 cons2seqs_sim <-
   function(grouped_alignment,
            grouped_consensus_seq) {
@@ -277,6 +415,19 @@ cons2seqs_sim <-
     return(true_percentage_G)
   }
 
+#' Convert alignment object to a matrix
+#'
+#' The function loads alignment into matrix to facilitate a convenient data manipulation
+#'
+#' @param alignment data loaded with \code{\link[seqinr]{read.alignment}} function
+#'
+#' @return Aligned sequences matrix where number of rows equals to number of aligned sequences and number of columns equals to the length length of aligned sequences
+#' @export
+#' @keywords alignment conversion matrix
+#' @examples
+#' data("alignment")
+#' alignment = delete_isoforms(alignment)
+#' matrix=alignment2matrix(alignment)
 alignment2matrix <- function(alignment) {
   #alignment data
   #returns alignment as a matrix
@@ -293,6 +444,32 @@ alignment2matrix <- function(alignment) {
   return(aligned_sequences_matrix)
 }
 
+#' Calculate AA variations on each position of the multiple sequence alignment
+#'
+#' This function calculates AA variations on each position of the alignment which may be further used for the conservativity study of the set of sequences in quiestio
+#'
+#' The output consists of amino acids and their fractions on each position of alignment. Amino acids with occurence frequencies lower than the threshold of user's choice are excluded.
+#'
+#' @param alignment The data loaded with \code{\link[seqinr]{read.alignment}} function
+#' @param threshold (optional) A number in range 0-1. A of minimal frequency of occurences of amino acids at each position. Default: all the residues are visualized.
+#' @param grouped (optional) A logical indicating if the grouping of amino acids should be applied. Default: FALSE
+#' @param grouping_method (optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity'. Default: 'substitution_matrix'. Default: 'substitution_matrix' if grouped is TRUE.
+#' @param weights (optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.
+#' @param pseudo_counts (optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only in non-group mode and without weights. Using these options with pseudo-counts will be suppressed. Default: FALSE
+#'
+#' @return Returns list of three matrices with tabelarized symbols of the most common AA in alignment column, percentage values for contributed AA and combined one.
+#' \item{AA }{A matrix of AA on all alignment positions with decreasing frequencies in columns}
+#' \item{per}{The percentage of AA frequencies corresponding to the $AA}
+#' \item{matrix}{A combination of this two. The best suited element for visual inspection of the variability at each position}
+#'
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' alignment = delete_isoforms(small_alignment)
+#' threshold=10
+#' grouped = FALSE
+#' var_aa=calculate_AA_variation(small_alignment, threshold, grouped)
 calculate_AA_variation <-
   function(alignment,
            threshold = NULL,
@@ -304,7 +481,7 @@ calculate_AA_variation <-
     prmt = get_align_params(alignment = alignment)
     if (pseudo_counts) {
       # pseudocounts calculation takes a long time, initialize a progress bar
-      pb <- progress_bar$new(
+      pb <- progress::progress_bar$new(
         format = paste("Pseudocounts calculation", " [:bar] :percent eta: :eta"),
         total = prmt$col_no,
         clear = T,
@@ -377,6 +554,24 @@ calculate_AA_variation <-
     ))
   }
 
+#' Find noteworthy sequences in the dataset (aligned sequences)
+#'
+#' This function detects noteworthy sequences (most common, closest to the consensus and most different from the consesus) to facilitate convenient detection of outlying sequences that might be excluded from the further analysis.
+#'
+#' @param percentage The identity of each sequence in the alignment to the consensus sequence. Output of the \code{\link{cons2seqs_ident}} function
+#' @param alignment Alignment loaded with \code{\link[seqinr]{read.alignment}} function
+#'
+#' @return
+#' \item{best_consensus}{Sequence closest to the consensus}
+#' \item{worst_consensus}{Sequence most different to the consensus}
+#' \item{most_common}{Most common sequence in the alignment}
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' consensus_seq = consensus(alignment, 30)
+#' consensus_to_sequences_identity=cons2seqs_ident(alignment,consensus_seq)
+#' noteworthy_seqs(consensus_to_sequences_identity, alignment)
 noteworthy_seqs <- function(percentage, alignment) {
   max = which.max(percentage)
   namelist = alignment[[2]]
@@ -395,6 +590,23 @@ noteworthy_seqs <- function(percentage, alignment) {
   return(out)
 }
 
+#' Amino acids symbols conversion
+#'
+#' This function facilitates the conversion of three letter amino acids' codes to one letter equivalents.
+#'
+#' In case a vector of amino acid three letter codes is provided the function returns a vector of their one letter equivalents.
+#'
+#' @param amino_acids A character or vector of characters with amino acid(s) three letter code(s)
+#'
+#' @return A chracter or vector of characters with amino acids one letter code(s)
+#'
+#' @export
+#'
+#' @keywords amino_acids
+#'
+#' @examples
+#' three_letter_codes = c("LEU", "VAL", "ALA")
+#' convert_AA_symbol(three_letter_codes)
 convert_AA_symbol <- function(amino_acids) {
   map <-
     c(
@@ -454,6 +666,23 @@ convert_AA_symbol <- function(amino_acids) {
            paste(map[x], collapse = ""))
 }
 
+#' Creates barplot with amino acid variation on the specified position
+#'
+#' This function facilitates a visual inspection of multiple sequence alignment (MSA) position variablity.
+#'
+#' @param position A number of column of alignment to be visualized
+#' @param AA_variation A percentage frequency of amino acids in the alignment, calculated with \code{\link{calculate_AA_variation}} function
+#'
+#' @return This function produces a barchart
+#' @export
+#' @keywords plot
+#' @importFrom graphics barplot legend par plot text
+#' @examples
+#' data("small_alignment")
+#' position = 100
+#' threshold = 0.01
+#' var_aa = calculate_AA_variation(small_alignment,threshold)
+#' barplotshow(position, var_aa)
 barplotshow <- function (position, AA_variation) {
   row = max(which(AA_variation$percentage[, position] != "n"))
   x_names = AA_variation$AA[seq(1, row), position]
@@ -501,6 +730,41 @@ barplotshow <- function (position, AA_variation) {
   )
 }
 
+#' Get sequences weights
+#'
+#' This function returns weights of the sequneces in the alignment object
+#'
+#' The weights are calculated as shown in: \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/1097-0134\%2820010101\%2942\%3A1\%3C108\%3A\%3AAID-PROT110\%3E3.0.CO\%3B2-O}{Valdar and Thronton (2001)
+#'
+#' \strong{According to the following formulas:}
+#'
+#' \deqn{W_{j} = \frac{\sum_{k\neq j}^{N}Dist(s_{j},s_{k}))}{N-1}}{Wj = (\sum Dist(sj,sk))/N-1}\cr
+#' where:\cr
+#' \eqn{W_{j}}{Wj} is the weight of sequence \eqn{s_{j}}{sj}, and is defined as the average evolutionary
+#' distance between \eqn{s_{j}}{sj} and all other sequences in the alignment\cr
+#' \eqn{N} is the number of sequences in the alignment.
+#'
+#' \deqn{Dist(s_{j},s_{k})) = 1 = \frac{\sum_{i\epsilon Aligned_{jk}}Mut(s_{j},s_{k}))}{n(Aligned_{jk}))}}{Dist(sj,sk)) = 1 = {\sum Mut(sj,sk)/n(Alignedjk))}}
+#' where:\cr
+#' \eqn{Dist(s_{j},s_{k})}{Dist(sj,sk)}, the evolutionary distance between sequences \eqn{s_{j}}{sj} and \eqn{s_{k}}{sk}\cr
+#' \eqn{Aligned_{jk}}{Alignedjk} is the set of all non-gap positions in \eqn{s_{j}}{sj} or \eqn{s_{k}}{sk}, \eqn{n(Aligned_{jk})}{n(Alignedjk)} is the number of such positions.
+#'
+#' \deqn{Mut(a,b) = \frac{m(a,b) - min(m)}{max(m) - min(m)}}{Mut(a,b) = (m(a,b) - min(m))/(max(m) - min(m))}
+#' where:\cr
+#' \eqn{Mut(a,b)} measures the similarity between amino acids \eqn{a} and \eqn{b} as derived from \eqn{a} mutation data matrix \eqn{m}
+#'
+#' @param alignment data loaded with \code{\link[seqinr]{read.alignment}}
+#'
+#' @return A vector with weights of length equal to the number of sequences in the alignment
+#'
+#' @references Valdar, W. S. J. & Thornton, J. M. Protein–protein interfaces: Analysis of amino acid conservation in homodimers. Proteins: Structure, Function, and Bioinformatics 42, 108–124 (2001).
+#'
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' alignment = small_alignment
+#' weights = get_seq_weights(alignment)
 get_seq_weights <- function(alignment) {
   weights = c()
   gonnet_mtx = BALCONY::gonnet
@@ -512,7 +776,7 @@ get_seq_weights <- function(alignment) {
     nrow = length(alignment$seq),
     ncol = length(alignment$seq)
   )
-  pb <- progress_bar$new(
+  pb <- progress::progress_bar$new(
     format = paste("Distance calculation", " [:bar] :percent eta: :eta"),
     total = length(alignment$seq),
     clear = T,
@@ -522,8 +786,8 @@ get_seq_weights <- function(alignment) {
     pb$tick()
     for (j in seq_len(length(alignment$seq))) {
       if (i != j) {
-        seqi = s2c(alignment$seq[i])
-        seqj = s2c(alignment$seq[j])
+        seqi = seqinr::s2c(alignment$seq[i])
+        seqj = seqinr::s2c(alignment$seq[j])
         non_gaps = intersect(which(seqi != "-"), which(seqj != "-"))
         for (pos in non_gaps) {
           aai = which(gonnet_mtx[[1]] == seqi[pos])
@@ -545,6 +809,25 @@ get_seq_weights <- function(alignment) {
   return(weights)
 }
 
+#' Get position based weights of sequences in alignment
+#'
+#' This function calculates position based weights of sequences based on Heinkoff & Heinkoff (1994) for given MSA. The score is calculated as sum of scores for each sequence position c. Score for position c is equal 1/r if there is r different residues at column c in MSA but 1/rs if r symbol is repeated in s sequences.
+#'
+#'   The weights might be calculated only for amino acids symbols or for all symbols (including gaps). Also weights can be normalized by number of columns in MSA, then the sum of weights for all sequences is 1.
+#'
+#' @param alignment alignment loaded with \code{\link[seqinr]{read.alignment}}
+#' @param gap (optional) a logical parameter, if TRUE(default) the gaps in MSA are included
+#' @param normalized optional) logical parameter, if TRUE (default) weights for all sequences are divided by number of columns in alignment (when gap = TRUE weights sum up to 1)
+#'
+#' @return a vector of position based weights for each sequence in given alignment
+#'
+#' @references Henikoff, S. & Henikoff, J. G. Position-based sequence weights. Journal of Molecular Biology 243, 574–578 (1994).
+#'
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' pos_based_weights <- get_pos_based_seq_weights(small_alignment)
 get_pos_based_seq_weights <- function(alignment, gap = TRUE, normalized = TRUE){
   align_param = get_align_params(alignment)
   weights_mtx = matrix(NA,nrow = align_param$row_no, ncol = align_param$col_no)
@@ -591,6 +874,30 @@ get_pos_based_seq_weights <- function(alignment, gap = TRUE, normalized = TRUE){
 }
 
 
+#' Create CSV file to save results
+#'
+#' This function saves results as table into csv file. Combination of given variation allows to compare protein structure with evolutionary data content from alignment. Each position on alignment has its own column in csv file. If the length of the alignmnet exceeds 1000 characters, the output is divided into separate files with suffixes corresponing to the number of file produced by this function.
+#'
+#' @param filename name of the output file produced by the function
+#' @param variations_matrix An object which contains alignment and frequencies of occurences each amino acids on each position of alignment. Output of \code{\link{calculate_AA_variation}}
+#' @param structure A strcture object - matrix of aligned, examined protein sequence covered by structure markers (S/N). Output of \code{\link{create_structure_seq}}
+#' @param sequence_id the Uniprot code of the sequence of interest
+#' @param alignment the output of \code{\link[seqinr]{read.alignment}} function. A variable containing alignment data. One of the sequences must be the sequence of interest
+#' @param score_list list of calculated entropy/conservation scores. Optional parameter. If not provided, this rows are not present in the output file
+#'
+#' @return A comma separated variable file containing information provided to this function. It is also written in the current directory
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' data("structure")
+#' uniprot="P34914"
+#' alignment = delete_isoforms(alignment)
+#' threshold = 1
+#' \donttest{var_aa=calculate_AA_variation(alignment,threshold)
+#' entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+#'                   Escore.entropy = Escore_conservativity(alignment))
+#' create_final_CSV("my_filename",var_aa,structure,uniprot,alignment,entropy_data)}
 create_final_CSV <-
   function(filename,
            variations_matrix,
@@ -598,7 +905,7 @@ create_final_CSV <-
            sequence_id,
            alignment,
            score_list = NULL) {
-    sequence = seqinr::s2c(.get_seq(sequence_id, alignment)[[1]])
+    sequence = seqinr::s2c(find_seq(sequence_id, alignment)[[1]])
     structure_output = rbind(structure$structure_matrix, structure$structure_numbers)
     structure_output_names = append(rownames(structure$structure_matrix), "Structure numbers")
     rownames(structure_output) = structure_output_names
@@ -651,6 +958,78 @@ create_final_CSV <-
     return(final_output)
   }
 
+#' Exclude low probability structural data
+#'
+#' This function facilitates the exclusion of low probability structural data from the downstream conservativity analysis, which helps to reduce the effect of non-consistent structural amino acids on the conservativity analysis of the structure of interest
+#'
+#' @param structure A structure object generated with \code{\link{create_structure_seq}} function
+#' @param threshold The threshold for the structural data exclusion
+#'
+#' @return \item{structure_matrix}{A matrix of characters "S" and "N" marking on sequence the structural element; "S" - amino acid forms the analyzed structure, "N" - amino acid which does not form the structure. Number of rows of the matrix corresponds to the number of structures analyzed}
+#' \item{structure_numbers}{A vector containing the numbers of the amino acids in the sequence of interest (no gaps)}
+#' \item{structure_probabilities}{A matrix of numeric values: probabilities of corresponding to the structural information from first element of the output}
+#'
+#' @export
+#'
+#' @keywords structure
+#'
+#' @examples
+#' data("alignment")
+#' structure_files = c(system.file("extdata", "T1_4JNC.structure", package = "BALCONY"),
+#'                     system.file("extdata", "T2_4JNC.structure", package = "BALCONY"),
+#'                     system.file("extdata", "T3_4JNC.structure", package = "BALCONY")
+#' )
+#' structure_list = read_structure(structure_files)
+#' #creating library uniprot - PDB
+#' lib=list(c("Q84HB8","4I19","4QA9"),
+#'          c("P34913","4JNC"),
+#'          c("P34914","1EK2","1CR6","1EK1","1CQZ"))
+#' pdb_name = "4JNC"
+#' uniprot=find_seqid(pdb_name,lib)
+#' tunnel=create_structure_seq(structure_list,uniprot,alignment)
+#' tunnel_excluded = excl_low_prob_strcts(tunnel, 0.5)
+excl_low_prob_strcts <-
+  function(structure, threshold) {
+    if (length(structure) == 3) {
+      for (i in seq(1, dim(structure[[3]])[1], by = 1)) {
+        to_exclude = which(structure[[3]][i, ] < threshold)
+        structure[[3]][i, to_exclude] = NaN
+        structure[[1]][i, to_exclude] = "N"
+      }
+    } else{
+      warning("No probability information provided for the structure.")
+    }
+    return(structure)
+  }
+
+#' Calculate the Escore conservation metric
+#'
+#' This function facilitates the calculation of Escore conservation metric (in amino acid or group mode)
+#'
+#' The conservativity score is calculated according to the following formula:
+#' \deqn{P(i) = max(p(i))/n(i)}
+#' \deqn{Pnorm(i) = P(i)/max(P)}
+#' \deqn{score = -ln(P_norm(i))/max(-ln(P_norm))}
+#' \cr where:\cr
+#' \eqn{p(i)} - amino acids frequency on i-th position where gaps are included \cr
+#' \eqn{n(i)} - amino acids count on i-th position where gaps are excluded
+#'
+#' @param alignment data read with \code{\link[seqinr]{read.alignment}} function
+#' @param grouping_method (optional) A string which specifies the grouping method to be used. One of following: 'substitution_matrix', 'polarity', 'size', 'aromaticity', default: NULL
+#' @param weights (optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.
+#' @param pseudo_counts (optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only in non-group mode and without weights. Using these options with pseudo-counts will be suppressed. Default: FALSE
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @export
+#'
+#' @keywords conservation_metrics
+#'
+#' @note Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula: \deqn{conservation = 1 - entropy}
+#'
+#' @examples
+#' data("small_alignment")
+#' \donttest{conservation_score = Escore_conservativity(alignment)}
 Escore_conservativity <-
   function(alignment,
            grouping_method = NULL,
@@ -698,6 +1077,30 @@ Escore_conservativity <-
     return(return_data)
   }
 
+#' Calculate Kabat conservation metric
+#'
+#' This function facilitates the calculation of Kabat conservation metric.
+#'
+#' @param alignment Alignment data read with \code{\link[seqinr]{read.alignment}} function
+#' @param weights (optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.
+#' @param pseudo_counts (optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only without weights. Using this option with pseudo-counts will be suppressed. Default: FALSE
+#'
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @note Please note that the Kabat matric formula can be found in the paper listed in "See Also" section below.
+#' Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+#'   \deqn{conservation = 1 - entropy}
+#'
+#' @references http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract
+#'
+#' @export
+#'
+#' @keywords conservation_metrics
+#'
+#' @examples
+#' data("small_alignment")
+#' \donttest{conservation_score = kabat_conservativity(alignment)}
 kabat_conservativity <-
   function(alignment,
            weights = NULL,
@@ -734,6 +1137,28 @@ kabat_conservativity <-
     return(Kabat_entropy_normalized)
   }
 
+#' Calculate Schneider conservation metric
+#'
+#' This function facilitates the calculation of Schneider conservation metric.
+#'
+#' @param alignment Alignment data read with \code{\link[seqinr]{read.alignment}} function
+#' @param weights (optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.
+#' @param pseudo_counts (optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only without weights. Using this option with pseudo-counts will be suppressed. Default: FALSE
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @note Please note that the Schneider matric formula can be found in the paper listed in "See Also" section below.
+#' Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+#' \deqn{conservation = 1 - entropy}
+#'
+#' @references http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract
+#'
+#' @keywords conservation_metrics
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' \donttest{conservation_score = schneider_conservativity(alignment)}
 schneider_conservativity <-
   function(alignment,
            weights = NULL,
@@ -772,6 +1197,28 @@ schneider_conservativity <-
     return(sum_schneider)
   }
 
+#' Calculate Shannon conservation metric
+#'
+#' This function facilitates the calculation of Shannon conservation metric.
+#'
+#' @param alignment Alignment data read with \code{\link[seqinr]{read.alignment}} function
+#' @param weights (optional) A vector of length equal number of sequences in the alignment object with weights to overcome the taxonomic bias in the conservation analysis.
+#' @param pseudo_counts (optional) A logical indicating if pseudo-counts should be added to the MSA. Pseudo-counts can be used only without weights. Using this option with pseudo-counts will be suppressed. Default: FALSE
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @note Please note that the Schneider matric formula can be found in the paper listed in "See Also" section below.
+#' Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+#' \deqn{conservation = 1 - entropy}
+#'
+#' @references http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract
+#'
+#' @keywords conservation_metrics
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' \donttest{conservation_score = shannon_conservativity(alignment)}
 shannon_conservativity <-
   function(alignment,
            weights = NULL,
@@ -813,6 +1260,18 @@ shannon_conservativity <-
     return(sum)
   }
 
+#' Calculate pairwise alignment for whole MSA
+#'
+#' For given alignment calculate pariwise alignments and returns alignment score.
+#'
+#' @param alignment An alignment object read with \code{\link[seqinr]{read.alignment}} function
+#'
+#' @return Matrix of alignment scores
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' \donttest{pairwiseAlignemnt_scores=pairwise_alignment_MSA(small_alignment)}
 pairwise_alignment_MSA <- function(alignment) {
   #define a function to use in sapply
   convert_then_align <- function(seqj, seqi) {
@@ -831,6 +1290,38 @@ pairwise_alignment_MSA <- function(alignment) {
   return(score_mtx)
 }
 
+#' Calculate cumulative relative entropy score
+#'
+#' This function calculates cumulative relative entropy score according to: \href{https://www.sciencedirect.com/science/article/pii/S0022283600940361?via\%3Dihub}{Hannenhalli and Russell (2000)}.
+#'
+#' \strong{PSEUDO-ALGORITHM} (According to \href{https://www.sciencedirect.com/science/article/pii/S0022283600940361?via\%3Dihub}{Hannenhalli and Russell (2000)}):
+#'   \enumerate{
+#'     \item (If score matrix is not provided) Run pairwise alignments for all available sequences in the input MSA and save scores to a matrix
+#'     \item (If score matrix is not provided) Calculate a distance matrix based off of the alignment scores one
+#'     \item Perform hierarchical clustering on the distance matrix (UPGMA method)
+#'     \item Get the sequence clusters
+#'     \item Divide the alignment into \code{sub_groups} which are the clusters
+#'     \item Run hmmbuild for \code{whole_alignment} without \code{sub-group} and \code{sub_group}
+#'     \item Calculate relative entropy using these two as indicated in the Reference and repeat for each \code{sub_group}
+#'     \item Calculate the cumulative relative entropy
+#'   }
+#' \strong{hmmbuild program}:
+#' This function uses hmmbuild program of \href{http://www.hmmer.org/}{HMMER} suite for HMM profile generation for MSA.
+#' We recommend downloading and installing HMMER by following the instructions and steps in the \href{http://hmmer.org/download.html}{ HMMER installation website }.
+#'
+#' @references Hannenhalli, S. S. & Russell, R. B. Analysis and prediction of functional sub-types from protein sequence alignments11Edited by J. Thornton. Journal of Molecular Biology 303, 61–76 (2000).
+#' @param alignment An alignment object read with \code{\link[seqinr]{read.alignment}} function
+#' @param hmmbuild_path (optional if running under UNIX) The aboslute path to the hmmbuild binary
+#' @param pairwiseAlignemnt_scores (optional) A matrix with pairwise alignment scores. For example created by \code{\link[Biostrings]{pairwiseAlignment}}. If the matrix is not provideded by the user it is calculated automatically by the function (time consuming). The sequences are extracted from the alignemnt object.
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @export
+#'
+#' @keywords conservation_metrics
+#'
+#' @examples
+#' #No example due to external software requirements
 CRE_conservativity <-
   function(alignment,
            hmmbuild_path = NULL,
@@ -934,6 +1425,21 @@ CRE_conservativity <-
   }
 
 
+#' Read a substitution matrix
+#'
+#' This function facilitates reading of substitution matrices for further use
+#'
+#' @param matrix_name A string with path to the substitution matrix in a text file to be read
+#'
+#' @return
+#' \item{names}{A vector of characters with amino acid names included in the matrix}
+#' \item{matrix}{A numeric matrix with values}
+#'
+#' @export
+#'
+#' @examples
+#' path = system.file("extdata", "GONNET.txt", package = "BALCONY")
+#' sub_mat = substitution_mtx(path)
 substitution_mtx <- function (matrix_name) {
   # function can read .txt file substitution matrix and convert it
   # into a list of alphabet (the range of letters in matrix) and
@@ -945,6 +1451,22 @@ substitution_mtx <- function (matrix_name) {
   return(sub_mtx)
 }
 
+#' Calculate substitution rate matrix between two amino acids
+#'
+#' This function is used to calculate Landgraf conservation metric. D_matrix contains substitution rates between two amino acids in the alignment, according to the following formula:\cr \cr
+#' \deqn{D(a,b)= (d(a,a)-d(a,b))/d(a,a)}\cr
+#' where:\cr
+#' \eqn{d(a,a)} is a probability of AA substitution by itself\cr
+#' \eqn{d(a,b)} is a probability of substitution of amino acid a with other amino acid.
+#'
+#' @param substitution_matrix A matrix with probablity of substitutions, e.g.  Gonnet substitution matrix
+#'
+#' @return A matrix of substitution probablities for all amino acids
+#' @export
+#'
+#' @examples
+#' data("gonnet")
+#' distance=D_matrix(gonnet)
 D_matrix <- function(substitution_matrix) {
   values = as.numeric(as.matrix(substitution_matrix[[2]]))
   dim(values) <- dim(substitution_matrix[[2]])
@@ -966,6 +1488,31 @@ D_matrix <- function(substitution_matrix) {
   return(output)
 }
 
+#' Calculate Landgraf conservation score
+#'
+#' This function calculates Landgraf conservarion score
+#'
+#' @param matrix_name A string with path to the file woith substitution matrix to be used to calculate the Landgraf conservation score. Optional parameter, if not provided the Gonnet substitution matrix is used (according to author's suggestion)
+#' @param alignment An alignment object read with \code{\link[seqinr]{read.alignment}} function
+#' @param weights A vector with weight for each sequence in the alignment  to be used to calculate the Landgraf conservation score e.g. each sequence similarity to the consensus sequence from the alignment - output from \code{\link{cons2seqs_ident}} fuction
+#'
+#' @return A vector of length equal to the length of aligned sequences
+#'
+#' @note Please note that the Shannon matric formula can be found in the paper listed in "See Also" section below.
+#' Also, this function originally calculates the entropy values which can be used to estimate the conservativity score according to the following formula:
+#' \deqn{conservation = 1 - entropy}
+#'
+#' @references http://onlinelibrary.wiley.com/doi/10.1002/prot.10146/abstract
+#'
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' alignment = small_alignment
+#' threshold_consensus = 30
+#' consensus_seq=consensus(alignment, threshold_consensus);
+#' consensus_sequences_identity=cons2seqs_ident(alignment, consensus_seq)
+#' score = landgraf_conservativity(alignment = alignment, weights = consensus_sequences_identity)
 landgraf_conservativity <-
   function(matrix_name = NULL, alignment, weights) {
     if (is.null(matrix_name)) {
@@ -978,7 +1525,7 @@ landgraf_conservativity <-
     dissim_mtx = D_matrix(pre_dissim_mtx)
     conservation = rep(NaN, dim(aligned_sequences_matrix)[2])
     status = 0
-    pb <- progress_bar$new(
+    pb <- progress::progress_bar$new(
       format = paste("Landgraf calculation", " [:bar] :percent eta: :eta"),
       total = dim(aligned_sequences_matrix)[2],
       clear = T,
@@ -1013,6 +1560,26 @@ landgraf_conservativity <-
     return(Landgraf_normalized_entropy)
   }
 
+#' Calculate pseudo counts for alignment
+#'
+#' This function calculates pseudo-counts (as shown in \href{https://doi.org/10.1093/bioinformatics/12.2.135}{Henikoff et al. (1996)}) for an alignment with the use of substitution matrices. It is recommended to estimate amino acid frequencies for alignments with small number of sequences (in order to calculate reliable entropy scores)
+#'
+#' @param alignment data loaded with \code{\link[seqinr]{read.alignment}}
+#' @param substitution_mtx Matrix with amino acids substitution frequencies. Default: GONNET
+#'
+#' @return Matrix with pseudo counts of size 21x number of alignment columns
+#'
+#' @export
+#'
+#' @references Henikoff et al.(1996) Using substitution probabilities to improve position-specific scoring matrices, Bioinformatics, 12, 135–143\cr
+#' Claverie (1994) Some useful statistical properties of position-weight matrices.
+#' Comput. Chem., 18, 287-293
+#'
+#' @note Please note that when using other scoring matrix user needs to make sure that all alignment symbols are present there. Missing symbol will issue an error.
+#'
+#' @examples
+#' data("alignment")
+#' PC <- calculate_pseudo_counts(alignment)
 calculate_pseudo_counts <-
   function(alignment, substitution_mtx = NULL) {
     if (is.null(substitution_mtx)) {
@@ -1069,6 +1636,38 @@ calculate_pseudo_counts <-
 # Structure analysis ------------------------------------------------------
 
 
+#' Superimpose structural data of interest on sequence after the alignmment
+#'
+#' Create sequence of a protein structure model based on numbers of amino acids given in a text file (list of IDs and numbers in protein)
+#'
+#' This function is useful to create sequence covered with structural data provided in a .txt file. This sequence can be compared with alignment to check the conservation for interesting amino acid(s). Additionally, if path to the PDB file is provided the function corrects the output accordingly to the information in REMARK465 on missing amino acids.
+#'
+#' @param structure_list A list of structure data used for further evolutionary analysis. It can be text file(s) read by the \code{\link{read_structure}} function (text file with 2 columns: numbers of amino acids and 3-letters codes of AA; First row needs to contain markers)
+#' @param sequence_id The id/name of the target sequence in alignment which will be a base of structure sequence
+#' @param alignment An alignment object read with \code{\link[seqinr]{read.alignment}} function, must contain the target sequence
+#' @param pdb_path A string specifying the path to the PDB file with structural information. Optional parameter, required if the structure is incomplete e.g. fragments such as loops are missing
+#' @param chain_identifier A character specifying the chain of interest e.g. "A" or "B"
+#' @param shift A numeric value. In case there is a need to adjust the amino acids numeration due to missing amino acids at the beginning of the structure (that are not considered in the PDB file REMARK465 section)
+#'
+#' @return \item{structure_matrix}{A matrix of characters "S" and "N" marking on sequence the structural element; "S" - amino acid forms the analyzed structure, "N" - amino acid which does not form the structure. Number of rows of the matrix corresponds to the number of structures analyzed}
+#' \item{structure_numbers}{A vector containing the numbers of the amino acids in the sequence of interest (no gaps)}
+#' \item{structure_probabilities}{A matrix of numeric values: probabilities of corresponding to the structural information from first element of the output, which helps to reduce the effect of non-consistent structural amino acids on the conservativity analysis of the structure of interest}
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' structure_files = c(system.file("extdata", "T1_4JNC.structure", package = "BALCONY"),
+#'                     system.file("extdata", "T2_4JNC.structure", package = "BALCONY"),
+#'                     system.file("extdata", "T3_4JNC.structure", package = "BALCONY")
+#' )
+#' structure_list = read_structure(structure_files)
+#' #creating library uniprot - PDB
+#' lib=list(c("Q84HB8","4I19","4QA9"),
+#'          c("P34913","4JNC"),
+#'          c("P34914","1EK2","1CR6","1EK1","1CQZ"))
+#' pdb_name = "4JNC"
+#' uniprot=find_seqid(pdb_name,lib)
+#' tunnel=create_structure_seq(structure_list,uniprot,alignment)
 create_structure_seq <-
   function(structure_list,
            sequence_id,
@@ -1099,7 +1698,7 @@ create_structure_seq <-
       missing = NULL
     }
     #finds an uniprot name from alignent- extract uniprot seq from alignment
-    base_seq = .get_seq(sequence_id, alignment)
+    base_seq = find_seq(sequence_id, alignment)
     structure_probabilities = list()
     for (i in seq(1, length(structure_list), by = 1)) {
       structures_indices = as.vector(structure_list[[i]][[1]])
@@ -1188,6 +1787,23 @@ create_structure_seq <-
     }
   }
 
+#' Get "REMARK 465" data from PDB file
+#'
+#' This function extracts the data concerning missing amino acids in PDB protein structure from the PDB file
+#'
+#' @param pdb_path A string specifying the path tp the PDB file
+#' @param chain_identifier A character specifying the chain to be considered
+#'
+#' @return \item{aa_numbers}{A numeric vector of indices of missing amino acids}
+#' \item{chain}{A character specifying the chain which was considered in remark 465 data extraction}
+#' @export
+#'
+#' @examples
+#' require(Rpdb)
+#' chain_identifier = "A"
+#' pdb_path = system.file("extdata", "4jnc.pdb", package = "BALCONY")
+#' print(pdb_path)
+#' remark465_data = get_remarks465_pdb(pdb_path,chain_identifier)
 get_remarks465_pdb <- function(pdb_path, chain_identifier) {
   #pdb_file_path: a path to the pdb file
   #chain_identifier: a character spcifying the chain to analyze
@@ -1223,20 +1839,30 @@ get_remarks465_pdb <- function(pdb_path, chain_identifier) {
   return(list(aa_numbers = aa_number, chain = unique(chain)))
 }
 
-find_consecutive_seq <- function(vector) {
-  vector = append(vector, vector[length(vector)] + 2)
-  diffs = diff(vector)
-  ind = append(vector[1], vector[which(diffs != 1) + 1])
-  cnt = 1
-  lengths = c()
-  for (i in seq(2, length(ind))) {
-    lengths[cnt] = which(vector == ind[i]) - which(vector == ind[i - 1])
-    cnt = cnt + 1
-  }
-  ind = ind[-length(ind)] # usuniecie sztucznej wartosci
-  return(list(values = ind, lengths = lengths))
-}
-
+#' Get IDs of structure(s) elements from aligned sequences (MSA)
+#'
+#' This function allows to obtain positions in aligned sequences for analyzed structure (e.g. functionally related amino acids dispersed in sequence) based on sequence corresponding to the crystal structure.
+#'
+#' It facilitates the management and oparation on the entropy values calculated for given MSA.
+#'
+#' @param structure The output of create_structure_seq function
+#'
+#' @return
+#' \item{proteinIndices}{A sorted vector of amino acids of analyzed sequence in MSA}
+#' \item{strucureIndices}{A list of sorted vectors of amino acids indices in aligned sequence for each structure}
+#'
+#' @export
+#'
+#' @examples
+#' data("structure")
+#' #creating library uniprot - PDB
+#' lib=list(c("Q84HB8","4I19","4QA9"),
+#'          c("P34913","4JNC"),
+#'          c("P34914","1EK2","1CR6","1EK1","1CQZ"))
+#' pdb_name = "1CQZ" #A string with path to PDB file
+#' uniprot=find_seqid(pdb_name,lib)
+#' tunnel=create_structure_seq(structure,uniprot,alignment)
+#' structure_index=get_structures_idx(tunnel)
 get_structures_idx <- function(structure) {
   #documentation get_structure_idx.Rd
   #get idx of structure in alignemnt
@@ -1253,6 +1879,33 @@ get_structures_idx <- function(structure) {
   return(out)
 }
 
+#' Get MSA-based calculated entropy for chosen protein
+#'
+#' This function allows to obtain vector of entropies for one complete protein sequence from MSA (gaps introduced in alignment are omitted)
+#'
+#' This function can be used on list of entropies or list with one element for one entropy score.
+#'
+#' @param protein_index Indices of given protein aminoacids in aligned sequence
+#' @param score_list A list of entropy scores calculated for MSA
+#'
+#' @return A list where each element is a vector of entropy values provided in entropy_scores_list
+#' @export
+#'
+#' @examples
+#' data("structure")
+#' data("alignment")
+#' pdb_name = "1CQZ" #A string with path to PDB file
+#' uniprot="P43914"
+#' chain_identifier = "B"
+#' structure_index=get_structures_idx(structure)
+#' \donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+#'                                    Escore_entropy = Escore_conservativity(alignment))
+#' prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
+#'
+#' # In case of one entropy score
+#' entropy_scores_list = list()
+#' entropy_scores_list[[1]] = Schneider_entropy = schneider_conservativity(alignment)
+#' prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)}
 get_prot_entropy <- function(protein_index, score_list) {
   #documentation get_prot_entropy.Rd
   #allows to get idx of whole protein in alignment
@@ -1270,6 +1923,38 @@ get_prot_entropy <- function(protein_index, score_list) {
   return(prot_cons)
 }
 
+#' Plot entropies for protein
+#'
+#' This function plots entropies of protein. Plots might be superimposed or not.
+#'
+#' This function produces plots for given values, on X axis are amino acids, on Y axis are values of entropy/conservation. Legend contains score names for description values.
+#'
+#' @param protein_conservation A list or a vectors of protein conservation/entropies. The output of \code{\link{get_prot_entropy}} function
+#' @param colors (optional) A vector of colors for each plot, default: rainbow
+#' @param impose (optional) A boolean, if True/T plots are superimposed, if False/F plots are printed separately, default: TRUE
+#' @param prot_name (optional) A string with structure name (to be used in the tile of the plot), default: NULL
+#' @param legend_pos (optional) A string witch legend position - one of following: "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right" and "center". Default: "bottomleft"
+#'
+#' @return This function produces plots
+#'
+#' @keywords plot
+#'
+#' @export
+#'
+#' @importFrom grDevices dev.new rainbow
+#'
+#' @examples
+#' data("alignment")
+#' data("structure")
+#' uniprot="P34914"
+#' structure_index=get_structures_idx(structure)
+#' \donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+#'                                    Escore_entropy = Escore_conservativity(alignment))
+#' prot_entropy=get_prot_entropy(structure_index$proteinIndices, entropy_scores_list)
+#'
+#' plot_entropy(prot_entropy, colors = c("red","green","blue"),
+#'              impose = TRUE, prot_name = "Murine Epoxide Hydrolase",
+#'           legend_pos = "bottomright")}
 plot_entropy <-
   function(protein_conservation,
            colors,
@@ -1320,6 +2005,34 @@ plot_entropy <-
            lty = c(1))
   }
 
+#' Get entropy of amino acids (for region of interest) in given protein
+#'
+#' This function allows to get values of entropy/conservation for amino acids dispersed in sequence of given protein. It works well with a list of dispersed amino acids in one protein.
+#'
+#' This function allows to obtain entropy (calculated on MSA) for dispersed amino acids in protein e.g. surface, binding site, tunnels etc. The input is a list of few structure indices in given protein sequence. Function calculates position of those in aligned sequence and returns a vector/matrix or a list of matrices with entropy values.
+#'
+#' @param structure_index A is a list of indices in alignment of protein and structures. Output output of \code{\link{get_structures_idx}} function
+#' @param score_list A list of entropies for whole alignment
+#'
+#' @return A list of matrices. Rows are entropy scores, columns are
+#'
+#' @keywords structure
+#'
+#' @export
+#'
+#' @examples
+#' data("structure")
+#' data("alignment")
+#'
+#' #creating library uniprot - PDB
+#' uniprot="P34914"
+#' tunnel=create_structure_seq(structure,uniprot,alignment)
+#' indices=get_structures_idx(structure)
+#' protein_index = indices$proteinIndices
+#' structure_index = indices$structureIndices
+#' \donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+#'                                    Escore_entropy = Escore_conservativity(alignment))
+#' structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)}
 get_structures_entropy <- function(structure_index, score_list) {
   #structure_index output of get_structures_idx  is a list of indexes in alignment of protein and structures
   #SCORE_LIST list of entropies for whole alignment
@@ -1340,6 +2053,30 @@ get_structures_entropy <- function(structure_index, score_list) {
   return(Entropy)
 }
 
+#' Combine the entropy data for structure building amino acids with their indices
+#'
+#' This function combines the entropy data for structure building amino acids with its indices. It prepares the data for convenient visualization or processing.
+#'
+#' @param structure A structure data, the output of \code{\link{create_structure_seq}} function
+#' @param structure_entropy The entropy values for the structure building residues, the output of \code{\link{get_structures_entropy}} function
+#'
+#' @return Each element is a list of entropy values (matrix of entropy scores) and indices of residues building structure in protein of interest.
+#'
+#' @keywords structure
+#'
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' data("structure")
+#' uniprot="P34914"
+#' indices=get_structures_idx(structure)
+#' protein_index = indices$proteinIndices
+#' structure_index = indices$structureIndices
+#' \donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+#'                                    Escore_entropy = Escore_conservativity(alignment))
+#' structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
+#' structure_profile = prepare_structure_profile(structure, structure_entropy)}
 prepare_structure_profile <-
   function(structure, structure_entropy) {
     #structure-> output of create_structure_seq
@@ -1362,6 +2099,38 @@ prepare_structure_profile <-
     return(megalist)
   }
 
+#' Plot structure entropy on protein background
+#'
+#' This function enables to visually asses the stucture(s) entropy in comparison with protein's entropy
+#'
+#' For each entropy score from structure_profiles (these must correspond to prot_entropy) this function plots separate plots. Each plot presents entropy score for whole protein each structure is marked as one of 21 symbols available in generic \code{\link[graphics]{plot}} function.
+#'
+#' @param protein_entropy A list of entropy values for protein of interest. Output of \code{\link{get_prot_entropy}} function
+#' @param structure_profiles Output of \code{\link{prepare_structure_profile}} function
+#' @param pdb_name (optional) A string with protein's name e.g. PDB ID.
+#' @param colors (optional) A vector of strings with colors to be used to plot the stucture markers of length equal to number of structures in structure profiles, default: rainbow()
+#' @param structure_names (optional) A vector of strings to be displayed as names in the legend, default: "stru <no>"
+#' @param legend_pos (optional) A string witch legend position - one of following: "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right" and "center". Default: "bottomleft"
+#'
+#' @return This function produces plot
+#'
+#' @keywords plot
+#'
+#' @export
+#'
+#' @examples
+#' data("alignment")
+#' data("structure")
+#' indices=get_structures_idx(structure)
+#' protein_index = indices$proteinIndices
+#' structure_index = indices$structureIndices
+#' \donttest{entropy_scores_list=list(Schneider_entropy = schneider_conservativity(alignment),
+#'                                    Escore_entropy = Escore_conservativity(alignment))
+#' structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
+#' structure_profile = prepare_structure_profile(structure, structure_entropy)
+#' prot_entropy=get_prot_entropy(protein_index, entropy_scores_list)
+#'
+#' plot_structure_on_protein(prot_entropy, structure_profile)}
 plot_structure_on_protein <-
   function(protein_entropy,
            structure_profiles,
@@ -1436,6 +2205,40 @@ plot_structure_on_protein <-
     }
   }
 
+#' Compare conservation metrics
+#'
+#' This function is designed to compare the conservation metrics used in the analysis. This way the user can notice the significant correlation or differences between these to evaluate their performance in a specific case.
+#'
+#' This function allows to show the scatterplots of an entropy scores. The protein is marked as gray points, the structures are marked with symbols. It is useful to visualise differences between entropy scores, and choose the best one for further analysis.
+#'
+#' @param protein_entropy List of entropy scores values for a whole protein (output of \code{\link{get_prot_entropy}})
+#' @param structure_profile Each element is a list of entropy values (matrix of entropy scores) and indices of residues building structure in protein of interest  (output of \code{\link{prepare_structure_profile}})
+#' @param pdb_name The name of the analyzed protein
+#'
+#' @return This function produces a set of scatter plots facilitating the visual inspection of entropy metrics dependancies
+#'
+#' @export
+#'
+#' @keywords conservativity_metrics
+#'
+#' @examples
+#' data("alignment")
+#' alignment = delete_isoforms(alignment)
+#' data("structure")
+#' uniprot="P34913"
+#' indices=get_structures_idx(structure)
+#' protein_index = indices$proteinIndices
+#' structure_index = indices$structureIndices
+#' \donttest{entropy_scores_list=list(
+#'   Schneider_entropy = schneider_conservativity(alignment),
+#'   Escore_entropy = Escore_conservativity(alignment)
+#' )
+#' structure_entropy=get_structures_entropy(structure_index, entropy_scores_list)
+#'
+#' structure_profile = prepare_structure_profile(structure, structure_entropy)
+#' protein_entropy=get_prot_entropy(protein_index, entropy_scores_list)
+#' compare_cons_metrics(protein_entropy, structure_profile, "1CQZ")
+#' }
 compare_cons_metrics <-
   function(protein_entropy,
            structure_profile,
@@ -1534,6 +2337,36 @@ compare_cons_metrics <-
 
   }
 
+#' Perform Kolmogorov-Smirnov test for structural data
+#'
+#' This function facilitates the comparison of conservativity of structure of interest with the rest of the protein. For example comparison of tunnel conservativity with overall protein conservativity.
+#'
+#' @param protein_entropy A list of calculated entropy scores (vectors of numeric values). The output of \code{\link{get_prot_entropy}} function
+#' @param structure_entropy A list where each element is a list of structure indices in the protein and matrix with corresponding entropy values (each row is a separate score metric)
+#' @param alternative A numeric value indicating the character of alternative hypothesis of the test to be performed: 1 - two sided test, 2 - less, 3 - greater, following the generic \code{\link[stats]{ks.test}} function.
+#' @param pdb_name (optional) A string with name of the reference protein, default: "Reference"
+#' @param range (optional) A numeric vector with region of reference protein to be excluded from the data set. Useful when protein consists of additional chains with outstandingly low/high entropy values which may distort result of the test, default: NULL
+#' @param make_plot (optional) A logical indicating if cumulative distribution functions should be displayed, default: TRUE
+#'
+#' @return A matrix of p-values for each entropy metric (rows) and structure (columns)
+#' @export
+#' @importFrom stats ecdf
+#'
+#' @examples
+#' data("alignment")
+#' data("structure")
+#' \donttest{entropy_data=list(Schneider.entropy=schneider_conservativity(alignment),
+#'                             Escore.entropy = Escore_conservativity(alignment),
+#'                             Kabat.entropy =  kabat_conservativity(alignment))
+#' indices=get_structures_idx(structure)
+#' protein_index = indices$proteinIndices
+#' structure_index = indices$structureIndices
+#' prot_cons=get_prot_entropy(protein_index,entropy_data)
+#' stru_entropy=get_structures_entropy(structure_index,entropy_data)
+#' profiles_for_structure=prepare_structure_profile(structure, stru_entropy)
+#' EQUAL=kolmogorov_smirnov_test(protein_entropy = prot_cons,
+#'                               structure_entropy = profiles_for_structure,
+#'                               alternative = 1,range = c(1:233),make_plot = TRUE)}
 kolmogorov_smirnov_test <-
   function(protein_entropy,
            structure_entropy,
@@ -1605,6 +2438,25 @@ kolmogorov_smirnov_test <-
     return(pval_mtx)
   }
 
+#' Calculate real-value Evolutionary Trace (ET)
+#'
+#' This function allows to calculate real-valued ET for MSA.
+#'
+#' Here, the real-valued ET is calculated using an evolutionary tree calculated for given alignment. The tree is calculated using UPGMA method. Real-valued ET score can be used as complimentary analysis of evolutionary entropy measures.
+#'
+#' @param alignment Data loaded with \code{\link[seqinr]{read.alignment}} function
+#'
+#' @return A vector of real valued ET score corresponding to each MSA column
+#'
+#' @references Mihalek, Res, Lichtarge, 2004
+#'
+#' @keywords conservation_metrics
+#' @export
+#'
+#' @examples
+#' data("small_alignment")
+#' alignment = small_alignment
+#' weights = get_seq_weights(alignment)
 RealValET_conservativity <- function(alignment) {
   ET_groups = seq(1, length(alignment$nam))
   dist <- seqinr::dist.alignment(alignment)
@@ -1635,7 +2487,7 @@ RealValET_conservativity <- function(alignment) {
     return(RO)
   }
   x = rep(0, dim(aligned_matrix)[2])
-  pb <- progress_bar$new(
+  pb <- progress::progress_bar$new(
     format = paste("Real valued ET score calculation", " [:bar] :percent eta: :eta"),
     total = dim(aligned_matrix)[2],
     clear = T,
