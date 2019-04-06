@@ -1,3 +1,6 @@
+[![](http://cranlogs.r-pkg.org/badges/grand-total/BALCONY)](http://cranlogs.r-pkg.org/badges/grand-total/BALCONY)
+[![](http://www.r-pkg.org/badges/version-last-release/BALCONY)](http://www.r-pkg.org/badges/version-last-release/BALCONY)
+
 # BALCONY
 This repository holds the BALCONY R package, which can be downloaded at its [CRAN](https://CRAN.R-project.org/package=BALCONY) website.
 
@@ -25,5 +28,4 @@ stability.
 
 See the [publication](https://doi.org/10.1186/s12859-018-2294-z) introducing the BALCONY package. 
 
-Płuciennik, Alicja, Michał Stolarczyk, Maria Bzówka, Agata Raczyńska, Tomasz Magdziarz, and Artur Góra. “BALCONY: An R Package for MSA and Functional Compartments of Protein Variability Analysis.” BMC Bioinformatics 19, no. 1 (August 14, 2018): 300. https://doi.org/10.1186/s12859-018-2294-z.
-
+Alicja Płuciennik, Michał Stolarczyk, Maria Bzówka, Agata Raczyńska, Tomasz Magdziarz, and Artur Góra. “BALCONY: An R Package for MSA and Functional Compartments of Protein Variability Analysis.” BMC Bioinformatics 19, no. 1 (August 14, 2018): 300. https://doi.org/10.1186/s12859-018-2294-z.
