@@ -888,6 +888,7 @@ get_pos_based_seq_weights <- function(alignment, gap = TRUE, normalized = TRUE){
 #' @return A comma separated variable file containing information provided to this function. It is also written in the current directory
 #' @export
 #'
+#' @name create_final_CSV
 #' @examples
 #' data("alignment")
 #' data("structure")
