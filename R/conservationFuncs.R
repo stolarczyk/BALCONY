@@ -203,7 +203,7 @@ get_align_params <- function(alignment) {
     #return list of alignment size [row_numbers, col_numbers]
     aligned_sequences = alignment$seq
     row_num = length(aligned_sequences)
-    col_num = length(seqinr::s2c(aligned_sequences[1]))
+    col_num = length(seqinr::s2c(aligned_sequences[[1]]))
     param = list(row_no = row_num, col_no = col_num)
     return(param)
 }
@@ -428,7 +428,7 @@ alignment2matrix <- function(alignment) {
     
     for (i in seq(1, prmt$row_no)) {
         #Putting aligned seqs into matrix
-        temp = toupper(seqinr::s2c(alignment$seq[i]))
+        temp = toupper(seqinr::s2c(alignment$seq[[i]]))
         for (j in seq(1, prmt$col_no)) {
             aligned_sequences_matrix[i, j] = temp[j]
         }
