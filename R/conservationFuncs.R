@@ -176,7 +176,7 @@ cons2seqs_ident <-  function(alignment, consensus_seq) {
     
     for (i in seq(1, get_align_params(alignment)$row_no)) {
         true_percentage[i] = length(which((
-            consensus_seq == seqinr::s2c(alignment$seq[i])
+            consensus_seq == seqinr::s2c(alignment$seq[[i]])
         ) == TRUE)) / length(consensus_seq)
         # true percentage calculation (number of the same AAs in consensusus and in each sequence/number of all AAs)
     }
@@ -203,7 +203,7 @@ get_align_params <- function(alignment) {
     #return list of alignment size [row_numbers, col_numbers]
     aligned_sequences = alignment$seq
     row_num = length(aligned_sequences)
-    col_num = length(seqinr::s2c(aligned_sequences[1]))
+    col_num = length(seqinr::s2c(aligned_sequences[[1]]))
     param = list(row_no = row_num, col_no = col_num)
     return(param)
 }
@@ -428,7 +428,7 @@ alignment2matrix <- function(alignment) {
     
     for (i in seq(1, prmt$row_no)) {
         #Putting aligned seqs into matrix
-        temp = toupper(seqinr::s2c(alignment$seq[i]))
+        temp = toupper(seqinr::s2c(alignment$seq[[i]]))
         for (j in seq(1, prmt$col_no)) {
             aligned_sequences_matrix[i, j] = temp[j]
         }
@@ -778,8 +778,8 @@ get_seq_weights <- function(alignment) {
         pb$tick()
         for (j in seq_len(length(alignment$seq))) {
             if (i != j) {
-                seqi = seqinr::s2c(alignment$seq[i])
-                seqj = seqinr::s2c(alignment$seq[j])
+                seqi = seqinr::s2c(alignment$seq[[i]])
+                seqj = seqinr::s2c(alignment$seq[[j]])
                 non_gaps = intersect(which(seqi != "-"), which(seqj != "-"))
                 for (pos in non_gaps) {
                     aai = which(gonnet_mtx[[1]] == seqi[pos])
@@ -1346,7 +1346,7 @@ CRE_conservativity <-
         no_clusters = max(clusters)
         RE = matrix(data = NA,
                     nrow = no_clusters,
-                    ncol = length(seqinr::s2c(alignment$seq[1])))
+                    ncol = length(seqinr::s2c(alignment$seq[[1]])))
         CRE = c()
         Z = c()
         #iterate over each clusters
@@ -1394,7 +1394,7 @@ CRE_conservativity <-
                 sub_pos = .preprocess_hmm_output(sub_hmm)$alignment_positions
                 #get the indices of alignemnt positions avaialble in both groups
                 intersection_pos = intersect(sub_pos, leftover_pos)
-                for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
+                for (pos in seq_len(length(seqinr::s2c(alignment$seq[[1]])))) {
                     which_pos = which(intersection_pos == pos)
                     if (length(which_pos) > 0) {
                         pre_RE = c()
@@ -1413,7 +1413,7 @@ CRE_conservativity <-
                 RE[i,] = 0
             }
         }
-        for (pos in seq_len(length(seqinr::s2c(alignment$seq[1])))) {
+        for (pos in seq_len(length(seqinr::s2c(alignment$seq[[1]])))) {
             CRE[pos] = sum(RE[, pos])
         }
         return(CRE / max(CRE))
