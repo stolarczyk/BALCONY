@@ -1,7 +1,7 @@
 .check_alignment_characters <- function(aligned_sequences_matrix) {
   total_char = length(unique(c(aligned_sequences_matrix)))
-  if(total_char != AA_COUNT-1)
-    warning("There are ", total_char," character (AA) types in your alignment, which is more than ", AA_COUNT,": (", AA_COUNT-1 ,"AA + '-')")
+  if(total_char >  AA_COUNT +1)
+    warning("There are ", total_char," character (AA) types in your alignment, which is more than prueba", AA_COUNT,": (", AA_COUNT-1 ,"AA + '-')")
   return(total_char)
 }
 
